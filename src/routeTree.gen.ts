@@ -9,8 +9,32 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as NamazShikkhaRouteImport } from './routes/namaz-shikkha'
+import { Route as IbadahRouteImport } from './routes/ibadah'
+import { Route as DonateRouteImport } from './routes/donate'
+import { Route as DevelopmentRouteImport } from './routes/development'
 import { Route as IndexRouteImport } from './routes/index'
 
+const NamazShikkhaRoute = NamazShikkhaRouteImport.update({
+  id: '/namaz-shikkha',
+  path: '/namaz-shikkha',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IbadahRoute = IbadahRouteImport.update({
+  id: '/ibadah',
+  path: '/ibadah',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DonateRoute = DonateRouteImport.update({
+  id: '/donate',
+  path: '/donate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevelopmentRoute = DevelopmentRouteImport.update({
+  id: '/development',
+  path: '/development',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +43,78 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/development': typeof DevelopmentRoute
+  '/donate': typeof DonateRoute
+  '/ibadah': typeof IbadahRoute
+  '/namaz-shikkha': typeof NamazShikkhaRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/development': typeof DevelopmentRoute
+  '/donate': typeof DonateRoute
+  '/ibadah': typeof IbadahRoute
+  '/namaz-shikkha': typeof NamazShikkhaRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/development': typeof DevelopmentRoute
+  '/donate': typeof DonateRoute
+  '/ibadah': typeof IbadahRoute
+  '/namaz-shikkha': typeof NamazShikkhaRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/development' | '/donate' | '/ibadah' | '/namaz-shikkha'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/development' | '/donate' | '/ibadah' | '/namaz-shikkha'
+  id:
+    | '__root__'
+    | '/'
+    | '/development'
+    | '/donate'
+    | '/ibadah'
+    | '/namaz-shikkha'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DevelopmentRoute: typeof DevelopmentRoute
+  DonateRoute: typeof DonateRoute
+  IbadahRoute: typeof IbadahRoute
+  NamazShikkhaRoute: typeof NamazShikkhaRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/namaz-shikkha': {
+      id: '/namaz-shikkha'
+      path: '/namaz-shikkha'
+      fullPath: '/namaz-shikkha'
+      preLoaderRoute: typeof NamazShikkhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ibadah': {
+      id: '/ibadah'
+      path: '/ibadah'
+      fullPath: '/ibadah'
+      preLoaderRoute: typeof IbadahRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/donate': {
+      id: '/donate'
+      path: '/donate'
+      fullPath: '/donate'
+      preLoaderRoute: typeof DonateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/development': {
+      id: '/development'
+      path: '/development'
+      fullPath: '/development'
+      preLoaderRoute: typeof DevelopmentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +127,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DevelopmentRoute: DevelopmentRoute,
+  DonateRoute: DonateRoute,
+  IbadahRoute: IbadahRoute,
+  NamazShikkhaRoute: NamazShikkhaRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
