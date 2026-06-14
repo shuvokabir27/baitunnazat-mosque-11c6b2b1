@@ -77,16 +77,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "বায়তুল মামুর জামে মসজিদ" },
+      { name: "description", content: "বায়তুল মামুর জামে মসজিদের অফিসিয়াল ওয়েবসাইট — নামাজের সময়সূচি, দান, উন্নয়ন কাজ ও নামাজ শিক্ষা।" },
+      { name: "author", content: "বায়তুল মামুর জামে মসজিদ" },
+      { property: "og:title", content: "বায়তুল মামুর জামে মসজিদ" },
+      { property: "og:description", content: "আল্লাহর ঘর — শান্তি ও ইবাদতের কেন্দ্র।" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap",
+      },
       {
         rel: "stylesheet",
         href: appCss,
