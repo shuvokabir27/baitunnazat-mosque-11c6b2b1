@@ -1,46 +1,52 @@
-import { useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, X, Moon } from "lucide-react";
+import { Moon, Home, HeartHandshake, HardHat, BookOpen, BookMarked } from "lucide-react";
 import { mosque, navItems } from "@/lib/mosque-data";
 
-function Header() {
-  const [open, setOpen] = useState(false);
+const navIcons: Record<string, typeof Home> = {
+  "/": Home,
+  "/donate": HeartHandshake,
+  "/development": HardHat,
+  "/ibadah": BookOpen,
+  "/namaz-shikkha": BookMarked,
+};
 
+function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-md">
-      <div className="mx-auto flex max-w-screen-md items-center justify-between px-4 py-3">
-        <Link to="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
+      <div className="mx-auto flex max-w-screen-md items-center justify-center px-4 py-3">
+        <Link to="/" className="flex items-center gap-2">
           <span className="grid h-9 w-9 place-items-center rounded-full gradient-gold shadow-gold">
             <Moon className="h-5 w-5 text-gold-foreground" />
           </span>
           <span className="text-lg font-bold text-primary leading-tight">{mosque.shortName}</span>
         </Link>
-        <button
-          aria-label="মেনু"
-          onClick={() => setOpen((v) => !v)}
-          className="grid h-10 w-10 place-items-center rounded-full bg-secondary text-secondary-foreground"
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
       </div>
+    </header>
+  );
+}
 
-      {open && (
-        <nav className="border-t border-border/60 bg-background px-4 pb-4 pt-2">
-          {navItems.map((item) => (
+function BottomNav() {
+  return (
+    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border/60 bg-background/95 backdrop-blur-md">
+      <div className="mx-auto grid max-w-screen-md grid-cols-5 px-1 pb-[env(safe-area-inset-bottom)]">
+        {navItems.map((item) => {
+          const Icon = navIcons[item.to] ?? Home;
+          return (
             <Link
               key={item.to}
               to={item.to}
-              onClick={() => setOpen(false)}
               activeOptions={{ exact: item.to === "/" }}
-              activeProps={{ className: "bg-secondary text-primary" }}
-              className="block rounded-xl px-4 py-3 text-base font-medium text-foreground transition-colors hover:bg-secondary"
+              activeProps={{ className: "text-primary" }}
+              className="flex flex-col items-center gap-1 px-1 py-2 text-muted-foreground transition-colors"
             >
-              {item.label}
+              <Icon className="h-5 w-5" />
+              <span className="text-[11px] font-medium leading-tight">{item.label}</span>
             </Link>
-          ))}
-        </nav>
-      )}
-    </header>
+          );
+        })}
+      </div>
+    </nav>
   );
 }
 
@@ -66,10 +72,11 @@ function Footer() {
 
 export function Layout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col pb-20">
       <Header />
       <main className="mx-auto w-full max-w-screen-md flex-1">{children}</main>
       <Footer />
+      <BottomNav />
     </div>
   );
 }
