@@ -6,10 +6,10 @@ import khatib from "@/assets/khatib.jpg";
 import muazzin from "@/assets/muazzin.jpg";
 
 export const mosque = {
-  name: "বায়তুল মামুর জামে মসজিদ",
-  shortName: "বায়তুল মামুর",
+  name: "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ, মহিপুর",
+  shortName: "বাইতুন নাজাত",
   established: "১৯৭৮",
-  location: "মিরপুর, ঢাকা",
+  location: "মহিপুর",
   tagline: "আল্লাহর ঘর — শান্তি ও ইবাদতের কেন্দ্র",
 };
 

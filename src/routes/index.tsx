@@ -7,8 +7,8 @@ import { mosque, heroImages, staff, committee, prayerTimes } from "@/lib/mosque-
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "বায়তুল মামুর জামে মসজিদ — হোম" },
-      { name: "description", content: "বায়তুল মামুর জামে মসজিদ। নামাজের সময়সূচি, ইমাম-খতিব ও কমিটির পরিচিতি।" },
+      { title: "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ, মহিপুর — হোম" },
+      { name: "description", content: "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ, মহিপুর। নামাজের সময়সূচি, ইমাম-খতিব ও কমিটির পরিচিতি।" },
     ],
   }),
   component: Index,
