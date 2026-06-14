@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as NamazShikkhaRouteImport } from './routes/namaz-shikkha'
 import { Route as IbadahRouteImport } from './routes/ibadah'
 import { Route as DonateRouteImport } from './routes/donate'
 import { Route as DevelopmentRouteImport } from './routes/development'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NamazShikkhaRoute = NamazShikkhaRouteImport.update({
   id: '/namaz-shikkha',
   path: '/namaz-shikkha',
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/donate': typeof DonateRoute
   '/ibadah': typeof IbadahRoute
   '/namaz-shikkha': typeof NamazShikkhaRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/donate': typeof DonateRoute
   '/ibadah': typeof IbadahRoute
   '/namaz-shikkha': typeof NamazShikkhaRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,12 +70,25 @@ export interface FileRoutesById {
   '/donate': typeof DonateRoute
   '/ibadah': typeof IbadahRoute
   '/namaz-shikkha': typeof NamazShikkhaRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/development' | '/donate' | '/ibadah' | '/namaz-shikkha'
+  fullPaths:
+    | '/'
+    | '/development'
+    | '/donate'
+    | '/ibadah'
+    | '/namaz-shikkha'
+    | '/sitemap.xml'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/development' | '/donate' | '/ibadah' | '/namaz-shikkha'
+  to:
+    | '/'
+    | '/development'
+    | '/donate'
+    | '/ibadah'
+    | '/namaz-shikkha'
+    | '/sitemap.xml'
   id:
     | '__root__'
     | '/'
@@ -75,6 +96,7 @@ export interface FileRouteTypes {
     | '/donate'
     | '/ibadah'
     | '/namaz-shikkha'
+    | '/sitemap.xml'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -83,10 +105,18 @@ export interface RootRouteChildren {
   DonateRoute: typeof DonateRoute
   IbadahRoute: typeof IbadahRoute
   NamazShikkhaRoute: typeof NamazShikkhaRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/namaz-shikkha': {
       id: '/namaz-shikkha'
       path: '/namaz-shikkha'
@@ -131,6 +161,7 @@ const rootRouteChildren: RootRouteChildren = {
   DonateRoute: DonateRoute,
   IbadahRoute: IbadahRoute,
   NamazShikkhaRoute: NamazShikkhaRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
