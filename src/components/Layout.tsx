@@ -18,7 +18,7 @@ function Header() {
           <span className="grid h-9 w-9 place-items-center rounded-full gradient-gold shadow-gold">
             <Moon className="h-5 w-5 text-gold-foreground" />
           </span>
-          <span className="text-lg font-bold text-primary leading-tight">{mosque.shortName}</span>
+          
         </Link>
       </div>
     </header>

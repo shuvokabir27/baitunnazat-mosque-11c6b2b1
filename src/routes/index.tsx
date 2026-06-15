@@ -47,11 +47,11 @@ function HeroSlider() {
     <section>
       {/* Mosque name & established year above the slider */}
       <div className="flex flex-col items-center px-5 pt-6 pb-5 text-center">
-        <span className="rounded-full gradient-gold px-4 py-1 text-sm font-semibold text-gold-foreground shadow-gold">
+        <h1 className="text-2xl font-bold leading-tight text-primary">{mosque.name}</h1>
+        <span className="mt-3 rounded-full gradient-gold px-4 py-1 text-sm font-semibold text-gold-foreground shadow-gold">
           প্রতিষ্ঠিত {mosque.established} সন
         </span>
-        <h1 className="mt-3 text-2xl font-bold leading-tight text-primary">{mosque.name}</h1>
-        <p className="mt-1.5 text-sm text-muted-foreground">{mosque.tagline}</p>
+        <p className="mt-3 text-sm text-muted-foreground">{mosque.tagline}</p>
       </div>
 
       {/* Image area with 16:9 aspect ratio */}
