@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, Link, useRouter, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ChevronLeft, Heart, ThumbsUp } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { staff } from "@/lib/mosque-data";
