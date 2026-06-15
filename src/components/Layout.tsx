@@ -11,6 +11,13 @@ const navIcons: Record<string, typeof Home> = {
   "/ibadah": BookOpen,
 };
 
+const navColors: Record<string, { bg: string; text: string; activeBg: string; activeText: string; dot: string }> = {
+  "/": { bg: "bg-emerald-100", text: "text-emerald-700", activeBg: "bg-emerald-600", activeText: "text-white", dot: "bg-emerald-500" },
+  "/donate": { bg: "bg-amber-100", text: "text-amber-700", activeBg: "bg-amber-500", activeText: "text-white", dot: "bg-amber-500" },
+  "/development": { bg: "bg-sky-100", text: "text-sky-700", activeBg: "bg-sky-600", activeText: "text-white", dot: "bg-sky-500" },
+  "/ibadah": { bg: "bg-violet-100", text: "text-violet-700", activeBg: "bg-violet-600", activeText: "text-white", dot: "bg-violet-500" },
+};
+
 const islamicMonthsBn = [
   "মুহররম",
   "সফর",
