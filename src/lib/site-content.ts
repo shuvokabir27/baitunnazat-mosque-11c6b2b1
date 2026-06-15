@@ -119,6 +119,7 @@ export const defaultContent: SiteContent = {
 export function mergeContent(stored: Partial<SiteContent> | null | undefined): SiteContent {
   if (!stored) return defaultContent;
   return {
+    site: { ...defaultContent.site, ...(stored.site ?? {}) },
     mosque: { ...defaultContent.mosque, ...(stored.mosque ?? {}) },
     heroCaptions:
       stored.heroCaptions && stored.heroCaptions.length
