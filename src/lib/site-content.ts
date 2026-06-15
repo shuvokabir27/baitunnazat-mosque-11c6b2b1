@@ -46,9 +46,12 @@ export type SiteSections = {
   footerQuote: string;
 };
 
+export type HeroSlide = { image?: string; caption: string };
+
 export type SiteContent = {
   mosque: MosqueInfo;
   heroCaptions: string[];
+  heroSlides: HeroSlide[];
   prayerTimes: PrayerTime[];
   staff: StaffMember[];
   committee: CommitteeMember[];
