@@ -78,6 +78,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "theme-color", content: "#0d7377" },
       { title: "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ - মহিপুর" },
       { name: "description", content: "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদের অফিসিয়াল ওয়েবসাইট — নামাজের সময়সূচি, দান, উন্নয়ন কাজ ও নামাজ শিক্ষা।" },
       { name: "author", content: "বায়তুল মামুর জামে মসজিদ" },
@@ -91,6 +92,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/aebf4c68-aa20-40d6-a16e-61af8cfc8a2e/id-preview-5bdf3404--ec9b5464-59a3-426c-921f-580dc73ec6a2.lovable.app-1781463411686.png" },
     ],
     links: [
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "apple-touch-icon", href: "/icon-192.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
