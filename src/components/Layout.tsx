@@ -28,7 +28,7 @@ function Header() {
 function BottomNav() {
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border/60 bg-background/95 backdrop-blur-md">
-      <div className="mx-auto grid max-w-screen-md grid-cols-5 px-1 pb-[env(safe-area-inset-bottom)]">
+      <div className="mx-auto grid max-w-screen-md grid-cols-4 px-1 pb-[env(safe-area-inset-bottom)]">
         {navItems.map((item) => {
           const Icon = navIcons[item.to] ?? Home;
           return (
