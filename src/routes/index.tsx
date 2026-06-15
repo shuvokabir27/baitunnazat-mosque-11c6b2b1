@@ -353,7 +353,15 @@ function PrayerSection() {
   return (
     <section className="px-4 py-10">
       <SectionTitle>{sections.prayerTitle}</SectionTitle>
-      {next && (
+      {next && next.ongoing && (
+        <div className="mb-5 flex flex-col items-center justify-center gap-2 rounded-2xl gradient-emerald px-4 py-4 text-center text-primary-foreground shadow-soft">
+          <p className="flex items-center justify-center gap-2 text-base font-semibold sm:text-lg">
+            <Clock className="h-5 w-5 shrink-0 animate-pulse" />
+            <span className="font-bold">{next.name}</span> নামাজের জামাত চলছে
+          </p>
+        </div>
+      )}
+      {next && !next.ongoing && (
         <div className="mb-5 flex flex-col items-center justify-center gap-3 rounded-2xl gradient-emerald px-4 py-4 text-center text-primary-foreground shadow-soft">
           <p className="flex items-center justify-center gap-2 text-sm font-semibold sm:text-base">
             <Clock className="h-5 w-5 shrink-0 animate-pulse" />
@@ -366,7 +374,6 @@ function PrayerSection() {
             <span className="text-sm font-semibold">বাকি</span>
           </div>
         </div>
-
       )}
       <div className="grid grid-cols-3 gap-3 lg:grid-cols-6">
         {prayerTimes.map((p) => {
