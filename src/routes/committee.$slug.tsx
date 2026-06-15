@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ChevronLeft, Heart, ThumbsUp } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { committee } from "@/lib/mosque-data";
 import { useSiteContent } from "@/lib/use-site-content";
+import { ProfileReactions } from "@/components/ProfileReactions";
+
 
 export const Route = createFileRoute("/committee/$slug")({
   loader: ({ params }) => {
