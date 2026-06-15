@@ -114,13 +114,6 @@ function AdminPage() {
       {/* Top admin bar (WordPress style) */}
       <header className="sticky top-0 z-50 flex h-12 items-center justify-between bg-[#1d2327] px-3 text-white">
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setSidebarOpen((o) => !o)}
-            className="grid h-8 w-8 place-items-center rounded text-white/80 hover:bg-white/10 md:hidden"
-            aria-label="মেনু"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
           <span className="flex items-center gap-2 text-sm font-semibold">
             <Home className="h-4 w-4" />
             বায়তুন নাজাত
