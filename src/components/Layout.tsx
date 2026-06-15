@@ -68,10 +68,10 @@ function HeaderDateTime() {
     month: "long",
     year: "numeric",
   });
-  const english = now.toLocaleDateString("en-GB", {
-    weekday: "short",
+  const english = now.toLocaleDateString("en-US", {
+    weekday: "long",
     day: "numeric",
-    month: "short",
+    month: "long",
     year: "numeric",
   });
   const islamicFmt = new Intl.DateTimeFormat("en-US-u-ca-islamic", {
