@@ -51,6 +51,14 @@ export type SiteSections = {
 
 export type HeroSlide = { image?: string; caption: string };
 
+export type DevelopmentItem = { image?: string; caption: string };
+
+export type DevelopmentContent = {
+  title: string;
+  subtitle: string;
+  items: DevelopmentItem[];
+};
+
 export type SiteContent = {
   mosque: MosqueInfo;
   heroCaptions: string[];
@@ -59,7 +67,9 @@ export type SiteContent = {
   staff: StaffMember[];
   committee: CommitteeMember[];
   sections: SiteSections;
+  development: DevelopmentContent;
 };
+
 
 // Static images keyed by staff slug (images are not editable via the panel)
 export const staffImages: Record<string, string> = {
