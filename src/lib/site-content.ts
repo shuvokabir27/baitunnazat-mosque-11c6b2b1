@@ -70,6 +70,7 @@ export const heroImages: string[] = [mosque1, mosque2, mosque3];
 export const defaultContent: SiteContent = {
   mosque: { ...mosqueDefault },
   heroCaptions: heroSlides.map((s) => s.caption),
+  heroSlides: heroSlides.map((s, i) => ({ image: heroImages[i], caption: s.caption })),
   prayerTimes: prayerDefault.map((p) => ({ ...p })),
   staff: staffDefault.map(({ image, ...rest }) => ({ ...rest })),
   committee: committeeDefault.map((c) => ({ ...c })),
