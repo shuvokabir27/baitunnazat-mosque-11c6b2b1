@@ -10,7 +10,6 @@ import {
   Trash2,
   Loader2,
   ShieldAlert,
-  Menu,
   LayoutDashboard,
   Images,
   FileText,
@@ -47,7 +46,6 @@ function AdminPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [tab, setTab] = useState<Tab>("mosque");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -114,13 +112,6 @@ function AdminPage() {
       {/* Top admin bar (WordPress style) */}
       <header className="sticky top-0 z-50 flex h-12 items-center justify-between bg-[#1d2327] px-3 text-white">
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setSidebarOpen((o) => !o)}
-            className="grid h-8 w-8 place-items-center rounded text-white/80 hover:bg-white/10 md:hidden"
-            aria-label="মেনু"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
           <span className="flex items-center gap-2 text-sm font-semibold">
             <Home className="h-4 w-4" />
             বায়তুন নাজাত
@@ -151,17 +142,9 @@ function AdminPage() {
         </p>
       )}
 
-      <div className="flex">
+      <div className="flex flex-col md:flex-row">
         {/* Sidebar */}
-        <Sidebar
-          tab={tab}
-          setTab={(t) => {
-            setTab(t);
-            setSidebarOpen(false);
-          }}
-          open={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-        />
+        <Sidebar tab={tab} setTab={setTab} />
 
         {/* Content area */}
         <main className="min-w-0 flex-1 px-4 py-6 md:px-8">
@@ -203,54 +186,31 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   committee: UsersRound,
 };
 
-function Sidebar({
-  tab,
-  setTab,
-  open,
-  onClose,
-}: {
-  tab: Tab;
-  setTab: (t: Tab) => void;
-  open: boolean;
-  onClose: () => void;
-}) {
+function Sidebar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
   return (
-    <>
-      {/* Mobile backdrop */}
-      {open && (
-        <div
-          className="fixed inset-0 top-12 z-30 bg-black/40 md:hidden"
-          onClick={onClose}
-          aria-hidden
-        />
-      )}
-      <nav
-        className={`fixed bottom-0 top-12 z-40 w-44 shrink-0 bg-[#1d2327] py-2 text-[#f0f0f1] transition-transform md:sticky md:top-12 md:z-auto md:h-[calc(100vh-3rem)] md:translate-x-0 ${
-          open ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        {(Object.keys(TAB_LABELS) as Tab[]).map((t) => {
-          const Icon = TAB_ICONS[t];
-          const active = tab === t;
-          return (
-            <button
-              key={t}
-              onClick={() => setTab(t)}
-              className={`flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm transition-colors ${
-                active
-                  ? "bg-[#2271b1] font-semibold text-white"
-                  : "text-[#c3c4c7] hover:bg-[#2c3338] hover:text-[#72aee6]"
-              }`}
-            >
-              <Icon className="h-4 w-4 shrink-0" />
-              {TAB_LABELS[t]}
-            </button>
-          );
-        })}
-      </nav>
-    </>
+    <nav className="flex shrink-0 gap-1 overflow-x-auto bg-[#1d2327] p-1.5 text-[#f0f0f1] md:w-44 md:flex-col md:gap-0 md:overflow-visible md:p-0 md:py-2 md:min-h-[calc(100vh-3rem)]">
+      {(Object.keys(TAB_LABELS) as Tab[]).map((t) => {
+        const Icon = TAB_ICONS[t];
+        const active = tab === t;
+        return (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded px-3 py-2 text-left text-sm transition-colors md:w-full md:rounded-none md:py-2.5 ${
+              active
+                ? "bg-[#2271b1] font-semibold text-white"
+                : "text-[#c3c4c7] hover:bg-[#2c3338] hover:text-[#72aee6]"
+            }`}
+          >
+            <Icon className="h-4 w-4 shrink-0" />
+            {TAB_LABELS[t]}
+          </button>
+        );
+      })}
+    </nav>
   );
 }
+
 
 
 type TabProps = {
