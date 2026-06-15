@@ -43,7 +43,7 @@ function StaffProfilePage() {
   const { member: loaderMember } = Route.useLoaderData();
   const { staff: liveStaff } = useSiteContent();
   const member = liveStaff.find((s) => s.slug === loaderMember.slug) ?? loaderMember;
-  const image = staffImages[member.slug] ?? heroImages[0];
+  const image = member.image || staffImages[member.slug] || heroImages[0];
   const storageKey = `staff-reaction:${member.slug}`;
   const [reaction, setReaction] = useState<Reaction | null>(null);
 
