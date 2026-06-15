@@ -297,7 +297,7 @@ function CommitteeSection() {
           onClick={() => setShowAll((s) => !s)}
           className="mx-auto mt-5 flex items-center gap-1.5 rounded-full bg-card px-5 py-2.5 text-sm font-semibold text-primary shadow-soft"
         >
-          {showAll ? "কম দেখুন" : "শো মোর"}
+          {showAll ? "কম দেখুন" : "সকল সদস্য দেখুন"}
           <ChevronDown className={`h-4 w-4 transition-transform ${showAll ? "rotate-180" : ""}`} />
         </button>
       )}
