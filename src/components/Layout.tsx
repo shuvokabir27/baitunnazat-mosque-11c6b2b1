@@ -76,9 +76,20 @@ function HeaderDateTime() {
   );
 }
 
+function BismillahBar() {
+  return (
+    <div className="bg-primary text-center py-1.5">
+      <span dir="rtl" className="text-sm font-semibold text-primary-foreground">
+        بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+      </span>
+    </div>
+  );
+}
+
 function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-md">
+      <BismillahBar />
       <div className="relative mx-auto flex max-w-screen-md items-center justify-center px-4 py-3 lg:max-w-6xl lg:justify-between">
         <HeaderDateTime />
         {/* Desktop-only top navigation */}
