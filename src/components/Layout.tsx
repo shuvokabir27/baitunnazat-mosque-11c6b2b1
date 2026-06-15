@@ -11,6 +11,13 @@ const navIcons: Record<string, typeof Home> = {
   "/ibadah": BookOpen,
 };
 
+const navColors: Record<string, { bg: string; text: string; activeBg: string; activeText: string; dot: string }> = {
+  "/": { bg: "bg-emerald-100", text: "text-emerald-700", activeBg: "bg-emerald-600", activeText: "text-white", dot: "bg-emerald-500" },
+  "/donate": { bg: "bg-amber-100", text: "text-amber-700", activeBg: "bg-amber-500", activeText: "text-white", dot: "bg-amber-500" },
+  "/development": { bg: "bg-sky-100", text: "text-sky-700", activeBg: "bg-sky-600", activeText: "text-white", dot: "bg-sky-500" },
+  "/ibadah": { bg: "bg-violet-100", text: "text-violet-700", activeBg: "bg-violet-600", activeText: "text-white", dot: "bg-violet-500" },
+};
+
 const islamicMonthsBn = [
   "মুহররম",
   "সফর",
@@ -117,18 +124,21 @@ function Header() {
       <div className="relative mx-auto flex max-w-screen-md items-center justify-center px-4 py-3 lg:max-w-6xl lg:justify-between">
         <HeaderDateTime />
         {/* Desktop-only top navigation */}
-        <nav className="hidden items-center gap-1 lg:absolute lg:left-1/2 lg:flex lg:-translate-x-1/2">
+        <nav className="hidden items-center gap-2 lg:absolute lg:left-1/2 lg:flex lg:-translate-x-1/2">
           {navItems.map((item) => {
             const Icon = navIcons[item.to] ?? Home;
+            const c = navColors[item.to];
             return (
               <Link
                 key={item.to}
                 to={item.to}
                 activeOptions={{ exact: item.to === "/" }}
-                activeProps={{ className: "bg-primary/10 text-primary" }}
-                className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:bg-secondary/60 hover:text-primary"
+                activeProps={{ className: `${c.activeBg} ${c.activeText} shadow-md` }}
+                className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold text-muted-foreground transition-all hover:bg-secondary hover:text-foreground hover:shadow-sm`}
               >
-                <Icon className="h-4 w-4" />
+                <span className={`flex h-7 w-7 items-center justify-center rounded-full ${c.bg} ${c.text}`}>
+                  <Icon className="h-3.5 w-3.5" />
+                </span>
                 <span>{item.label}</span>
               </Link>
             );
@@ -141,20 +151,24 @@ function Header() {
 
 function BottomNav() {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border/60 bg-background/95 backdrop-blur-md lg:hidden">
-      <div className="mx-auto grid max-w-screen-md grid-cols-4 px-1 pb-[env(safe-area-inset-bottom)]">
+    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border/60 bg-background/95 backdrop-blur-xl shadow-[0_-8px_24px_-6px_rgba(0,0,0,0.08)] lg:hidden">
+      <div className="mx-auto grid max-w-screen-md grid-cols-4 px-2 pb-[env(safe-area-inset-bottom)] pt-1">
         {navItems.map((item) => {
           const Icon = navIcons[item.to] ?? Home;
+          const c = navColors[item.to];
           return (
             <Link
               key={item.to}
               to={item.to}
               activeOptions={{ exact: item.to === "/" }}
-              activeProps={{ className: "text-primary" }}
-              className="flex flex-col items-center gap-1 px-1 py-2 text-muted-foreground transition-colors"
+              activeProps={{ className: `${c.text} font-bold` }}
+              className="group flex flex-col items-center gap-1 rounded-xl px-1 py-2 text-muted-foreground transition-all active:scale-95"
             >
-              <Icon className="h-5 w-5" />
+              <span className={`flex h-9 w-9 items-center justify-center rounded-full transition-all group-hover:scale-110 ${c.bg}`}>
+                <Icon className={`h-4 w-4 ${c.text}`} />
+              </span>
               <span className="text-[11px] font-medium leading-tight">{item.label}</span>
+              <span className={`h-1 w-1 rounded-full transition-all group-hover:w-3 ${c.dot}`} />
             </Link>
           );
         })}
