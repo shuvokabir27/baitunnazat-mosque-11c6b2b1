@@ -25,51 +25,56 @@ function HeroSlider() {
   }, []);
 
   return (
-    <section className="relative h-[78vh] min-h-[480px] w-full overflow-hidden">
-      {heroImages.map((src, idx) => (
-        <img
-          key={src}
-          src={src}
-          alt={`${mosque.name} ছবি ${idx + 1}`}
-          width={1280}
-          height={1280}
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
-            idx === i ? "opacity-100" : "opacity-0"
-          }`}
-        />
-      ))}
-      <div className="absolute inset-0 gradient-hero opacity-75" />
+    <section>
+      {/* Image area with 16:9 aspect ratio */}
+      <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16 / 9" }}>
+        {heroImages.map((src, idx) => (
+          <img
+            key={src}
+            src={src}
+            alt={`${mosque.name} ছবি ${idx + 1}`}
+            width={1280}
+            height={720}
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
+              idx === i ? "opacity-100" : "opacity-0"
+            }`}
+          />
+        ))}
 
-      <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center text-primary-foreground">
+        {/* Navigation arrows */}
+        <button onClick={prev} aria-label="পূর্ববর্তী" className="absolute left-2 top-1/2 z-20 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-black/30 text-white backdrop-blur">
+          <ChevronLeft className="h-5 w-5" />
+        </button>
+        <button onClick={next} aria-label="পরবর্তী" className="absolute right-2 top-1/2 z-20 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-black/30 text-white backdrop-blur">
+          <ChevronRight className="h-5 w-5" />
+        </button>
+
+        {/* Dots */}
+        <div className="absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 gap-2">
+          {heroImages.map((_, idx) => (
+            <button
+              key={idx}
+              aria-label={`ছবি ${idx + 1}`}
+              onClick={() => setI(idx)}
+              className={`h-2 rounded-full transition-all ${idx === i ? "w-6 bg-gold" : "w-2 bg-white/70"}`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Text below the slider */}
+      <div className="flex flex-col items-center px-5 py-8 text-center">
         <span className="rounded-full gradient-gold px-4 py-1 text-sm font-semibold text-gold-foreground shadow-gold">
           প্রতিষ্ঠিত {mosque.established} সন
         </span>
-        <h1 className="mt-5 text-4xl font-bold leading-tight drop-shadow">{mosque.name}</h1>
-        <p className="mt-3 max-w-sm text-primary-foreground/90">{mosque.tagline}</p>
+        <h1 className="mt-4 text-3xl font-bold leading-tight text-primary">{mosque.name}</h1>
+        <p className="mt-2 text-muted-foreground">{mosque.tagline}</p>
         <Link
           to="/donate"
-          className="mt-7 inline-flex items-center gap-2 rounded-full bg-card px-6 py-3 text-base font-semibold text-primary shadow-soft"
+          className="mt-5 inline-flex items-center gap-2 rounded-full gradient-emerald px-6 py-3 text-base font-semibold text-primary-foreground shadow-soft"
         >
           <Heart className="h-5 w-5" /> দান করুন
         </Link>
-      </div>
-
-      <button onClick={prev} aria-label="পূর্ববর্তী" className="absolute left-3 top-1/2 z-20 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-background/30 text-primary-foreground backdrop-blur">
-        <ChevronLeft className="h-6 w-6" />
-      </button>
-      <button onClick={next} aria-label="পরবর্তী" className="absolute right-3 top-1/2 z-20 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-background/30 text-primary-foreground backdrop-blur">
-        <ChevronRight className="h-6 w-6" />
-      </button>
-
-      <div className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 gap-2">
-        {heroImages.map((_, idx) => (
-          <button
-            key={idx}
-            aria-label={`ছবি ${idx + 1}`}
-            onClick={() => setI(idx)}
-            className={`h-2 rounded-full transition-all ${idx === i ? "w-6 bg-gold" : "w-2 bg-primary-foreground/60"}`}
-          />
-        ))}
       </div>
     </section>
   );
