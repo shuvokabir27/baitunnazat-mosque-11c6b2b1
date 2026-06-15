@@ -8,8 +8,10 @@ const SiteContentContext = createContext<SiteContent>(defaultContent);
 export const siteContentQueryOptions = {
   queryKey: ["site-content"] as const,
   queryFn: () => getSiteContent(),
-  initialData: defaultContent,
-  staleTime: 1000 * 30,
+  placeholderData: defaultContent,
+  staleTime: 0,
+  refetchOnMount: true,
+  refetchOnWindowFocus: true,
 };
 
 export function SiteContentProvider({ children }: { children: ReactNode }) {
