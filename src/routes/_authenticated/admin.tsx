@@ -174,8 +174,9 @@ function AdminPage() {
   );
 }
 
-type Tab = "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "footer";
+type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "footer";
 const TAB_LABELS: Record<Tab, string> = {
+  site: "সাইট সেটিংস",
   mosque: "মসজিদ",
   slider: "স্লাইডার",
   sections: "সেকশন লেখা",
@@ -187,6 +188,7 @@ const TAB_LABELS: Record<Tab, string> = {
 };
 
 const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
+  site: Settings,
   mosque: LayoutDashboard,
   slider: Images,
   sections: FileText,
