@@ -3,7 +3,22 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Save, Plus, Trash2, Loader2, ShieldAlert } from "lucide-react";
+import {
+  LogOut,
+  Save,
+  Plus,
+  Trash2,
+  Loader2,
+  ShieldAlert,
+  Menu,
+  LayoutDashboard,
+  Images,
+  FileText,
+  Clock,
+  Users,
+  UsersRound,
+  Home,
+} from "lucide-react";
 import { defaultContent, type SiteContent } from "@/lib/site-content";
 import {
   getSiteContent,
