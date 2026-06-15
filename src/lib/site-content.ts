@@ -126,5 +126,13 @@ export function mergeContent(stored: Partial<SiteContent> | null | undefined): S
     committee:
       stored.committee && stored.committee.length ? stored.committee : defaultContent.committee,
     sections: { ...defaultContent.sections, ...(stored.sections ?? {}) },
+    development: {
+      ...defaultContent.development,
+      ...(stored.development ?? {}),
+      items:
+        stored.development?.items && stored.development.items.length
+          ? stored.development.items
+          : defaultContent.development.items,
+    },
   };
 }
