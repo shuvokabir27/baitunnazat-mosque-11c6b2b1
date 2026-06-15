@@ -267,6 +267,31 @@ function Card({ children }: { children: React.ReactNode }) {
   return <div className="space-y-4 rounded-2xl border border-border bg-card p-5 shadow-soft">{children}</div>;
 }
 
+function SiteTab({ content, setContent }: TabProps) {
+  const s = content.site;
+  return (
+    <Card>
+      <Field
+        label="সাইট টাইটেল (ব্রাউজার ট্যাবে দেখাবে)"
+        value={s.title}
+        onChange={(v) => setContent((c) => ({ ...c, site: { ...c.site, title: v } }))}
+      />
+      <ImageCropUpload
+        label="সাইট আইকন (ফ্যাভিকন)"
+        value={s.icon}
+        aspect={1}
+        round={false}
+        outputWidth={256}
+        onChange={(img) => setContent((c) => ({ ...c, site: { ...c.site, icon: img } }))}
+      />
+      <p className="text-xs text-muted-foreground">
+        আইকন বর্গাকারে ক্রোপ হবে এবং ব্রাউজার ট্যাবে দেখাবে। পরিবর্তন সংরক্ষণের পর কিছুক্ষণের মধ্যে কার্যকর হবে।
+      </p>
+    </Card>
+  );
+}
+
+
 function MosqueTab({ content, setContent }: TabProps) {
   const m = content.mosque;
   const set = (k: keyof typeof m, v: string) =>
