@@ -346,6 +346,18 @@ function SectionsTab({ content, setContent }: TabProps) {
   );
 }
 
+function FooterTab({ content, setContent }: TabProps) {
+  const s = content.sections;
+  const set = (k: keyof typeof s, v: string) =>
+    setContent((c) => ({ ...c, sections: { ...c.sections, [k]: v } }));
+  return (
+    <Card>
+      <Field label="ফুটার উক্তি" value={s.footerQuote} onChange={(v) => set("footerQuote", v)} textarea />
+      <Field label="ফুটার বার্তা" value={s.footerMessage} onChange={(v) => set("footerMessage", v)} textarea />
+    </Card>
+  );
+}
+
 function PrayerTab({ content, setContent }: TabProps) {
   const setRow = (i: number, k: "name" | "time", v: string) =>
     setContent((c) => {
