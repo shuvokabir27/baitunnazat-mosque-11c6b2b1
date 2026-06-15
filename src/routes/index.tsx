@@ -266,23 +266,106 @@ function CommitteeSection() {
   );
 }
 
+const BN_DIGITS = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
+
+function toEnNumber(s: string) {
+  let out = "";
+  for (const ch of s) {
+    const idx = BN_DIGITS.indexOf(ch);
+    out += idx >= 0 ? String(idx) : ch;
+  }
+  return out;
+}
+
+function toBnNumber(n: number) {
+  return String(n)
+    .split("")
+    .map((c) => (/[0-9]/.test(c) ? BN_DIGITS[Number(c)] : c))
+    .join("");
+}
+
+// Parse a prayer time + name into minutes-from-midnight (24h)
+function prayerMinutes(name: string, time: string): number | null {
+  const m = toEnNumber(time).match(/(\d{1,2})\s*[:.]\s*(\d{1,2})/);
+  if (!m) return null;
+  let hour = Number(m[1]);
+  const min = Number(m[2]);
+  const isFajr = name.includes("ফজর") || name.includes("সাহরি") || name.includes("সেহরি");
+  if (isFajr) {
+    if (hour === 12) hour = 0; // 12 AM
+    // morning hours stay as-is
+  } else {
+    if (hour < 12) hour += 12; // afternoon/evening -> PM
+  }
+  return hour * 60 + min;
+}
+
+function useNextPrayer(prayerTimes: { name: string; time: string }[]) {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  // exclude জুমা (weekly) from the rolling countdown
+  const daily = prayerTimes
+    .filter((p) => !p.name.includes("জুমা"))
+    .map((p) => ({ ...p, mins: prayerMinutes(p.name, p.time) }))
+    .filter((p): p is { name: string; time: string; mins: number } => p.mins !== null)
+    .sort((a, b) => a.mins - b.mins);
+
+  if (!daily.length) return null;
+
+  const nowMins = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
+  let next = daily.find((p) => p.mins > nowMins);
+  let diff: number;
+  if (next) {
+    diff = next.mins - nowMins;
+  } else {
+    next = daily[0]; // tomorrow's first prayer
+    diff = 24 * 60 - nowMins + next.mins;
+  }
+  const totalMin = Math.floor(diff);
+  return { name: next.name, time: next.time, hours: Math.floor(totalMin / 60), minutes: totalMin % 60 };
+}
+
 function PrayerSection() {
   const { prayerTimes, sections } = useSiteContent();
+  const next = useNextPrayer(prayerTimes);
   return (
     <section className="px-4 py-10">
       <SectionTitle>{sections.prayerTitle}</SectionTitle>
+      {next && (
+        <div className="mb-5 flex items-center justify-center gap-3 rounded-2xl gradient-emerald px-4 py-3 text-center text-primary-foreground shadow-soft">
+          <Clock className="h-5 w-5 shrink-0 animate-pulse" />
+          <p className="text-sm font-semibold">
+            পরবর্তী নামাজ <span className="font-bold">{next.name}</span> ({next.time}) —{" "}
+            {next.hours > 0 && <span>{toBnNumber(next.hours)} ঘন্টা </span>}
+            {toBnNumber(next.minutes)} মিনিট বাকি
+          </p>
+        </div>
+      )}
       <div className="grid grid-cols-3 gap-3">
-        {prayerTimes.map((p) => (
-          <div key={p.name} className="rounded-2xl border border-border bg-card p-4 text-center shadow-soft">
-            <Clock className="mx-auto h-5 w-5 text-gold" />
-            <p className="mt-2 font-semibold text-foreground">{p.name}</p>
-            <p className="text-lg font-bold text-primary">{p.time}</p>
-          </div>
-        ))}
+        {prayerTimes.map((p) => {
+          const isNext = next?.name === p.name && !p.name.includes("জুমা");
+          return (
+            <div
+              key={p.name}
+              className={`rounded-2xl border p-4 text-center shadow-soft transition-colors ${
+                isNext ? "border-gold bg-gold/10 ring-2 ring-gold" : "border-border bg-card"
+              }`}
+            >
+              <Clock className={`mx-auto h-5 w-5 ${isNext ? "text-primary" : "text-gold"}`} />
+              <p className="mt-2 font-semibold text-foreground">{p.name}</p>
+              <p className="text-lg font-bold text-primary">{p.time}</p>
+            </div>
+          );
+        })}
       </div>
     </section>
   );
 }
+
 
 function CtaSection() {
   const { sections } = useSiteContent();
