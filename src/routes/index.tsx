@@ -215,13 +215,19 @@ function CommitteeSection() {
       <SectionTitle>মসজিদ কমিটি</SectionTitle>
       <div className="grid grid-cols-2 gap-3">
         {visible.map((c) => (
-          <div key={c.name} className="rounded-2xl border border-border bg-card p-4 text-center shadow-soft">
+          <Link
+            key={c.name}
+            to="/committee/$slug"
+            params={{ slug: c.slug }}
+            className="rounded-2xl border border-border bg-card p-4 text-center shadow-soft transition-transform active:scale-[0.98]"
+          >
             <div className="mx-auto grid h-12 w-12 place-items-center rounded-full gradient-gold text-lg font-bold text-gold-foreground">
               {c.name.replace(/^(আলহাজ্ব |জনাব )/, "").charAt(0)}
             </div>
             <h3 className="mt-2 text-sm font-bold text-foreground">{c.name}</h3>
             <p className="text-xs text-primary">{c.role}</p>
-          </div>
+            <span className="mt-1 inline-block text-[11px] font-semibold text-primary">প্রোফাইল দেখুন →</span>
+          </Link>
         ))}
       </div>
       {committee.length > 4 && (
