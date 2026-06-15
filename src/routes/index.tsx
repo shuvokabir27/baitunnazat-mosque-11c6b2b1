@@ -59,16 +59,17 @@ function HeroSlider() {
   return (
     <section>
       {/* Mosque name & established year above the slider */}
-      <div className="flex flex-col items-center px-5 pt-6 pb-5 text-center">
-        <h1 className="text-2xl font-bold leading-tight text-primary">{mosque.name}</h1>
+      <div className="flex flex-col items-center px-5 pt-6 pb-5 text-center lg:pt-10">
+        <h1 className="text-2xl font-bold leading-tight text-primary lg:text-4xl">{mosque.name}</h1>
         <span className="mt-3 rounded-full gradient-gold px-4 py-1 text-sm font-semibold text-gold-foreground shadow-gold">
           প্রতিষ্ঠিত {mosque.established} সন
         </span>
-        <p className="mt-3 text-sm text-muted-foreground">{mosque.tagline}</p>
+        <p className="mt-3 text-sm text-muted-foreground lg:text-base">{mosque.tagline}</p>
       </div>
 
       {/* Image area with 16:9 aspect ratio */}
-      <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16 / 9" }}>
+      <div className="relative w-full overflow-hidden lg:mx-auto lg:max-w-4xl lg:rounded-3xl lg:shadow-soft" style={{ aspectRatio: "16 / 9" }}>
+
         {slides.map((slide, idx) => (
           <img
             key={slide.src}
