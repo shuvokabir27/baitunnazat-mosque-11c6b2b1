@@ -15,6 +15,22 @@ export const mosque = {
 
 export const heroImages = [mosque1, mosque2, mosque3];
 
+export const development = {
+  title: "মসজিদ উন্নয়ন প্রকল্প",
+  subtitle: "মুসল্লিদের সহযোগিতায় চলমান উন্নয়ন কাজের ছবি ও অগ্রগতি।",
+  // স্লাইডারে দেখানো নির্বাচিত ছবিগুলো
+  slider: [mosque1, mosque2, mosque3],
+  // নিচের গ্যালারিতে দেখানো সব ছবি (ক্লিক করে যুম ও সেভ করা যাবে)
+  gallery: [
+    { src: mosque1, caption: "দ্বিতীয় তলা সম্প্রসারণ কাজ" },
+    { src: mosque2, caption: "ওযুখানা ও টয়লেট সংস্কার" },
+    { src: mosque3, caption: "মিনার ও গম্বুজ সংস্কার" },
+    { src: mosque1, caption: "নতুন এয়ার কন্ডিশনার স্থাপন" },
+    { src: mosque2, caption: "মূল নামাজ কক্ষের কার্পেট" },
+    { src: mosque3, caption: "বাহিরের আঙিনা উন্নয়ন" },
+  ],
+};
+
 export const staff = [
   {
     name: "মাওলানা আব্দুর রহমান",
