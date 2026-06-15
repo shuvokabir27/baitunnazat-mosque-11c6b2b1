@@ -76,7 +76,7 @@ function Footer() {
             className="mt-1 inline-flex items-center justify-center gap-1.5 text-sm font-semibold text-gold transition-opacity hover:opacity-80"
           >
             <MessageCircle className="h-4 w-4" />
-            মোঃ আব্দুল্লাহ
+            কবির হোসেন শুভ
           </a>
           <p className="mt-2 text-[11px] leading-relaxed text-primary-foreground/60">
             এই মসজিদের ওয়েবসাইটের কাজ ফ্রি সদকা হিসেবে করা হয়েছে — আল্লাহ কবুল করুন।
