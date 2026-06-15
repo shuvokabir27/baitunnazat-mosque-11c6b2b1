@@ -110,44 +110,76 @@ function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-secondary/30 pb-24">
-      <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
-        <div className="mx-auto flex max-w-screen-md items-center justify-between px-4 py-3">
-          <h1 className="text-lg font-bold text-primary">অ্যাডমিন প্যানেল</h1>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={save}
-              disabled={saving}
-              className="inline-flex items-center gap-1.5 rounded-full gradient-emerald px-4 py-2 text-sm font-bold text-primary-foreground disabled:opacity-60"
-            >
-              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-              সংরক্ষণ
-            </button>
-            <button
-              onClick={signOut}
-              className="grid h-9 w-9 place-items-center rounded-full bg-card text-muted-foreground shadow-soft"
-              aria-label="লগ আউট"
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
-          </div>
+    <div className="min-h-screen bg-[#f0f0f1] text-[#1d2327]">
+      {/* Top admin bar (WordPress style) */}
+      <header className="sticky top-0 z-50 flex h-12 items-center justify-between bg-[#1d2327] px-3 text-white">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setSidebarOpen((o) => !o)}
+            className="grid h-8 w-8 place-items-center rounded text-white/80 hover:bg-white/10 md:hidden"
+            aria-label="মেনু"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+          <span className="flex items-center gap-2 text-sm font-semibold">
+            <Home className="h-4 w-4" />
+            বায়তুন নাজাত
+          </span>
         </div>
-        {saved && (
-          <p className="bg-emerald-600 py-1 text-center text-xs font-semibold text-white">
-            সফলভাবে সংরক্ষিত হয়েছে ✓
-          </p>
-        )}
-        <Tabs tab={tab} setTab={setTab} />
+        <div className="flex items-center gap-2">
+          <button
+            onClick={save}
+            disabled={saving}
+            className="inline-flex items-center gap-1.5 rounded bg-[#2271b1] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#135e96] disabled:opacity-60"
+          >
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            পরিবর্তন সংরক্ষণ
+          </button>
+          <button
+            onClick={signOut}
+            className="grid h-8 w-8 place-items-center rounded text-white/80 hover:bg-white/10"
+            aria-label="লগ আউট"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
+        </div>
       </header>
 
-      <main className="mx-auto max-w-screen-md space-y-6 px-4 py-6">
-        {tab === "mosque" && <MosqueTab content={content} setContent={setContent} />}
-        {tab === "slider" && <SliderTab content={content} setContent={setContent} />}
-        {tab === "sections" && <SectionsTab content={content} setContent={setContent} />}
-        {tab === "prayer" && <PrayerTab content={content} setContent={setContent} />}
-        {tab === "staff" && <StaffTab content={content} setContent={setContent} />}
-        {tab === "committee" && <CommitteeTab content={content} setContent={setContent} />}
-      </main>
+      {saved && (
+        <p className="bg-[#00a32a] py-1.5 text-center text-xs font-semibold text-white">
+          সফলভাবে সংরক্ষিত হয়েছে ✓
+        </p>
+      )}
+
+      <div className="flex">
+        {/* Sidebar */}
+        <Sidebar
+          tab={tab}
+          setTab={(t) => {
+            setTab(t);
+            setSidebarOpen(false);
+          }}
+          open={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+        />
+
+        {/* Content area */}
+        <main className="min-w-0 flex-1 px-4 py-6 md:px-8">
+          <div className="mx-auto max-w-3xl">
+            <h2 className="mb-5 text-2xl font-normal text-[#1d2327]">{TAB_LABELS[tab]}</h2>
+            <div className="rounded border border-[#c3c4c7] bg-white p-5 shadow-sm">
+              <div className="space-y-6">
+                {tab === "mosque" && <MosqueTab content={content} setContent={setContent} />}
+                {tab === "slider" && <SliderTab content={content} setContent={setContent} />}
+                {tab === "sections" && <SectionsTab content={content} setContent={setContent} />}
+                {tab === "prayer" && <PrayerTab content={content} setContent={setContent} />}
+                {tab === "staff" && <StaffTab content={content} setContent={setContent} />}
+                {tab === "committee" && <CommitteeTab content={content} setContent={setContent} />}
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
@@ -162,23 +194,64 @@ const TAB_LABELS: Record<Tab, string> = {
   committee: "কমিটি",
 };
 
-function Tabs({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
+const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
+  mosque: LayoutDashboard,
+  slider: Images,
+  sections: FileText,
+  prayer: Clock,
+  staff: Users,
+  committee: UsersRound,
+};
+
+function Sidebar({
+  tab,
+  setTab,
+  open,
+  onClose,
+}: {
+  tab: Tab;
+  setTab: (t: Tab) => void;
+  open: boolean;
+  onClose: () => void;
+}) {
   return (
-    <div className="mx-auto flex max-w-screen-md gap-1 overflow-x-auto px-2 py-2">
-      {(Object.keys(TAB_LABELS) as Tab[]).map((t) => (
-        <button
-          key={t}
-          onClick={() => setTab(t)}
-          className={`whitespace-nowrap rounded-full px-3.5 py-1.5 text-sm font-semibold transition-colors ${
-            tab === t ? "gradient-emerald text-primary-foreground" : "bg-card text-muted-foreground"
-          }`}
-        >
-          {TAB_LABELS[t]}
-        </button>
-      ))}
-    </div>
+    <>
+      {/* Mobile backdrop */}
+      {open && (
+        <div
+          className="fixed inset-0 top-12 z-30 bg-black/40 md:hidden"
+          onClick={onClose}
+          aria-hidden
+        />
+      )}
+      <nav
+        className={`fixed bottom-0 top-12 z-40 w-44 shrink-0 bg-[#1d2327] py-2 text-[#f0f0f1] transition-transform md:sticky md:top-12 md:z-auto md:h-[calc(100vh-3rem)] md:translate-x-0 ${
+          open ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        {(Object.keys(TAB_LABELS) as Tab[]).map((t) => {
+          const Icon = TAB_ICONS[t];
+          const active = tab === t;
+          return (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm transition-colors ${
+                active
+                  ? "bg-[#2271b1] font-semibold text-white"
+                  : "text-[#c3c4c7] hover:bg-[#2c3338] hover:text-[#72aee6]"
+              }`}
+            >
+              <Icon className="h-4 w-4 shrink-0" />
+              {TAB_LABELS[t]}
+            </button>
+          );
+        })}
+      </nav>
+    </>
   );
 }
+
 
 type TabProps = {
   content: SiteContent;
