@@ -65,23 +65,7 @@ function Footer() {
           © {new Date().getFullYear()} {mosque.shortName} জামে মসজিদ
         </p>
 
-        <div className="mx-auto mt-6 max-w-xs rounded-2xl border border-gold/30 bg-primary-foreground/5 px-4 py-4 text-center">
-          <p className="text-[11px] uppercase tracking-wider text-primary-foreground/50">
-            ডেভেলপার
-          </p>
-          <a
-            href="https://wa.me/8801713953527"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-1 inline-flex items-center justify-center gap-1.5 text-sm font-semibold text-gold transition-opacity hover:opacity-80"
-          >
-            <MessageCircle className="h-4 w-4" />
-            কবির হোসেন শুভ
-          </a>
-          <p className="mt-2 text-[11px] leading-relaxed text-primary-foreground/60">
-            এই মসজিদের ওয়েবসাইটের কাজ ফ্রি সদকা হিসেবে করা হয়েছে — আল্লাহ কবুল করুন।
-          </p>
-        </div>
+
 
         <Link to="/admin" className="mt-4 inline-block text-[11px] text-primary-foreground/40">
           অ্যাডমিন
