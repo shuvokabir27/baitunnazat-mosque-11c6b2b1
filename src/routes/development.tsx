@@ -86,16 +86,22 @@ async function saveImage(src: string, name: string) {
 }
 
 function Development() {
+  const { development } = useSiteContent();
   const [active, setActive] = useState<number | null>(null);
-  const items = development.gallery;
+  const items = development.items.map((it, idx) => ({
+    src: it.image || heroImages[idx % heroImages.length],
+    caption: it.caption,
+  }));
+  const sliderImages = items.map((it) => it.src);
 
   return (
     <Layout>
       <PageHeader title={development.title} subtitle={development.subtitle} />
 
       <section className="px-4 pt-6">
-        <Slider images={development.slider} />
+        <Slider images={sliderImages} />
       </section>
+
 
       <section className="px-4 py-8">
         <h2 className="mb-4 text-lg font-bold text-foreground">উন্নয়নের ছবিসমূহ</h2>
