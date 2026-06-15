@@ -1,6 +1,6 @@
-import { type ReactNode } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Moon, Home, HeartHandshake, HardHat, BookOpen } from "lucide-react";
+import { Home, HeartHandshake, HardHat, BookOpen } from "lucide-react";
 import { navItems } from "@/lib/mosque-data";
 import { useSiteContent } from "@/lib/use-site-content";
 
@@ -11,17 +11,52 @@ const navIcons: Record<string, typeof Home> = {
   "/ibadah": BookOpen,
 };
 
+function HeaderDateTime() {
+  const [now, setNow] = useState(new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const bangla = now.toLocaleDateString("bn-BD", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  const english = now.toLocaleDateString("en-GB", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+  const arabic = now.toLocaleDateString("ar-SA-u-ca-islamic", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  const time = now.toLocaleTimeString("bn-BD", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  });
+
+  return (
+    <div className="flex flex-col items-center text-center leading-tight lg:items-start lg:text-left">
+      <span className="text-sm font-bold text-primary">{bangla}</span>
+      <span className="text-xs text-muted-foreground">{english}</span>
+      <span dir="rtl" className="text-xs font-medium text-gold">{arabic}</span>
+      <span className="mt-0.5 text-base font-bold tabular-nums text-foreground">{time}</span>
+    </div>
+  );
+}
+
 function Header() {
-  const { mosque } = useSiteContent();
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-screen-md items-center justify-center px-4 py-3 lg:max-w-6xl lg:justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="grid h-9 w-9 place-items-center rounded-full gradient-gold shadow-gold">
-            <Moon className="h-5 w-5 text-gold-foreground" />
-          </span>
-          <span className="hidden text-base font-bold text-primary lg:inline">{mosque.shortName}</span>
-        </Link>
+        <HeaderDateTime />
         {/* Desktop-only top navigation */}
         <nav className="hidden items-center gap-1 lg:flex">
           {navItems.map((item) => {
