@@ -4,6 +4,7 @@ import {
   staff as staffDefault,
   committee as committeeDefault,
   prayerTimes as prayerDefault,
+  development as developmentDefault,
 } from "@/lib/mosque-data";
 import imam from "@/assets/imam.jpg";
 import khatib from "@/assets/khatib.jpg";
@@ -11,6 +12,7 @@ import muazzin from "@/assets/muazzin.jpg";
 import mosque1 from "@/assets/mosque-1.jpg";
 import mosque2 from "@/assets/mosque-2.jpg";
 import mosque3 from "@/assets/mosque-3.jpg";
+
 
 export type MosqueInfo = {
   name: string;
