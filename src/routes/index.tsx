@@ -189,7 +189,7 @@ function StaffSection() {
   return (
     <section className="bg-secondary/40 px-4 py-12">
       <SectionTitle>{sections.staffTitle}</SectionTitle>
-      <div className="space-y-5">
+      <div className="space-y-5 lg:grid lg:grid-cols-3 lg:gap-5 lg:space-y-0">
         {staff.map((s) => (
           <Link
             key={s.slug}
