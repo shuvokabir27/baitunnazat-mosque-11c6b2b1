@@ -301,9 +301,3 @@ function Index() {
     </Layout>
   );
 }
-
-// helper imported lazily to avoid circular usage in JSX above
-import { staffImages } from "@/lib/site-content";
-function staffImageFor(slug: string) {
-  return staffImages[slug] ?? heroImages[0];
-}
