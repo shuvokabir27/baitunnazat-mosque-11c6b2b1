@@ -347,12 +347,10 @@ function PersonEditor({
   person,
   onChange,
   onRemove,
-  showImageNote,
 }: {
   person: SiteContent["staff"][number];
   onChange: (p: SiteContent["staff"][number]) => void;
   onRemove: () => void;
-  showImageNote?: boolean;
 }) {
   return (
     <Card>
@@ -364,6 +362,7 @@ function PersonEditor({
           <Trash2 className="h-4 w-4" />
         </button>
       </div>
+      <ImageCropUpload value={person.image} onChange={(img) => onChange({ ...person, image: img })} />
       <Field label="নাম" value={person.name} onChange={(v) => onChange({ ...person, name: v })} />
       <Field label="পদবি" value={person.role} onChange={(v) => onChange({ ...person, role: v })} />
       <Field label="সংক্ষিপ্ত বিবরণ" value={person.detail} onChange={(v) => onChange({ ...person, detail: v })} textarea />
@@ -371,11 +370,6 @@ function PersonEditor({
       <ListField label="পূর্বের কর্মস্থল" items={person.previousJobs} onChange={(v) => onChange({ ...person, previousJobs: v })} />
       <ListField label="দক্ষতার বিষয়" items={person.expertise} onChange={(v) => onChange({ ...person, expertise: v })} />
       <ListField label="শিক্ষাগত যোগ্যতা" items={person.education} onChange={(v) => onChange({ ...person, education: v })} />
-      {showImageNote && (
-        <p className="text-xs text-muted-foreground">
-          ছবি পরিবর্তনের জন্য চ্যাটে নতুন ছবি দিন (এই প্যানেলে লেখা সম্পাদনা করা যায়)।
-        </p>
-      )}
     </Card>
   );
 }
