@@ -178,7 +178,7 @@ function HeroSlider() {
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div className="mb-6 text-center">
-      <h2 className="text-2xl font-bold text-primary">{children}</h2>
+      <h2 className="text-2xl font-bold text-primary lg:text-3xl">{children}</h2>
       <div className="mx-auto mt-2 h-1 w-16 rounded-full gradient-gold" />
     </div>
   );
