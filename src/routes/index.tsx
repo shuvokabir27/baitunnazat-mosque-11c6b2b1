@@ -121,7 +121,7 @@ function HeroSlider() {
       <div className="flex flex-col items-center px-5 py-8 text-center">
         <Link
           to="/donate"
-          className="inline-flex items-center gap-2 rounded-full gradient-emerald px-6 py-3 text-base font-semibold text-primary-foreground shadow-soft"
+          className="animate-pulse-red inline-flex items-center gap-2 rounded-full gradient-red px-6 py-3 text-base font-semibold text-white shadow-red"
         >
           <Heart className="h-5 w-5" /> দান করুন
         </Link>
@@ -279,7 +279,7 @@ function Index() {
           </p>
           <Link
             to="/donate"
-            className="mt-5 inline-flex items-center gap-2 rounded-full bg-card px-6 py-3 font-semibold text-primary"
+            className="animate-pulse-red mt-5 inline-flex items-center gap-2 rounded-full gradient-red px-6 py-3 font-semibold text-white shadow-red"
           >
             <Heart className="h-5 w-5" /> দান করুন
           </Link>
