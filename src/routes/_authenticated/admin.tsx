@@ -126,6 +126,7 @@ function AdminPage() {
 
       <main className="mx-auto max-w-screen-md space-y-6 px-4 py-6">
         {tab === "mosque" && <MosqueTab content={content} setContent={setContent} />}
+        {tab === "slider" && <SliderTab content={content} setContent={setContent} />}
         {tab === "sections" && <SectionsTab content={content} setContent={setContent} />}
         {tab === "prayer" && <PrayerTab content={content} setContent={setContent} />}
         {tab === "staff" && <StaffTab content={content} setContent={setContent} />}
