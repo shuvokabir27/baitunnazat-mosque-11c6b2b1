@@ -47,6 +47,7 @@ function AdminPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [tab, setTab] = useState<Tab>("mosque");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     (async () => {
