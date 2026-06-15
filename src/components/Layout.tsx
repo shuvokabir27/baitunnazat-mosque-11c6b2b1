@@ -31,11 +31,23 @@ function toBnNum(n: number): string {
 }
 
 function HeaderDateTime() {
-  const [now, setNow] = useState(new Date());
+  const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
+    setNow(new Date());
     const id = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(id);
   }, []);
+
+  if (!now) {
+    return (
+      <div className="flex flex-col items-center text-center leading-tight lg:items-start lg:text-left">
+        <span className="text-sm font-bold text-primary">...</span>
+        <span className="text-xs text-muted-foreground">...</span>
+        <span dir="rtl" className="text-xs font-medium text-gold">...</span>
+        <span className="mt-0.5 text-base font-bold tabular-nums text-foreground">...</span>
+      </div>
+    );
+  }
 
   const bangla = now.toLocaleDateString("bn-BD", {
     weekday: "long",
@@ -49,7 +61,7 @@ function HeaderDateTime() {
     month: "short",
     year: "numeric",
   });
-  const islamicFmt = new Intl.DateTimeFormat("en_US-u-ca-islamic", {
+  const islamicFmt = new Intl.DateTimeFormat("en-US-u-ca-islamic", {
     day: "numeric",
     month: "numeric",
     year: "numeric",
