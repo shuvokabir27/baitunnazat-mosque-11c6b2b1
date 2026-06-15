@@ -38,26 +38,12 @@ export const Route = createFileRoute("/staff/$slug")({
   component: StaffProfilePage,
 });
 
-type Reaction = "love" | "like";
-
 function StaffProfilePage() {
   const { member: loaderMember } = Route.useLoaderData();
   const { staff: liveStaff } = useSiteContent();
   const member = liveStaff.find((s) => s.slug === loaderMember.slug) ?? loaderMember;
   const image = member.image || staffImages[member.slug] || heroImages[0];
-  const storageKey = `staff-reaction:${member.slug}`;
-  const [reaction, setReaction] = useState<Reaction | null>(null);
 
-  useEffect(() => {
-    const saved = localStorage.getItem(storageKey) as Reaction | null;
-    if (saved === "love" || saved === "like") setReaction(saved);
-  }, [storageKey]);
-
-  const react = (type: Reaction) => {
-    if (reaction) return; // already reacted once from this device
-    setReaction(type);
-    localStorage.setItem(storageKey, type);
-  };
 
   return (
     <Layout>
