@@ -70,37 +70,8 @@ function StaffProfilePage() {
           </div>
 
           {/* Reaction buttons */}
-          <div className="mt-6 flex items-center justify-center gap-3">
-            <button
-              onClick={() => react("love")}
-              disabled={!!reaction}
-              aria-pressed={reaction === "love"}
-              className={`flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-semibold transition-colors ${
-                reaction === "love"
-                  ? "border-rose-500 bg-rose-500 text-white"
-                  : "border-border bg-secondary text-foreground"
-              } ${reaction && reaction !== "love" ? "opacity-50" : ""}`}
-            >
-              <Heart className={`h-4 w-4 ${reaction === "love" ? "fill-current" : ""}`} /> লাভ
-            </button>
-            <button
-              onClick={() => react("like")}
-              disabled={!!reaction}
-              aria-pressed={reaction === "like"}
-              className={`flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-semibold transition-colors ${
-                reaction === "like"
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-secondary text-foreground"
-              } ${reaction && reaction !== "like" ? "opacity-50" : ""}`}
-            >
-              <ThumbsUp className={`h-4 w-4 ${reaction === "like" ? "fill-current" : ""}`} /> লাইক
-            </button>
-          </div>
-          {reaction && (
-            <p className="mt-2 text-center text-xs text-muted-foreground">
-              আপনি এই প্রোফাইলে {reaction === "love" ? "লাভ" : "লাইক"} দিয়েছেন।
-            </p>
-          )}
+          <ProfileReactions slug={member.slug} />
+
         </div>
 
         <div className="mt-6 space-y-5 rounded-3xl border border-border bg-card p-6 shadow-soft">
