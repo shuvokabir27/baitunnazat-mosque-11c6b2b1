@@ -119,7 +119,7 @@ function StaffProfilePage() {
           <div>
             <h2 className="text-sm font-bold text-primary">পূর্বের কর্মস্থল</h2>
             <ul className="mt-1 list-inside list-disc space-y-1 text-sm text-muted-foreground">
-              {member.previousJobs.map((j) => (
+              {member.previousJobs.map((j: string) => (
                 <li key={j}>{j}</li>
               ))}
             </ul>
@@ -127,7 +127,7 @@ function StaffProfilePage() {
           <div>
             <h2 className="text-sm font-bold text-primary">দক্ষতার বিষয়</h2>
             <div className="mt-2 flex flex-wrap gap-2">
-              {member.expertise.map((e) => (
+              {member.expertise.map((e: string) => (
                 <span key={e} className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-foreground">
                   {e}
                 </span>
@@ -137,7 +137,7 @@ function StaffProfilePage() {
           <div>
             <h2 className="text-sm font-bold text-primary">শিক্ষাগত যোগ্যতা</h2>
             <ul className="mt-1 list-inside list-disc space-y-1 text-sm text-muted-foreground">
-              {member.education.map((ed) => (
+              {member.education.map((ed: string) => (
                 <li key={ed}>{ed}</li>
               ))}
             </ul>
