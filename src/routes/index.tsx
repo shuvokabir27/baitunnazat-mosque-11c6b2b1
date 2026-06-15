@@ -228,7 +228,7 @@ function CommitteeSection() {
   return (
     <section className="px-4 py-12">
       <SectionTitle>{sections.committeeTitle}</SectionTitle>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-5">
         {visible.map((c) => (
           <Link
             key={c.slug}
