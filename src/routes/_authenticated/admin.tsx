@@ -136,9 +136,10 @@ function AdminPage() {
   );
 }
 
-type Tab = "mosque" | "sections" | "prayer" | "staff" | "committee";
+type Tab = "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee";
 const TAB_LABELS: Record<Tab, string> = {
   mosque: "মসজিদ",
+  slider: "স্লাইডার",
   sections: "সেকশন লেখা",
   prayer: "নামাজ",
   staff: "দায়িত্বপ্রাপ্ত",
