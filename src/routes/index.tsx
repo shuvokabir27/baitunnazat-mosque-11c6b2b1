@@ -216,20 +216,9 @@ function Index() {
       </section>
 
       {/* Committee */}
-      <section className="px-4 py-12">
-        <SectionTitle>মসজিদ কমিটি</SectionTitle>
-        <div className="grid grid-cols-2 gap-3">
-          {committee.map((c) => (
-            <div key={c.name} className="rounded-2xl border border-border bg-card p-4 text-center shadow-soft">
-              <div className="mx-auto grid h-12 w-12 place-items-center rounded-full gradient-gold text-lg font-bold text-gold-foreground">
-                {c.name.replace(/^(আলহাজ্ব |জনাব )/, "").charAt(0)}
-              </div>
-              <h3 className="mt-2 text-sm font-bold text-foreground">{c.name}</h3>
-              <p className="text-xs text-primary">{c.role}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      <CommitteeSection />
+
+      {/* CTA */}
 
       {/* CTA */}
       <section className="px-4 pb-4">
