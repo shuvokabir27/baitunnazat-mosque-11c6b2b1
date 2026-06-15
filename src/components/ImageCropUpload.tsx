@@ -4,7 +4,12 @@ import { Loader2, Upload, X } from "lucide-react";
 
 type Area = { x: number; y: number; width: number; height: number };
 
-async function getCroppedDataUrl(src: string, crop: Area, size = 400): Promise<string> {
+async function getCroppedDataUrl(
+  src: string,
+  crop: Area,
+  outW: number,
+  outH: number,
+): Promise<string> {
   const image = await new Promise<HTMLImageElement>((resolve, reject) => {
     const img = new Image();
     img.onload = () => resolve(img);
@@ -12,11 +17,11 @@ async function getCroppedDataUrl(src: string, crop: Area, size = 400): Promise<s
     img.src = src;
   });
   const canvas = document.createElement("canvas");
-  canvas.width = size;
-  canvas.height = size;
+  canvas.width = outW;
+  canvas.height = outH;
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("canvas unsupported");
-  ctx.drawImage(image, crop.x, crop.y, crop.width, crop.height, 0, 0, size, size);
+  ctx.drawImage(image, crop.x, crop.y, crop.width, crop.height, 0, 0, outW, outH);
   return canvas.toDataURL("image/jpeg", 0.82);
 }
 
@@ -24,10 +29,16 @@ export function ImageCropUpload({
   value,
   onChange,
   label = "প্রোফাইল ছবি",
+  aspect = 1,
+  round = true,
+  outputWidth = 400,
 }: {
   value?: string;
   onChange: (dataUrl: string) => void;
   label?: string;
+  aspect?: number;
+  round?: boolean;
+  outputWidth?: number;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [src, setSrc] = useState<string | null>(null);
@@ -35,6 +46,7 @@ export function ImageCropUpload({
   const [zoom, setZoom] = useState(1);
   const [areaPixels, setAreaPixels] = useState<Area | null>(null);
   const [busy, setBusy] = useState(false);
+  const outputHeight = Math.round(outputWidth / aspect);
 
   const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -53,7 +65,7 @@ export function ImageCropUpload({
     if (!src || !areaPixels) return;
     setBusy(true);
     try {
-      const dataUrl = await getCroppedDataUrl(src, areaPixels);
+      const dataUrl = await getCroppedDataUrl(src, areaPixels, outputWidth, outputHeight);
       onChange(dataUrl);
       setSrc(null);
       setZoom(1);
@@ -68,9 +80,15 @@ export function ImageCropUpload({
       <p className="mb-1 text-sm font-semibold text-foreground">{label}</p>
       <div className="flex items-center gap-3">
         {value ? (
-          <img src={value} alt="" className="h-16 w-16 rounded-2xl object-cover border border-border" />
+          <img
+            src={value}
+            alt=""
+            className={`border border-border object-cover ${round ? "h-16 w-16 rounded-2xl" : "h-16 w-28 rounded-xl"}`}
+          />
         ) : (
-          <div className="grid h-16 w-16 place-items-center rounded-2xl border border-dashed border-border text-xs text-muted-foreground">
+          <div
+            className={`grid place-items-center border border-dashed border-border text-xs text-muted-foreground ${round ? "h-16 w-16 rounded-2xl" : "h-16 w-28 rounded-xl"}`}
+          >
             নেই
           </div>
         )}
@@ -97,8 +115,8 @@ export function ImageCropUpload({
               image={src}
               crop={crop}
               zoom={zoom}
-              aspect={1}
-              cropShape="round"
+              aspect={aspect}
+              cropShape={round ? "round" : "rect"}
               showGrid={false}
               onCropChange={setCrop}
               onZoomChange={setZoom}
