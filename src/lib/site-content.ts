@@ -4,6 +4,7 @@ import {
   staff as staffDefault,
   committee as committeeDefault,
   prayerTimes as prayerDefault,
+  development as developmentDefault,
 } from "@/lib/mosque-data";
 import imam from "@/assets/imam.jpg";
 import khatib from "@/assets/khatib.jpg";
@@ -11,6 +12,7 @@ import muazzin from "@/assets/muazzin.jpg";
 import mosque1 from "@/assets/mosque-1.jpg";
 import mosque2 from "@/assets/mosque-2.jpg";
 import mosque3 from "@/assets/mosque-3.jpg";
+
 
 export type MosqueInfo = {
   name: string;
@@ -49,6 +51,14 @@ export type SiteSections = {
 
 export type HeroSlide = { image?: string; caption: string };
 
+export type DevelopmentItem = { image?: string; caption: string };
+
+export type DevelopmentContent = {
+  title: string;
+  subtitle: string;
+  items: DevelopmentItem[];
+};
+
 export type SiteContent = {
   mosque: MosqueInfo;
   heroCaptions: string[];
@@ -57,7 +67,9 @@ export type SiteContent = {
   staff: StaffMember[];
   committee: CommitteeMember[];
   sections: SiteSections;
+  development: DevelopmentContent;
 };
+
 
 // Static images keyed by staff slug (images are not editable via the panel)
 export const staffImages: Record<string, string> = {
@@ -85,7 +97,13 @@ export const defaultContent: SiteContent = {
     footerQuote: "“নিশ্চয়ই মসজিদসমূহ আল্লাহরই জন্য।” — সূরা আল-জিন",
     footerMessage: "এই মসজিদের ওয়েবসাইটের কাজ ফ্রি সদকা হিসেবে করা হয়েছে — আল্লাহ কবুল করুন।",
   },
+  development: {
+    title: developmentDefault.title,
+    subtitle: developmentDefault.subtitle,
+    items: developmentDefault.gallery.map((g) => ({ image: g.src, caption: g.caption })),
+  },
 };
+
 
 /** Merge partial stored content over the defaults so missing keys are safe. */
 export function mergeContent(stored: Partial<SiteContent> | null | undefined): SiteContent {
@@ -108,5 +126,13 @@ export function mergeContent(stored: Partial<SiteContent> | null | undefined): S
     committee:
       stored.committee && stored.committee.length ? stored.committee : defaultContent.committee,
     sections: { ...defaultContent.sections, ...(stored.sections ?? {}) },
+    development: {
+      ...defaultContent.development,
+      ...(stored.development ?? {}),
+      items:
+        stored.development?.items && stored.development.items.length
+          ? stored.development.items
+          : defaultContent.development.items,
+    },
   };
 }
