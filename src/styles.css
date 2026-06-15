@@ -33,8 +33,9 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-ring-offset-background: var(--background);
-  --font-display: "Hind Siliguri", sans-serif;
-  --font-body: "Hind Siliguri", sans-serif;
+  --font-display: "Tiro Bangla", serif;
+  --font-body: "Tiro Bangla", serif;
+  --font-sans: "Tiro Bangla", serif;
 }
 
 :root {
