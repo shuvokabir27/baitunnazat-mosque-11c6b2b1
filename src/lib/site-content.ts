@@ -1,0 +1,101 @@
+import {
+  mosque as mosqueDefault,
+  heroSlides,
+  staff as staffDefault,
+  committee as committeeDefault,
+  prayerTimes as prayerDefault,
+} from "@/lib/mosque-data";
+import imam from "@/assets/imam.jpg";
+import khatib from "@/assets/khatib.jpg";
+import muazzin from "@/assets/muazzin.jpg";
+import mosque1 from "@/assets/mosque-1.jpg";
+import mosque2 from "@/assets/mosque-2.jpg";
+import mosque3 from "@/assets/mosque-3.jpg";
+
+export type MosqueInfo = {
+  name: string;
+  shortName: string;
+  established: string;
+  location: string;
+  tagline: string;
+};
+
+export type PrayerTime = { name: string; time: string };
+
+export type StaffMember = {
+  slug: string;
+  name: string;
+  role: string;
+  detail: string;
+  experience: string;
+  previousJobs: string[];
+  expertise: string[];
+  education: string[];
+};
+
+export type CommitteeMember = StaffMember;
+
+export type SiteSections = {
+  prayerTitle: string;
+  staffTitle: string;
+  committeeTitle: string;
+  ctaTitle: string;
+  ctaText: string;
+  donateLabel: string;
+  footerQuote: string;
+};
+
+export type SiteContent = {
+  mosque: MosqueInfo;
+  heroCaptions: string[];
+  prayerTimes: PrayerTime[];
+  staff: StaffMember[];
+  committee: CommitteeMember[];
+  sections: SiteSections;
+};
+
+// Static images keyed by staff slug (images are not editable via the panel)
+export const staffImages: Record<string, string> = {
+  imam,
+  khatib,
+  muazzin,
+};
+
+export const heroImages: string[] = [mosque1, mosque2, mosque3];
+
+export const defaultContent: SiteContent = {
+  mosque: { ...mosqueDefault },
+  heroCaptions: heroSlides.map((s) => s.caption),
+  prayerTimes: prayerDefault.map((p) => ({ ...p })),
+  staff: staffDefault.map(({ image, ...rest }) => ({ ...rest })),
+  committee: committeeDefault.map((c) => ({ ...c })),
+  sections: {
+    prayerTitle: "নামাজের সময়সূচি",
+    staffTitle: "মসজিদের দায়িত্বপ্রাপ্ত",
+    committeeTitle: "মসজিদ কমিটি",
+    ctaTitle: "মসজিদের সেবায় শরিক হোন",
+    ctaText: "আপনার দান মসজিদের উন্নয়ন ও দ্বীনি শিক্ষায় কাজে লাগবে।",
+    donateLabel: "দান করুন",
+    footerQuote: "“নিশ্চয়ই মসজিদসমূহ আল্লাহরই জন্য।” — সূরা আল-জিন",
+  },
+};
+
+/** Merge partial stored content over the defaults so missing keys are safe. */
+export function mergeContent(stored: Partial<SiteContent> | null | undefined): SiteContent {
+  if (!stored) return defaultContent;
+  return {
+    mosque: { ...defaultContent.mosque, ...(stored.mosque ?? {}) },
+    heroCaptions:
+      stored.heroCaptions && stored.heroCaptions.length
+        ? stored.heroCaptions
+        : defaultContent.heroCaptions,
+    prayerTimes:
+      stored.prayerTimes && stored.prayerTimes.length
+        ? stored.prayerTimes
+        : defaultContent.prayerTimes,
+    staff: stored.staff && stored.staff.length ? stored.staff : defaultContent.staff,
+    committee:
+      stored.committee && stored.committee.length ? stored.committee : defaultContent.committee,
+    sections: { ...defaultContent.sections, ...(stored.sections ?? {}) },
+  };
+}

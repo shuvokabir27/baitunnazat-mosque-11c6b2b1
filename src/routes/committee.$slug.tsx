@@ -3,6 +3,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ChevronLeft, Heart, ThumbsUp } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { committee } from "@/lib/mosque-data";
+import { useSiteContent } from "@/lib/use-site-content";
 
 export const Route = createFileRoute("/committee/$slug")({
   loader: ({ params }) => {
@@ -37,7 +38,9 @@ export const Route = createFileRoute("/committee/$slug")({
 type Reaction = "love" | "like";
 
 function CommitteeProfilePage() {
-  const { member } = Route.useLoaderData();
+  const { member: loaderMember } = Route.useLoaderData();
+  const { committee: liveCommittee } = useSiteContent();
+  const member = liveCommittee.find((c) => c.slug === loaderMember.slug) ?? loaderMember;
   const storageKey = `committee-reaction:${member.slug}`;
   const [reaction, setReaction] = useState<Reaction | null>(null);
   const initial = member.name.replace(/^(আলহাজ্ব |জনাব )/, "").charAt(0);

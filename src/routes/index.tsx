@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Heart, Clock, X, Download, ZoomIn, ChevronDown } from "lucide-react";
 import { Layout } from "@/components/Layout";
-import { mosque, heroSlides, staff, committee, prayerTimes } from "@/lib/mosque-data";
+import { useSiteContent } from "@/lib/use-site-content";
+import { heroImages, staffImages } from "@/lib/site-content";
+
+function staffImageFor(slug: string) {
+  return staffImages[slug] ?? heroImages[0];
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -32,10 +37,15 @@ async function saveImage(src: string, name: string) {
 }
 
 function HeroSlider() {
+  const { mosque, heroCaptions, sections } = useSiteContent();
+  const slides = heroImages.map((src, idx) => ({
+    src,
+    caption: heroCaptions[idx] ?? heroCaptions[0] ?? "",
+  }));
   const [i, setI] = useState(0);
   const [zoom, setZoom] = useState(false);
-  const next = () => setI((p) => (p + 1) % heroSlides.length);
-  const prev = () => setI((p) => (p - 1 + heroSlides.length) % heroSlides.length);
+  const next = () => setI((p) => (p + 1) % slides.length);
+  const prev = () => setI((p) => (p - 1 + slides.length) % slides.length);
 
   useEffect(() => {
     if (zoom) return;
@@ -56,7 +66,7 @@ function HeroSlider() {
 
       {/* Image area with 16:9 aspect ratio */}
       <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16 / 9" }}>
-        {heroSlides.map((slide, idx) => (
+        {slides.map((slide, idx) => (
           <img
             key={slide.src}
             src={slide.src}
@@ -85,7 +95,7 @@ function HeroSlider() {
 
         {/* Dots */}
         <div className="absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 gap-2">
-          {heroSlides.map((_, idx) => (
+          {slides.map((_, idx) => (
             <button
               key={idx}
               aria-label={`ছবি ${idx + 1}`}
@@ -99,7 +109,7 @@ function HeroSlider() {
       {/* Synced text slide for the current image */}
       <div className="bg-secondary/40 px-5 py-3 text-center">
         <p key={i} className="animate-in fade-in slide-in-from-bottom-2 text-sm font-semibold text-primary duration-500">
-          {heroSlides[i].caption}
+          {slides[i].caption}
         </p>
         <div className="mt-2 flex justify-center gap-2">
           <button
@@ -109,7 +119,7 @@ function HeroSlider() {
             <ZoomIn className="h-3.5 w-3.5" /> জুম করুন
           </button>
           <button
-            onClick={() => saveImage(heroSlides[i].src, `mosque-${i + 1}.jpg`)}
+            onClick={() => saveImage(slides[i].src, `mosque-${i + 1}.jpg`)}
             className="inline-flex items-center gap-1.5 rounded-full gradient-emerald px-3 py-1.5 text-xs font-semibold text-primary-foreground"
           >
             <Download className="h-3.5 w-3.5" /> সেভ করুন
@@ -123,7 +133,7 @@ function HeroSlider() {
           to="/donate"
           className="animate-pulse-red inline-flex items-center gap-2 rounded-full gradient-red px-6 py-3 text-base font-semibold text-white shadow-red"
         >
-          <Heart className="h-5 w-5" /> দান করুন
+          <Heart className="h-5 w-5" /> {sections.donateLabel}
         </Link>
       </div>
 
@@ -134,15 +144,15 @@ function HeroSlider() {
           onClick={() => setZoom(false)}
         >
           <img
-            src={heroSlides[i].src}
-            alt={heroSlides[i].caption}
+            src={slides[i].src}
+            alt={slides[i].caption}
             className="max-h-[75vh] w-auto max-w-full rounded-2xl object-contain"
             onClick={(e) => e.stopPropagation()}
           />
-          <p className="mt-3 text-center text-sm font-semibold text-white">{heroSlides[i].caption}</p>
+          <p className="mt-3 text-center text-sm font-semibold text-white">{slides[i].caption}</p>
           <div className="mt-4 flex gap-3" onClick={(e) => e.stopPropagation()}>
             <button
-              onClick={() => saveImage(heroSlides[i].src, `mosque-${i + 1}.jpg`)}
+              onClick={() => saveImage(slides[i].src, `mosque-${i + 1}.jpg`)}
               className="flex items-center gap-2 rounded-full gradient-emerald px-5 py-2.5 text-sm font-bold text-primary-foreground"
             >
               <Download className="h-4 w-4" /> সেভ করুন
@@ -171,19 +181,20 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 }
 
 function StaffSection() {
+  const { staff, sections } = useSiteContent();
   return (
     <section className="bg-secondary/40 px-4 py-12">
-      <SectionTitle>মসজিদের দায়িত্বপ্রাপ্ত</SectionTitle>
+      <SectionTitle>{sections.staffTitle}</SectionTitle>
       <div className="space-y-5">
         {staff.map((s) => (
           <Link
-            key={s.role}
+            key={s.slug}
             to="/staff/$slug"
             params={{ slug: s.slug }}
             className="flex w-full items-center gap-4 rounded-3xl border border-border bg-card p-4 text-left shadow-soft transition-transform active:scale-[0.98]"
           >
             <img
-              src={s.image}
+              src={staffImageFor(s.slug)}
               alt={s.name}
               loading="lazy"
               width={768}
@@ -205,18 +216,18 @@ function StaffSection() {
   );
 }
 
-
 function CommitteeSection() {
+  const { committee, sections } = useSiteContent();
   const [showAll, setShowAll] = useState(false);
   const visible = showAll ? committee : committee.slice(0, 4);
 
   return (
     <section className="px-4 py-12">
-      <SectionTitle>মসজিদ কমিটি</SectionTitle>
+      <SectionTitle>{sections.committeeTitle}</SectionTitle>
       <div className="grid grid-cols-2 gap-3">
         {visible.map((c) => (
           <Link
-            key={c.name}
+            key={c.slug}
             to="/committee/$slug"
             params={{ slug: c.slug }}
             className="rounded-2xl border border-border bg-card p-4 text-center shadow-soft transition-transform active:scale-[0.98]"
@@ -243,48 +254,50 @@ function CommitteeSection() {
   );
 }
 
+function PrayerSection() {
+  const { prayerTimes, sections } = useSiteContent();
+  return (
+    <section className="px-4 py-10">
+      <SectionTitle>{sections.prayerTitle}</SectionTitle>
+      <div className="grid grid-cols-3 gap-3">
+        {prayerTimes.map((p) => (
+          <div key={p.name} className="rounded-2xl border border-border bg-card p-4 text-center shadow-soft">
+            <Clock className="mx-auto h-5 w-5 text-gold" />
+            <p className="mt-2 font-semibold text-foreground">{p.name}</p>
+            <p className="text-lg font-bold text-primary">{p.time}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function CtaSection() {
+  const { sections } = useSiteContent();
+  return (
+    <section className="px-4 pb-4">
+      <div className="rounded-3xl gradient-emerald p-7 text-center text-primary-foreground shadow-soft">
+        <h2 className="text-xl font-bold">{sections.ctaTitle}</h2>
+        <p className="mt-2 text-sm text-primary-foreground/85">{sections.ctaText}</p>
+        <Link
+          to="/donate"
+          className="animate-pulse-red mt-5 inline-flex items-center gap-2 rounded-full gradient-red px-6 py-3 font-semibold text-white shadow-red"
+        >
+          <Heart className="h-5 w-5" /> {sections.donateLabel}
+        </Link>
+      </div>
+    </section>
+  );
+}
+
 function Index() {
   return (
     <Layout>
       <HeroSlider />
-
-      {/* Prayer times */}
-      <section className="px-4 py-10">
-        <SectionTitle>নামাজের সময়সূচি</SectionTitle>
-        <div className="grid grid-cols-3 gap-3">
-          {prayerTimes.map((p) => (
-            <div key={p.name} className="rounded-2xl border border-border bg-card p-4 text-center shadow-soft">
-              <Clock className="mx-auto h-5 w-5 text-gold" />
-              <p className="mt-2 font-semibold text-foreground">{p.name}</p>
-              <p className="text-lg font-bold text-primary">{p.time}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Staff */}
+      <PrayerSection />
       <StaffSection />
-
-      {/* Committee */}
       <CommitteeSection />
-
-      {/* CTA */}
-
-      {/* CTA */}
-      <section className="px-4 pb-4">
-        <div className="rounded-3xl gradient-emerald p-7 text-center text-primary-foreground shadow-soft">
-          <h2 className="text-xl font-bold">মসজিদের সেবায় শরিক হোন</h2>
-          <p className="mt-2 text-sm text-primary-foreground/85">
-            আপনার দান মসজিদের উন্নয়ন ও দ্বীনি শিক্ষায় কাজে লাগবে।
-          </p>
-          <Link
-            to="/donate"
-            className="animate-pulse-red mt-5 inline-flex items-center gap-2 rounded-full gradient-red px-6 py-3 font-semibold text-white shadow-red"
-          >
-            <Heart className="h-5 w-5" /> দান করুন
-          </Link>
-        </div>
-      </section>
+      <CtaSection />
     </Layout>
   );
 }

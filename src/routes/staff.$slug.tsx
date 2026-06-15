@@ -3,6 +3,8 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ChevronLeft, Heart, ThumbsUp } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { staff } from "@/lib/mosque-data";
+import { useSiteContent } from "@/lib/use-site-content";
+import { staffImages, heroImages } from "@/lib/site-content";
 
 export const Route = createFileRoute("/staff/$slug")({
   loader: ({ params }) => {
@@ -38,7 +40,10 @@ export const Route = createFileRoute("/staff/$slug")({
 type Reaction = "love" | "like";
 
 function StaffProfilePage() {
-  const { member } = Route.useLoaderData();
+  const { member: loaderMember } = Route.useLoaderData();
+  const { staff: liveStaff } = useSiteContent();
+  const member = liveStaff.find((s) => s.slug === loaderMember.slug) ?? loaderMember;
+  const image = staffImages[member.slug] ?? heroImages[0];
   const storageKey = `staff-reaction:${member.slug}`;
   const [reaction, setReaction] = useState<Reaction | null>(null);
 
@@ -66,7 +71,7 @@ function StaffProfilePage() {
         <div className="rounded-3xl border border-border bg-card p-6 shadow-soft">
           <div className="flex flex-col items-center text-center">
             <img
-              src={member.image}
+              src={image}
               alt={member.name}
               className="h-32 w-32 rounded-3xl object-cover shadow-soft"
             />
