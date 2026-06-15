@@ -346,7 +346,7 @@ function PrayerSection() {
           </p>
         </div>
       )}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-3 lg:grid-cols-6">
         {prayerTimes.map((p) => {
           const isNext = next?.name === p.name && !p.name.includes("জুমা");
           return (
