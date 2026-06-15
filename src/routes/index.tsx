@@ -326,8 +326,14 @@ function useNextPrayer(prayerTimes: { name: string; time: string }[]) {
     next = daily[0]; // tomorrow's first prayer
     diff = 24 * 60 - nowMins + next.mins;
   }
-  const totalMin = Math.floor(diff);
-  return { name: next.name, time: next.time, hours: Math.floor(totalMin / 60), minutes: totalMin % 60 };
+  const totalSec = Math.max(0, Math.floor(diff * 60));
+  return {
+    name: next.name,
+    time: next.time,
+    hours: Math.floor(totalSec / 3600),
+    minutes: Math.floor((totalSec % 3600) / 60),
+    seconds: totalSec % 60,
+  };
 }
 
 function PrayerSection() {
