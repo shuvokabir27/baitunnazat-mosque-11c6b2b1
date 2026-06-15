@@ -84,7 +84,7 @@ function HeaderDateTime() {
   const islamicMonth = parseInt(parts.find((p) => p.type === "month")?.value ?? "1", 10);
   const islamicYear = parseInt(parts.find((p) => p.type === "year")?.value ?? "1", 10);
   const arabic = `${toBnNum(islamicDay)} ${islamicMonthsBn[islamicMonth - 1]} ${toBnNum(islamicYear)} হিজরি`;
-  const time = now.toLocaleTimeString("bn-BD", {
+  const time = now.toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
