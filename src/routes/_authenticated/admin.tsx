@@ -20,6 +20,7 @@ import {
   ChevronDown,
   MessageSquare,
   HardHat,
+  Settings,
 } from "lucide-react";
 import { defaultContent, type SiteContent } from "@/lib/site-content";
 import {
