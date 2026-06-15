@@ -1,45 +1,70 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronLeft, ChevronRight, Heart, Clock } from "lucide-react";
+import { ChevronLeft, ChevronRight, Heart, Clock, X, Download, ZoomIn } from "lucide-react";
 import { Layout } from "@/components/Layout";
-import { mosque, heroImages, staff, committee, prayerTimes } from "@/lib/mosque-data";
+import { mosque, heroSlides, staff, committee, prayerTimes } from "@/lib/mosque-data";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ, মহিপুর — হোম" },
-      { name: "description", content: "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ, মহিপুর। নামাজের সময়সূচি, ইমাম-খতিব ও কমিটির পরিচিতি।" },
+      { title: "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ, মহিপুর — হোম" },
+      { name: "description", content: "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ, মহিপুর। নামাজের সময়সূচি, ইমাম-খতিব ও কমিটির পরিচিতি।" },
     ],
   }),
   component: Index,
 });
 
+async function saveImage(src: string, name: string) {
+  try {
+    const res = await fetch(src);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  } catch {
+    window.open(src, "_blank");
+  }
+}
+
 function HeroSlider() {
   const [i, setI] = useState(0);
-  const next = () => setI((p) => (p + 1) % heroImages.length);
-  const prev = () => setI((p) => (p - 1 + heroImages.length) % heroImages.length);
+  const [zoom, setZoom] = useState(false);
+  const next = () => setI((p) => (p + 1) % heroSlides.length);
+  const prev = () => setI((p) => (p - 1 + heroSlides.length) % heroSlides.length);
 
   useEffect(() => {
+    if (zoom) return;
     const t = setInterval(next, 4500);
     return () => clearInterval(t);
-  }, []);
+  }, [zoom]);
 
   return (
     <section>
       {/* Image area with 16:9 aspect ratio */}
       <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16 / 9" }}>
-        {heroImages.map((src, idx) => (
+        {heroSlides.map((slide, idx) => (
           <img
-            key={src}
-            src={src}
-            alt={`${mosque.name} ছবি ${idx + 1}`}
+            key={slide.src}
+            src={slide.src}
+            alt={slide.caption}
             width={1280}
             height={720}
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
+            onClick={() => idx === i && setZoom(true)}
+            className={`absolute inset-0 h-full w-full cursor-zoom-in object-cover transition-opacity duration-1000 ${
               idx === i ? "opacity-100" : "opacity-0"
             }`}
           />
         ))}
+
+        {/* Zoom hint */}
+        <span className="pointer-events-none absolute right-2 top-2 z-20 grid h-8 w-8 place-items-center rounded-full bg-black/40 text-white backdrop-blur">
+          <ZoomIn className="h-4 w-4" />
+        </span>
 
         {/* Navigation arrows */}
         <button onClick={prev} aria-label="পূর্ববর্তী" className="absolute left-2 top-1/2 z-20 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-black/30 text-white backdrop-blur">
@@ -51,7 +76,7 @@ function HeroSlider() {
 
         {/* Dots */}
         <div className="absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 gap-2">
-          {heroImages.map((_, idx) => (
+          {heroSlides.map((_, idx) => (
             <button
               key={idx}
               aria-label={`ছবি ${idx + 1}`}
@@ -59,6 +84,27 @@ function HeroSlider() {
               className={`h-2 rounded-full transition-all ${idx === i ? "w-6 bg-gold" : "w-2 bg-white/70"}`}
             />
           ))}
+        </div>
+      </div>
+
+      {/* Synced text slide for the current image */}
+      <div className="bg-secondary/40 px-5 py-3 text-center">
+        <p key={i} className="animate-in fade-in slide-in-from-bottom-2 text-sm font-semibold text-primary duration-500">
+          {heroSlides[i].caption}
+        </p>
+        <div className="mt-2 flex justify-center gap-2">
+          <button
+            onClick={() => setZoom(true)}
+            className="inline-flex items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-xs font-semibold text-primary shadow-soft"
+          >
+            <ZoomIn className="h-3.5 w-3.5" /> জুম করুন
+          </button>
+          <button
+            onClick={() => saveImage(heroSlides[i].src, `mosque-${i + 1}.jpg`)}
+            className="inline-flex items-center gap-1.5 rounded-full gradient-emerald px-3 py-1.5 text-xs font-semibold text-primary-foreground"
+          >
+            <Download className="h-3.5 w-3.5" /> সেভ করুন
+          </button>
         </div>
       </div>
 
@@ -76,6 +122,37 @@ function HeroSlider() {
           <Heart className="h-5 w-5" /> দান করুন
         </Link>
       </div>
+
+      {/* Zoom lightbox */}
+      {zoom && (
+        <div
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90 p-4"
+          onClick={() => setZoom(false)}
+        >
+          <img
+            src={heroSlides[i].src}
+            alt={heroSlides[i].caption}
+            className="max-h-[75vh] w-auto max-w-full rounded-2xl object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <p className="mt-3 text-center text-sm font-semibold text-white">{heroSlides[i].caption}</p>
+          <div className="mt-4 flex gap-3" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => saveImage(heroSlides[i].src, `mosque-${i + 1}.jpg`)}
+              className="flex items-center gap-2 rounded-full gradient-emerald px-5 py-2.5 text-sm font-bold text-primary-foreground"
+            >
+              <Download className="h-4 w-4" /> সেভ করুন
+            </button>
+            <button
+              onClick={() => setZoom(false)}
+              aria-label="বন্ধ করুন"
+              className="grid h-11 w-11 place-items-center rounded-full bg-white/15 text-white"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
