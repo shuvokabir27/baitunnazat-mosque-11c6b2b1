@@ -170,6 +170,110 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
+function StaffSection() {
+  const [selected, setSelected] = useState<(typeof staff)[number] | null>(null);
+
+  return (
+    <section className="bg-secondary/40 px-4 py-12">
+      <SectionTitle>মসজিদের দায়িত্বপ্রাপ্ত</SectionTitle>
+      <div className="space-y-5">
+        {staff.map((s) => (
+          <button
+            key={s.role}
+            onClick={() => setSelected(s)}
+            className="flex w-full items-center gap-4 rounded-3xl border border-border bg-card p-4 text-left shadow-soft transition-transform active:scale-[0.98]"
+          >
+            <img
+              src={s.image}
+              alt={s.name}
+              loading="lazy"
+              width={768}
+              height={768}
+              className="h-20 w-20 shrink-0 rounded-2xl object-cover"
+            />
+            <div>
+              <span className="rounded-full gradient-emerald px-3 py-0.5 text-xs font-semibold text-primary-foreground">
+                {s.role}
+              </span>
+              <h3 className="mt-1.5 text-lg font-bold text-foreground">{s.name}</h3>
+              <p className="text-sm text-muted-foreground">{s.detail}</p>
+              <span className="mt-1 inline-block text-xs font-semibold text-primary">প্রোফাইল দেখুন →</span>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {selected && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 sm:items-center sm:p-4"
+          onClick={() => setSelected(null)}
+        >
+          <div
+            className="max-h-[88vh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-card p-6 shadow-soft sm:rounded-3xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-4">
+                <img
+                  src={selected.image}
+                  alt={selected.name}
+                  className="h-20 w-20 shrink-0 rounded-2xl object-cover"
+                />
+                <div>
+                  <span className="rounded-full gradient-emerald px-3 py-0.5 text-xs font-semibold text-primary-foreground">
+                    {selected.role}
+                  </span>
+                  <h3 className="mt-1.5 text-lg font-bold text-foreground">{selected.name}</h3>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelected(null)}
+                aria-label="বন্ধ করুন"
+                className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-secondary text-foreground"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="mt-5 space-y-5">
+              <div>
+                <h4 className="text-sm font-bold text-primary">অভিজ্ঞতা</h4>
+                <p className="mt-1 text-sm text-muted-foreground">{selected.experience}</p>
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-primary">পূর্বের কর্মস্থল</h4>
+                <ul className="mt-1 list-inside list-disc space-y-1 text-sm text-muted-foreground">
+                  {selected.previousJobs.map((j) => (
+                    <li key={j}>{j}</li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-primary">দক্ষতার বিষয়</h4>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {selected.expertise.map((e) => (
+                    <span key={e} className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-foreground">
+                      {e}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-primary">শিক্ষাগত যোগ্যতা</h4>
+                <ul className="mt-1 list-inside list-disc space-y-1 text-sm text-muted-foreground">
+                  {selected.education.map((ed) => (
+                    <li key={ed}>{ed}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
 function CommitteeSection() {
   const [showAll, setShowAll] = useState(false);
   const visible = showAll ? committee : committee.slice(0, 4);
@@ -221,30 +325,7 @@ function Index() {
       </section>
 
       {/* Staff */}
-      <section className="bg-secondary/40 px-4 py-12">
-        <SectionTitle>মসজিদের দায়িত্বপ্রাপ্ত</SectionTitle>
-        <div className="space-y-5">
-          {staff.map((s) => (
-            <div key={s.role} className="flex items-center gap-4 rounded-3xl border border-border bg-card p-4 shadow-soft">
-              <img
-                src={s.image}
-                alt={s.name}
-                loading="lazy"
-                width={768}
-                height={768}
-                className="h-20 w-20 shrink-0 rounded-2xl object-cover"
-              />
-              <div>
-                <span className="rounded-full gradient-emerald px-3 py-0.5 text-xs font-semibold text-primary-foreground">
-                  {s.role}
-                </span>
-                <h3 className="mt-1.5 text-lg font-bold text-foreground">{s.name}</h3>
-                <p className="text-sm text-muted-foreground">{s.detail}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      <StaffSection />
 
       {/* Committee */}
       <CommitteeSection />
