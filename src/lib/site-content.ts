@@ -87,6 +87,10 @@ export const staffImages: Record<string, string> = {
 export const heroImages: string[] = [mosque1, mosque2, mosque3];
 
 export const defaultContent: SiteContent = {
+  site: {
+    title: "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ - মহিপুর",
+    icon: "/icon-192.png",
+  },
   mosque: { ...mosqueDefault },
   heroCaptions: heroSlides.map((s) => s.caption),
   heroSlides: heroSlides.map((s, i) => ({ image: heroImages[i], caption: s.caption })),
