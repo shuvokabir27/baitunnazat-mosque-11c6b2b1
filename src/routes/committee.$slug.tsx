@@ -36,26 +36,12 @@ export const Route = createFileRoute("/committee/$slug")({
   component: CommitteeProfilePage,
 });
 
-type Reaction = "love" | "like";
-
 function CommitteeProfilePage() {
   const { member: loaderMember } = Route.useLoaderData();
   const { committee: liveCommittee } = useSiteContent();
   const member = liveCommittee.find((c) => c.slug === loaderMember.slug) ?? loaderMember;
-  const storageKey = `committee-reaction:${member.slug}`;
-  const [reaction, setReaction] = useState<Reaction | null>(null);
   const initial = member.name.replace(/^(আলহাজ্ব |জনাব )/, "").charAt(0);
 
-  useEffect(() => {
-    const saved = localStorage.getItem(storageKey) as Reaction | null;
-    if (saved === "love" || saved === "like") setReaction(saved);
-  }, [storageKey]);
-
-  const react = (type: Reaction) => {
-    if (reaction) return;
-    setReaction(type);
-    localStorage.setItem(storageKey, type);
-  };
 
   return (
     <Layout>
