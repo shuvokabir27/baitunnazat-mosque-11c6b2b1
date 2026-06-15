@@ -1,6 +1,6 @@
 import { type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { Moon, Home, HeartHandshake, HardHat, BookOpen, BookMarked } from "lucide-react";
+import { Moon, Home, HeartHandshake, HardHat, BookOpen } from "lucide-react";
 import { mosque, navItems } from "@/lib/mosque-data";
 
 const navIcons: Record<string, typeof Home> = {
@@ -8,7 +8,6 @@ const navIcons: Record<string, typeof Home> = {
   "/donate": HeartHandshake,
   "/development": HardHat,
   "/ibadah": BookOpen,
-  "/namaz-shikkha": BookMarked,
 };
 
 function Header() {
