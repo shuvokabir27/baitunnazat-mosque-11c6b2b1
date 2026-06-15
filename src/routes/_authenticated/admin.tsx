@@ -441,24 +441,36 @@ function PersonEditor({
   onChange: (p: SiteContent["staff"][number]) => void;
   onRemove: () => void;
 }) {
+  const [open, setOpen] = useState(false);
   return (
     <Card>
-      <div className="flex items-center justify-between">
-        <span className="rounded-full gradient-gold px-3 py-0.5 text-xs font-semibold text-gold-foreground">
-          {person.role || "নতুন"}
-        </span>
-        <button onClick={onRemove} className="grid h-8 w-8 place-items-center rounded-lg bg-destructive/10 text-destructive" aria-label="মুছুন">
+      <div className="flex items-center justify-between gap-2">
+        <button
+          onClick={() => setOpen((o) => !o)}
+          className="flex flex-1 items-center gap-2 text-left"
+        >
+          <ChevronDown className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+          <span className="rounded-full gradient-gold px-3 py-0.5 text-xs font-semibold text-gold-foreground">
+            {person.role || "নতুন"}
+          </span>
+          <span className="truncate text-sm font-semibold text-foreground">{person.name || "নাম নেই"}</span>
+        </button>
+        <button onClick={onRemove} className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-destructive/10 text-destructive" aria-label="মুছুন">
           <Trash2 className="h-4 w-4" />
         </button>
       </div>
-      <ImageCropUpload value={person.image} onChange={(img) => onChange({ ...person, image: img })} />
-      <Field label="নাম" value={person.name} onChange={(v) => onChange({ ...person, name: v })} />
-      <Field label="পদবি" value={person.role} onChange={(v) => onChange({ ...person, role: v })} />
-      <Field label="সংক্ষিপ্ত বিবরণ" value={person.detail} onChange={(v) => onChange({ ...person, detail: v })} textarea />
-      <Field label="অভিজ্ঞতা" value={person.experience} onChange={(v) => onChange({ ...person, experience: v })} textarea />
-      <ListField label="পূর্বের কর্মস্থল" items={person.previousJobs} onChange={(v) => onChange({ ...person, previousJobs: v })} />
-      <ListField label="দক্ষতার বিষয়" items={person.expertise} onChange={(v) => onChange({ ...person, expertise: v })} />
-      <ListField label="শিক্ষাগত যোগ্যতা" items={person.education} onChange={(v) => onChange({ ...person, education: v })} />
+      {open && (
+        <div className="mt-4 space-y-4 border-t border-border pt-4">
+          <ImageCropUpload value={person.image} onChange={(img) => onChange({ ...person, image: img })} />
+          <Field label="নাম" value={person.name} onChange={(v) => onChange({ ...person, name: v })} />
+          <Field label="পদবি" value={person.role} onChange={(v) => onChange({ ...person, role: v })} />
+          <Field label="সংক্ষিপ্ত বিবরণ" value={person.detail} onChange={(v) => onChange({ ...person, detail: v })} textarea />
+          <Field label="অভিজ্ঞতা" value={person.experience} onChange={(v) => onChange({ ...person, experience: v })} textarea />
+          <ListField label="পূর্বের কর্মস্থল" items={person.previousJobs} onChange={(v) => onChange({ ...person, previousJobs: v })} />
+          <ListField label="দক্ষতার বিষয়" items={person.expertise} onChange={(v) => onChange({ ...person, expertise: v })} />
+          <ListField label="শিক্ষাগত যোগ্যতা" items={person.education} onChange={(v) => onChange({ ...person, education: v })} />
+        </div>
+      )}
     </Card>
   );
 }
