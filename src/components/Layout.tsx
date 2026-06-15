@@ -40,14 +40,16 @@ function HeaderDateTime() {
 
   if (!now) {
     return (
-      <div className="flex items-center gap-6 text-center leading-tight lg:text-left">
-        <div className="flex flex-col items-center lg:items-start">
-          <span className="text-base font-bold tabular-nums text-foreground">...</span>
-          <span dir="rtl" className="text-xs font-medium text-gold">...</span>
-        </div>
-        <div className="flex flex-col items-center lg:items-start">
-          <span className="text-xs text-muted-foreground">...</span>
-          <span className="text-sm font-bold text-primary">...</span>
+      <div className="bg-secondary/60 backdrop-blur-sm rounded-lg px-4 py-2">
+        <div className="flex items-center gap-6 text-center leading-tight lg:text-left">
+          <div className="flex flex-col items-center lg:items-start">
+            <span className="text-base font-bold tabular-nums text-foreground">...</span>
+            <span dir="rtl" className="text-xs font-medium text-gold">...</span>
+          </div>
+          <div className="flex flex-col items-center lg:items-start">
+            <span className="text-xs text-muted-foreground">...</span>
+            <span className="text-sm font-bold text-primary">...</span>
+          </div>
         </div>
       </div>
     );
