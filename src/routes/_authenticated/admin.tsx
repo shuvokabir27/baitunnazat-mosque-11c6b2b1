@@ -172,7 +172,7 @@ function AdminPage() {
   );
 }
 
-type Tab = "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "footer";
+type Tab = "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "footer";
 const TAB_LABELS: Record<Tab, string> = {
   mosque: "মসজিদ",
   slider: "স্লাইডার",
@@ -180,6 +180,7 @@ const TAB_LABELS: Record<Tab, string> = {
   prayer: "নামাজ",
   staff: "দায়িত্বপ্রাপ্ত",
   committee: "কমিটি",
+  development: "উন্নয়ন কাজ",
   footer: "ফুটার",
 };
 
@@ -190,6 +191,7 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   prayer: Clock,
   staff: Users,
   committee: UsersRound,
+  development: HardHat,
   footer: MessageSquare,
 };
 
