@@ -312,12 +312,22 @@ function useNextPrayer(prayerTimes: { name: string; time: string }[]) {
   const daily = prayerTimes
     .filter((p) => !p.name.includes("জুমা"))
     .map((p) => ({ ...p, mins: prayerMinutes(p.name, p.time) }))
-    .filter((p): p is { name: string; time: string; mins: number } => p.mins !== null)
+    .filter((p): p is { name: string; time: string; jamaat?: number; mins: number } => p.mins !== null)
     .sort((a, b) => a.mins - b.mins);
 
   if (!daily.length) return null;
 
   const nowMins = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
+
+  // Check if a jamaat is currently in progress
+  const ongoing = daily.find((p) => {
+    const dur = p.jamaat ?? 15;
+    return nowMins >= p.mins && nowMins < p.mins + dur;
+  });
+  if (ongoing) {
+    return { ongoing: true as const, name: ongoing.name, time: ongoing.time, hours: 0, minutes: 0, seconds: 0 };
+  }
+
   let next = daily.find((p) => p.mins > nowMins);
   let diff: number;
   if (next) {
@@ -328,6 +338,7 @@ function useNextPrayer(prayerTimes: { name: string; time: string }[]) {
   }
   const totalSec = Math.max(0, Math.floor(diff * 60));
   return {
+    ongoing: false as const,
     name: next.name,
     time: next.time,
     hours: Math.floor(totalSec / 3600),
@@ -342,7 +353,15 @@ function PrayerSection() {
   return (
     <section className="px-4 py-10">
       <SectionTitle>{sections.prayerTitle}</SectionTitle>
-      {next && (
+      {next && next.ongoing && (
+        <div className="mb-5 flex flex-col items-center justify-center gap-2 rounded-2xl gradient-emerald px-4 py-4 text-center text-primary-foreground shadow-soft">
+          <p className="flex items-center justify-center gap-2 text-base font-semibold sm:text-lg">
+            <Clock className="h-5 w-5 shrink-0 animate-pulse" />
+            <span className="font-bold">{next.name}</span> নামাজের জামাত চলছে
+          </p>
+        </div>
+      )}
+      {next && !next.ongoing && (
         <div className="mb-5 flex flex-col items-center justify-center gap-3 rounded-2xl gradient-emerald px-4 py-4 text-center text-primary-foreground shadow-soft">
           <p className="flex items-center justify-center gap-2 text-sm font-semibold sm:text-base">
             <Clock className="h-5 w-5 shrink-0 animate-pulse" />
@@ -355,7 +374,6 @@ function PrayerSection() {
             <span className="text-sm font-semibold">বাকি</span>
           </div>
         </div>
-
       )}
       <div className="grid grid-cols-3 gap-3 lg:grid-cols-6">
         {prayerTimes.map((p) => {

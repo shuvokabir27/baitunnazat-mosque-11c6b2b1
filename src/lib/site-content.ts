@@ -22,7 +22,7 @@ export type MosqueInfo = {
   tagline: string;
 };
 
-export type PrayerTime = { name: string; time: string };
+export type PrayerTime = { name: string; time: string; jamaat?: number };
 
 export type StaffMember = {
   slug: string;
