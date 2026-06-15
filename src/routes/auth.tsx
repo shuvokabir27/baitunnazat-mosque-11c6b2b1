@@ -12,7 +12,6 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,17 +22,8 @@ function AuthPage() {
     setError(null);
     setLoading(true);
     try {
-      if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: window.location.origin + "/admin" },
-        });
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
       navigate({ to: "/admin" });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "একটি সমস্যা হয়েছে";
@@ -52,7 +42,7 @@ function AuthPage() {
           </span>
           <h1 className="mt-3 text-xl font-bold text-primary">অ্যাডমিন প্যানেল</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {mode === "login" ? "লগইন করে সাইট পরিচালনা করুন" : "নতুন অ্যাডমিন অ্যাকাউন্ট তৈরি করুন"}
+            লগইন করে সাইট পরিচালনা করুন
           </p>
         </div>
 
@@ -88,22 +78,12 @@ function AuthPage() {
             disabled={loading}
             className="w-full rounded-xl gradient-emerald py-2.5 text-sm font-bold text-primary-foreground disabled:opacity-60"
           >
-            {loading ? "অপেক্ষা করুন..." : mode === "login" ? "লগইন" : "অ্যাকাউন্ট তৈরি করুন"}
+            {loading ? "অপেক্ষা করুন..." : "লগইন"}
           </button>
         </form>
-
-        <button
-          onClick={() => {
-            setMode((m) => (m === "login" ? "signup" : "login"));
-            setError(null);
-          }}
-          className="mt-4 w-full text-center text-sm font-semibold text-primary"
-        >
-          {mode === "login" ? "নতুন অ্যাকাউন্ট তৈরি করুন" : "ইতিমধ্যে অ্যাকাউন্ট আছে? লগইন করুন"}
-        </button>
       </div>
       <p className="mt-4 max-w-sm text-center text-xs text-muted-foreground">
-        প্রথমবার সাইন আপ করা ব্যক্তি স্বয়ংক্রিয়ভাবে অ্যাডমিন হবেন।
+        শুধুমাত্র অনুমোদিত অ্যাডমিন লগইন করতে পারবেন।
       </p>
     </div>
   );
