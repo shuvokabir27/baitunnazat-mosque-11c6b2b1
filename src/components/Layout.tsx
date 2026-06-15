@@ -1,6 +1,6 @@
 import { type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { Moon, Home, HeartHandshake, HardHat, BookOpen } from "lucide-react";
+import { Moon, Home, HeartHandshake, HardHat, BookOpen, MessageCircle } from "lucide-react";
 import { navItems } from "@/lib/mosque-data";
 import { useSiteContent } from "@/lib/use-site-content";
 
