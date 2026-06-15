@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ChevronLeft, Heart, ThumbsUp } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { staff } from "@/lib/mosque-data";
 import { useSiteContent } from "@/lib/use-site-content";
 import { staffImages, heroImages } from "@/lib/site-content";
+import { ProfileReactions } from "@/components/ProfileReactions";
+
 
 export const Route = createFileRoute("/staff/$slug")({
   loader: ({ params }) => {
@@ -37,26 +38,12 @@ export const Route = createFileRoute("/staff/$slug")({
   component: StaffProfilePage,
 });
 
-type Reaction = "love" | "like";
-
 function StaffProfilePage() {
   const { member: loaderMember } = Route.useLoaderData();
   const { staff: liveStaff } = useSiteContent();
   const member = liveStaff.find((s) => s.slug === loaderMember.slug) ?? loaderMember;
   const image = member.image || staffImages[member.slug] || heroImages[0];
-  const storageKey = `staff-reaction:${member.slug}`;
-  const [reaction, setReaction] = useState<Reaction | null>(null);
 
-  useEffect(() => {
-    const saved = localStorage.getItem(storageKey) as Reaction | null;
-    if (saved === "love" || saved === "like") setReaction(saved);
-  }, [storageKey]);
-
-  const react = (type: Reaction) => {
-    if (reaction) return; // already reacted once from this device
-    setReaction(type);
-    localStorage.setItem(storageKey, type);
-  };
 
   return (
     <Layout>
@@ -83,37 +70,8 @@ function StaffProfilePage() {
           </div>
 
           {/* Reaction buttons */}
-          <div className="mt-6 flex items-center justify-center gap-3">
-            <button
-              onClick={() => react("love")}
-              disabled={!!reaction}
-              aria-pressed={reaction === "love"}
-              className={`flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-semibold transition-colors ${
-                reaction === "love"
-                  ? "border-rose-500 bg-rose-500 text-white"
-                  : "border-border bg-secondary text-foreground"
-              } ${reaction && reaction !== "love" ? "opacity-50" : ""}`}
-            >
-              <Heart className={`h-4 w-4 ${reaction === "love" ? "fill-current" : ""}`} /> লাভ
-            </button>
-            <button
-              onClick={() => react("like")}
-              disabled={!!reaction}
-              aria-pressed={reaction === "like"}
-              className={`flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-semibold transition-colors ${
-                reaction === "like"
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-secondary text-foreground"
-              } ${reaction && reaction !== "like" ? "opacity-50" : ""}`}
-            >
-              <ThumbsUp className={`h-4 w-4 ${reaction === "like" ? "fill-current" : ""}`} /> লাইক
-            </button>
-          </div>
-          {reaction && (
-            <p className="mt-2 text-center text-xs text-muted-foreground">
-              আপনি এই প্রোফাইলে {reaction === "love" ? "লাভ" : "লাইক"} দিয়েছেন।
-            </p>
-          )}
+          <ProfileReactions slug={member.slug} />
+
         </div>
 
         <div className="mt-6 space-y-5 rounded-3xl border border-border bg-card p-6 shadow-soft">
