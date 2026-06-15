@@ -45,6 +45,15 @@ function HeroSlider() {
 
   return (
     <section>
+      {/* Mosque name & established year above the slider */}
+      <div className="flex flex-col items-center px-5 pt-6 pb-5 text-center">
+        <span className="rounded-full gradient-gold px-4 py-1 text-sm font-semibold text-gold-foreground shadow-gold">
+          প্রতিষ্ঠিত {mosque.established} সন
+        </span>
+        <h1 className="mt-3 text-2xl font-bold leading-tight text-primary">{mosque.name}</h1>
+        <p className="mt-1.5 text-sm text-muted-foreground">{mosque.tagline}</p>
+      </div>
+
       {/* Image area with 16:9 aspect ratio */}
       <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16 / 9" }}>
         {heroSlides.map((slide, idx) => (
@@ -108,16 +117,11 @@ function HeroSlider() {
         </div>
       </div>
 
-      {/* Text below the slider */}
+      {/* Donate CTA below the slider */}
       <div className="flex flex-col items-center px-5 py-8 text-center">
-        <span className="rounded-full gradient-gold px-4 py-1 text-sm font-semibold text-gold-foreground shadow-gold">
-          প্রতিষ্ঠিত {mosque.established} সন
-        </span>
-        <h1 className="mt-4 text-3xl font-bold leading-tight text-primary">{mosque.name}</h1>
-        <p className="mt-2 text-muted-foreground">{mosque.tagline}</p>
         <Link
           to="/donate"
-          className="mt-5 inline-flex items-center gap-2 rounded-full gradient-emerald px-6 py-3 text-base font-semibold text-primary-foreground shadow-soft"
+          className="inline-flex items-center gap-2 rounded-full gradient-emerald px-6 py-3 text-base font-semibold text-primary-foreground shadow-soft"
         >
           <Heart className="h-5 w-5" /> দান করুন
         </Link>
