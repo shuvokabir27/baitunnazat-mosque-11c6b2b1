@@ -436,8 +436,16 @@ function PrayerTab({ content, setContent }: TabProps) {
       const arr = c.prayerTimes.map((p, idx) => (idx === i ? { ...p, [k]: v } : p));
       return { ...c, prayerTimes: arr };
     });
+  const setJamaat = (i: number, v: string) =>
+    setContent((c) => {
+      const n = parseInt(v.replace(/[^0-9]/g, ""), 10);
+      const arr = c.prayerTimes.map((p, idx) =>
+        idx === i ? { ...p, jamaat: isNaN(n) ? undefined : n } : p,
+      );
+      return { ...c, prayerTimes: arr };
+    });
   const add = () =>
-    setContent((c) => ({ ...c, prayerTimes: [...c.prayerTimes, { name: "নতুন", time: "" }] }));
+    setContent((c) => ({ ...c, prayerTimes: [...c.prayerTimes, { name: "নতুন", time: "", jamaat: 15 }] }));
   const remove = (i: number) =>
     setContent((c) => ({ ...c, prayerTimes: c.prayerTimes.filter((_, idx) => idx !== i) }));
   return (
@@ -449,6 +457,13 @@ function PrayerTab({ content, setContent }: TabProps) {
           </div>
           <div className="flex-1">
             <Field label="সময়" value={p.time} onChange={(v) => setRow(i, "time", v)} />
+          </div>
+          <div className="w-28">
+            <Field
+              label="জামাত (মিনিট)"
+              value={p.jamaat == null ? "" : String(p.jamaat)}
+              onChange={(v) => setJamaat(i, v)}
+            />
           </div>
           <button
             onClick={() => remove(i)}
