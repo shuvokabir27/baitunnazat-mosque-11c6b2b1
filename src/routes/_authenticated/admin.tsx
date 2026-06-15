@@ -11,6 +11,7 @@ import {
   getMyAdminStatus,
   claimAdmin,
 } from "@/lib/site-content.functions";
+import { ImageCropUpload } from "@/components/ImageCropUpload";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "অ্যাডমিন প্যানেল" }] }),
@@ -399,7 +400,7 @@ function StaffTab({ content, setContent }: TabProps) {
   return (
     <div className="space-y-5">
       {content.staff.map((s, i) => (
-        <PersonEditor key={i} person={s} onChange={(p) => update(i, p)} onRemove={() => remove(i)} showImageNote />
+        <PersonEditor key={i} person={s} onChange={(p) => update(i, p)} onRemove={() => remove(i)} />
       ))}
       <AddButton onClick={add} label="নতুন দায়িত্বপ্রাপ্ত যোগ করুন" />
     </div>
