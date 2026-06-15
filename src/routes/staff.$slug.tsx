@@ -5,6 +5,7 @@ import { staff } from "@/lib/mosque-data";
 import { useSiteContent } from "@/lib/use-site-content";
 import { staffImages, heroImages } from "@/lib/site-content";
 import { ProfileReactions } from "@/components/ProfileReactions";
+import { ShareButton } from "@/components/ShareButton";
 
 
 export const Route = createFileRoute("/staff/$slug")({

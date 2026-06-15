@@ -4,6 +4,7 @@ import { Layout } from "@/components/Layout";
 import { committee } from "@/lib/mosque-data";
 import { useSiteContent } from "@/lib/use-site-content";
 import { ProfileReactions } from "@/components/ProfileReactions";
+import { ShareButton } from "@/components/ShareButton";
 
 
 export const Route = createFileRoute("/committee/$slug")({
