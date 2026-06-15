@@ -362,6 +362,74 @@ function FooterTab({ content, setContent }: TabProps) {
   );
 }
 
+function DevelopmentTab({ content, setContent }: TabProps) {
+  const dev = content.development;
+  const setField = (k: "title" | "subtitle", v: string) =>
+    setContent((c) => ({ ...c, development: { ...c.development, [k]: v } }));
+  const setItem = (i: number, patch: Partial<SiteContent["development"]["items"][number]>) =>
+    setContent((c) => ({
+      ...c,
+      development: {
+        ...c.development,
+        items: c.development.items.map((it, idx) => (idx === i ? { ...it, ...patch } : it)),
+      },
+    }));
+  const add = () =>
+    setContent((c) => ({
+      ...c,
+      development: { ...c.development, items: [...c.development.items, { caption: "" }] },
+    }));
+  const remove = (i: number) =>
+    setContent((c) => ({
+      ...c,
+      development: { ...c.development, items: c.development.items.filter((_, idx) => idx !== i) },
+    }));
+
+  return (
+    <div className="space-y-5">
+      <Card>
+        <Field label="শিরোনাম" value={dev.title} onChange={(v) => setField("title", v)} />
+        <Field label="সংক্ষিপ্ত বিবরণ" value={dev.subtitle} onChange={(v) => setField("subtitle", v)} textarea />
+      </Card>
+      <p className="text-sm text-muted-foreground">
+        উন্নয়ন কাজের প্রতিটি ছবি আপলোড করুন এবং নিচে ক্যাপশন লিখুন।
+      </p>
+      {dev.items.map((it, i) => (
+        <Card key={i}>
+          <div className="flex items-center justify-between">
+            <span className="rounded-full gradient-gold px-3 py-0.5 text-xs font-semibold text-gold-foreground">
+              ছবি {i + 1}
+            </span>
+            <button
+              onClick={() => remove(i)}
+              className="grid h-8 w-8 place-items-center rounded-lg bg-destructive/10 text-destructive"
+              aria-label="মুছুন"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+          <ImageCropUpload
+            label="উন্নয়ন কাজের ছবি"
+            value={it.image}
+            aspect={1}
+            round={false}
+            outputWidth={800}
+            onChange={(img) => setItem(i, { image: img })}
+          />
+          <Field
+            label="ক্যাপশন"
+            value={it.caption}
+            onChange={(v) => setItem(i, { caption: v })}
+            textarea
+          />
+        </Card>
+      ))}
+      <AddButton onClick={add} label="নতুন ছবি যোগ করুন" />
+    </div>
+  );
+}
+
+
 function PrayerTab({ content, setContent }: TabProps) {
   const setRow = (i: number, k: "name" | "time", v: string) =>
     setContent((c) => {
