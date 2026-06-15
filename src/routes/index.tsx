@@ -343,15 +343,17 @@ function PrayerSection() {
     <section className="px-4 py-10">
       <SectionTitle>{sections.prayerTitle}</SectionTitle>
       {next && (
-        <div className="mb-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-2xl gradient-emerald px-4 py-3 text-center text-primary-foreground shadow-soft">
-          <Clock className="h-5 w-5 shrink-0 animate-pulse" />
-          <p className="text-sm font-semibold">
-            পরবর্তী নামাজ <span className="font-bold">{next.name}</span> ({next.time}) —{" "}
+        <div className="mb-5 flex flex-col items-center justify-center gap-3 rounded-2xl gradient-emerald px-4 py-4 text-center text-primary-foreground shadow-soft">
+          <p className="flex items-center justify-center gap-2 text-sm font-semibold sm:text-base">
+            <Clock className="h-5 w-5 shrink-0 animate-pulse" />
+            পরবর্তী নামাজ <span className="font-bold">{next.name}</span> ({next.time})
           </p>
-          <span className="inline-flex items-center gap-1 rounded-lg bg-white/15 px-2.5 py-1 font-mono text-sm font-bold tabular-nums tracking-wider">
-            {toBnNumber(next.hours).padStart(2, "০")}:{toBnNumber(next.minutes).padStart(2, "০")}:{toBnNumber(next.seconds).padStart(2, "০")}
-          </span>
-          <span className="text-sm font-semibold">বাকি</span>
+          <div className="flex items-baseline justify-center gap-2">
+            <span className="inline-flex items-center gap-1 rounded-xl bg-white/15 px-4 py-2 font-mono text-3xl font-bold tabular-nums tracking-wider sm:text-4xl">
+              {toBnNumber(next.hours).padStart(2, "০")}:{toBnNumber(next.minutes).padStart(2, "০")}:{toBnNumber(next.seconds).padStart(2, "০")}
+            </span>
+            <span className="text-sm font-semibold">বাকি</span>
+          </div>
         </div>
 
       )}
