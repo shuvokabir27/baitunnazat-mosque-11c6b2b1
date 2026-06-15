@@ -18,6 +18,7 @@ import {
   UsersRound,
   Home,
   ChevronDown,
+  MessageSquare,
 } from "lucide-react";
 import { defaultContent, type SiteContent } from "@/lib/site-content";
 import {
