@@ -318,6 +318,16 @@ function useNextPrayer(prayerTimes: { name: string; time: string }[]) {
   if (!daily.length) return null;
 
   const nowMins = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
+
+  // Check if a jamaat is currently in progress
+  const ongoing = daily.find((p) => {
+    const dur = p.jamaat ?? 15;
+    return nowMins >= p.mins && nowMins < p.mins + dur;
+  });
+  if (ongoing) {
+    return { ongoing: true as const, name: ongoing.name, time: ongoing.time, hours: 0, minutes: 0, seconds: 0 };
+  }
+
   let next = daily.find((p) => p.mins > nowMins);
   let diff: number;
   if (next) {
@@ -328,6 +338,7 @@ function useNextPrayer(prayerTimes: { name: string; time: string }[]) {
   }
   const totalSec = Math.max(0, Math.floor(diff * 60));
   return {
+    ongoing: false as const,
     name: next.name,
     time: next.time,
     hours: Math.floor(totalSec / 3600),
