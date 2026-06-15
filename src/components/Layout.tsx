@@ -55,10 +55,10 @@ function HeaderDateTime() {
 function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-md">
-      <div className="mx-auto flex max-w-screen-md items-center justify-center px-4 py-3 lg:max-w-6xl lg:justify-between">
+      <div className="relative mx-auto flex max-w-screen-md items-center justify-center px-4 py-3 lg:max-w-6xl lg:justify-between">
         <HeaderDateTime />
         {/* Desktop-only top navigation */}
-        <nav className="hidden items-center gap-1 lg:flex">
+        <nav className="hidden items-center gap-1 lg:absolute lg:left-1/2 lg:flex lg:-translate-x-1/2">
           {navItems.map((item) => {
             const Icon = navIcons[item.to] ?? Home;
             return (
