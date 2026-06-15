@@ -11,6 +11,25 @@ const navIcons: Record<string, typeof Home> = {
   "/ibadah": BookOpen,
 };
 
+const islamicMonthsBn = [
+  "মুহররম",
+  "সফর",
+  "রবিউল আউয়াল",
+  "রবিউস সানি",
+  "জমাদিউল আউয়াল",
+  "জমাদিউস সানি",
+  "রজব",
+  "শাবান",
+  "রমজান",
+  "শাওয়াল",
+  "জিলকদ",
+  "জিলহজ্জ",
+];
+
+function toBnNum(n: number): string {
+  return n.toString().replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[parseInt(d, 10)]);
+}
+
 function HeaderDateTime() {
   const [now, setNow] = useState(new Date());
   useEffect(() => {
