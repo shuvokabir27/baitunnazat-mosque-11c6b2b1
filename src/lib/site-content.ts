@@ -46,9 +46,12 @@ export type SiteSections = {
   footerQuote: string;
 };
 
+export type HeroSlide = { image?: string; caption: string };
+
 export type SiteContent = {
   mosque: MosqueInfo;
   heroCaptions: string[];
+  heroSlides: HeroSlide[];
   prayerTimes: PrayerTime[];
   staff: StaffMember[];
   committee: CommitteeMember[];
@@ -67,6 +70,7 @@ export const heroImages: string[] = [mosque1, mosque2, mosque3];
 export const defaultContent: SiteContent = {
   mosque: { ...mosqueDefault },
   heroCaptions: heroSlides.map((s) => s.caption),
+  heroSlides: heroSlides.map((s, i) => ({ image: heroImages[i], caption: s.caption })),
   prayerTimes: prayerDefault.map((p) => ({ ...p })),
   staff: staffDefault.map(({ image, ...rest }) => ({ ...rest })),
   committee: committeeDefault.map((c) => ({ ...c })),
@@ -90,6 +94,10 @@ export function mergeContent(stored: Partial<SiteContent> | null | undefined): S
       stored.heroCaptions && stored.heroCaptions.length
         ? stored.heroCaptions
         : defaultContent.heroCaptions,
+    heroSlides:
+      stored.heroSlides && stored.heroSlides.length
+        ? stored.heroSlides
+        : defaultContent.heroSlides,
     prayerTimes:
       stored.prayerTimes && stored.prayerTimes.length
         ? stored.prayerTimes

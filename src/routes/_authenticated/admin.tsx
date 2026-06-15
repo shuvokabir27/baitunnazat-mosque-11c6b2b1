@@ -126,6 +126,7 @@ function AdminPage() {
 
       <main className="mx-auto max-w-screen-md space-y-6 px-4 py-6">
         {tab === "mosque" && <MosqueTab content={content} setContent={setContent} />}
+        {tab === "slider" && <SliderTab content={content} setContent={setContent} />}
         {tab === "sections" && <SectionsTab content={content} setContent={setContent} />}
         {tab === "prayer" && <PrayerTab content={content} setContent={setContent} />}
         {tab === "staff" && <StaffTab content={content} setContent={setContent} />}
@@ -135,9 +136,10 @@ function AdminPage() {
   );
 }
 
-type Tab = "mosque" | "sections" | "prayer" | "staff" | "committee";
+type Tab = "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee";
 const TAB_LABELS: Record<Tab, string> = {
   mosque: "মসজিদ",
+  slider: "স্লাইডার",
   sections: "সেকশন লেখা",
   prayer: "নামাজ",
   staff: "দায়িত্বপ্রাপ্ত",
@@ -214,26 +216,62 @@ function MosqueTab({ content, setContent }: TabProps) {
       <Field label="প্রতিষ্ঠা সন" value={m.established} onChange={(v) => set("established", v)} />
       <Field label="অবস্থান" value={m.location} onChange={(v) => set("location", v)} />
       <Field label="ট্যাগলাইন" value={m.tagline} onChange={(v) => set("tagline", v)} textarea />
-      <div>
-        <p className="mb-2 text-sm font-semibold text-foreground">স্লাইডার ছবির ক্যাপশন</p>
-        <div className="space-y-3">
-          {content.heroCaptions.map((cap, i) => (
-            <Field
-              key={i}
-              label={`ছবি ${i + 1}`}
-              value={cap}
-              onChange={(v) =>
-                setContent((c) => {
-                  const arr = [...c.heroCaptions];
-                  arr[i] = v;
-                  return { ...c, heroCaptions: arr };
-                })
-              }
-            />
-          ))}
-        </div>
-      </div>
+      <p className="text-xs text-muted-foreground">
+        স্লাইডার ছবি ও ক্যাপশন এখন "স্লাইডার" ট্যাবে পরিবর্তন করা যাবে।
+      </p>
     </Card>
+  );
+}
+
+function SliderTab({ content, setContent }: TabProps) {
+  const slides = content.heroSlides;
+  const setSlide = (i: number, patch: Partial<SiteContent["heroSlides"][number]>) =>
+    setContent((c) => ({
+      ...c,
+      heroSlides: c.heroSlides.map((s, idx) => (idx === i ? { ...s, ...patch } : s)),
+    }));
+  const add = () =>
+    setContent((c) => ({ ...c, heroSlides: [...c.heroSlides, { caption: "" }] }));
+  const remove = (i: number) =>
+    setContent((c) => ({ ...c, heroSlides: c.heroSlides.filter((_, idx) => idx !== i) }));
+
+  return (
+    <div className="space-y-5">
+      <p className="text-sm text-muted-foreground">
+        প্রতিটি স্লাইডের জন্য ছবি আপলোড করুন (ওয়াইড আকারে ক্রোপ হবে) এবং নিচে টাইটেল/ক্যাপশন লিখুন।
+      </p>
+      {slides.map((s, i) => (
+        <Card key={i}>
+          <div className="flex items-center justify-between">
+            <span className="rounded-full gradient-gold px-3 py-0.5 text-xs font-semibold text-gold-foreground">
+              স্লাইড {i + 1}
+            </span>
+            <button
+              onClick={() => remove(i)}
+              className="grid h-8 w-8 place-items-center rounded-lg bg-destructive/10 text-destructive"
+              aria-label="মুছুন"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+          <ImageCropUpload
+            label="স্লাইডার ছবি"
+            value={s.image}
+            aspect={16 / 9}
+            round={false}
+            outputWidth={1280}
+            onChange={(img) => setSlide(i, { image: img })}
+          />
+          <Field
+            label="টাইটেল / ক্যাপশন"
+            value={s.caption}
+            onChange={(v) => setSlide(i, { caption: v })}
+            textarea
+          />
+        </Card>
+      ))}
+      <AddButton onClick={add} label="নতুন স্লাইড যোগ করুন" />
+    </div>
   );
 }
 
