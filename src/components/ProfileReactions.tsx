@@ -14,8 +14,9 @@ function toBn(n: number) {
     .join("");
 }
 
-export function ProfileReactions({ slug }: { slug: string }) {
-  const storageKey = `staff-reaction:${slug}`;
+export function ProfileReactions({ slug, storagePrefix = "staff-reaction" }: { slug: string; storagePrefix?: string }) {
+  const storageKey = `${storagePrefix}:${slug}`;
+
   const [reaction, setReaction] = useState<Reaction | null>(null);
   const queryClient = useQueryClient();
   const fetchReactions = useServerFn(getReactions);
