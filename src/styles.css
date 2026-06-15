@@ -131,6 +131,15 @@
 @utility text-gold {
   color: var(--gold);
 }
+@utility gradient-red {
+  background-image: linear-gradient(135deg, oklch(0.55 0.22 25), oklch(0.45 0.2 20));
+}
+@utility animate-pulse-red {
+  animation: pulse-red 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@utility shadow-red {
+  box-shadow: 0 10px 30px -12px oklch(0.55 0.22 25 / 0.45);
+}
 
 /* Quantum Lovable - watermark removal */
 #lovable-badge {
