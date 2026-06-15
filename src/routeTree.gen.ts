@@ -15,6 +15,7 @@ import { Route as DonateRouteImport } from './routes/donate'
 import { Route as DevelopmentRouteImport } from './routes/development'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StaffSlugRouteImport } from './routes/staff.$slug'
+import { Route as CommitteeSlugRouteImport } from './routes/committee.$slug'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -46,6 +47,11 @@ const StaffSlugRoute = StaffSlugRouteImport.update({
   path: '/staff/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommitteeSlugRoute = CommitteeSlugRouteImport.update({
+  id: '/committee/$slug',
+  path: '/committee/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -53,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/donate': typeof DonateRoute
   '/ibadah': typeof IbadahRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/committee/$slug': typeof CommitteeSlugRoute
   '/staff/$slug': typeof StaffSlugRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +68,7 @@ export interface FileRoutesByTo {
   '/donate': typeof DonateRoute
   '/ibadah': typeof IbadahRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/committee/$slug': typeof CommitteeSlugRoute
   '/staff/$slug': typeof StaffSlugRoute
 }
 export interface FileRoutesById {
@@ -70,6 +78,7 @@ export interface FileRoutesById {
   '/donate': typeof DonateRoute
   '/ibadah': typeof IbadahRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/committee/$slug': typeof CommitteeSlugRoute
   '/staff/$slug': typeof StaffSlugRoute
 }
 export interface FileRouteTypes {
@@ -80,6 +89,7 @@ export interface FileRouteTypes {
     | '/donate'
     | '/ibadah'
     | '/sitemap.xml'
+    | '/committee/$slug'
     | '/staff/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -88,6 +98,7 @@ export interface FileRouteTypes {
     | '/donate'
     | '/ibadah'
     | '/sitemap.xml'
+    | '/committee/$slug'
     | '/staff/$slug'
   id:
     | '__root__'
@@ -96,6 +107,7 @@ export interface FileRouteTypes {
     | '/donate'
     | '/ibadah'
     | '/sitemap.xml'
+    | '/committee/$slug'
     | '/staff/$slug'
   fileRoutesById: FileRoutesById
 }
@@ -105,6 +117,7 @@ export interface RootRouteChildren {
   DonateRoute: typeof DonateRoute
   IbadahRoute: typeof IbadahRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  CommitteeSlugRoute: typeof CommitteeSlugRoute
   StaffSlugRoute: typeof StaffSlugRoute
 }
 
@@ -152,6 +165,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StaffSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/committee/$slug': {
+      id: '/committee/$slug'
+      path: '/committee/$slug'
+      fullPath: '/committee/$slug'
+      preLoaderRoute: typeof CommitteeSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -161,6 +181,7 @@ const rootRouteChildren: RootRouteChildren = {
   DonateRoute: DonateRoute,
   IbadahRoute: IbadahRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  CommitteeSlugRoute: CommitteeSlugRoute,
   StaffSlugRoute: StaffSlugRoute,
 }
 export const routeTree = rootRouteImport
