@@ -15,6 +15,12 @@ export const mosque = {
 
 export const heroImages = [mosque1, mosque2, mosque3];
 
+export const heroSlides = [
+  { src: mosque1, caption: "আল্লাহর ঘর — শান্তি ও ইবাদতের কেন্দ্র" },
+  { src: mosque2, caption: "জামাতের সাথে নামাজ আদায়ের পবিত্র স্থান" },
+  { src: mosque3, caption: "দ্বীনি শিক্ষা ও কুরআন তিলাওয়াতের কেন্দ্র" },
+];
+
 export const development = {
   title: "মসজিদ উন্নয়ন প্রকল্প",
   subtitle: "মুসল্লিদের সহযোগিতায় চলমান উন্নয়ন কাজের ছবি ও অগ্রগতি।",
