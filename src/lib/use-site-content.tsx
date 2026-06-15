@@ -1,4 +1,4 @@
-import { createContext, useContext, type ReactNode } from "react";
+import { createContext, useContext, useEffect, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getSiteContent } from "@/lib/site-content.functions";
 import { defaultContent, type SiteContent } from "@/lib/site-content";
@@ -14,14 +14,35 @@ export const siteContentQueryOptions = {
   refetchOnWindowFocus: true,
 };
 
+function applySiteSettings(site: SiteContent["site"]) {
+  if (typeof document === "undefined") return;
+  if (site.title) document.title = site.title;
+  if (site.icon) {
+    let link = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "icon";
+      document.head.appendChild(link);
+    }
+    link.href = site.icon;
+  }
+}
+
 export function SiteContentProvider({ children }: { children: ReactNode }) {
   const { data } = useQuery(siteContentQueryOptions);
+  const content = data ?? defaultContent;
+
+  useEffect(() => {
+    applySiteSettings(content.site);
+  }, [content.site.title, content.site.icon]);
+
   return (
-    <SiteContentContext.Provider value={data ?? defaultContent}>
+    <SiteContentContext.Provider value={content}>
       {children}
     </SiteContentContext.Provider>
   );
 }
+
 
 export function useSiteContent(): SiteContent {
   return useContext(SiteContentContext);
