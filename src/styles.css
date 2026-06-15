@@ -90,6 +90,17 @@
   --ring: oklch(0.6 0.12 165);
 }
 
+@keyframes pulse-red {
+  0%, 100% {
+    box-shadow: 0 0 0 0 oklch(0.55 0.22 25 / 0.6);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 12px oklch(0.55 0.22 25 / 0);
+    transform: scale(1.05);
+  }
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
