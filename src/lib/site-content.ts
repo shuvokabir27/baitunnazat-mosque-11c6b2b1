@@ -59,7 +59,13 @@ export type DevelopmentContent = {
   items: DevelopmentItem[];
 };
 
+export type SiteSettings = {
+  title: string;
+  icon?: string;
+};
+
 export type SiteContent = {
+  site: SiteSettings;
   mosque: MosqueInfo;
   heroCaptions: string[];
   heroSlides: HeroSlide[];
@@ -81,6 +87,10 @@ export const staffImages: Record<string, string> = {
 export const heroImages: string[] = [mosque1, mosque2, mosque3];
 
 export const defaultContent: SiteContent = {
+  site: {
+    title: "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ - মহিপুর",
+    icon: "/icon-192.png",
+  },
   mosque: { ...mosqueDefault },
   heroCaptions: heroSlides.map((s) => s.caption),
   heroSlides: heroSlides.map((s, i) => ({ image: heroImages[i], caption: s.caption })),
@@ -109,6 +119,7 @@ export const defaultContent: SiteContent = {
 export function mergeContent(stored: Partial<SiteContent> | null | undefined): SiteContent {
   if (!stored) return defaultContent;
   return {
+    site: { ...defaultContent.site, ...(stored.site ?? {}) },
     mosque: { ...defaultContent.mosque, ...(stored.mosque ?? {}) },
     heroCaptions:
       stored.heroCaptions && stored.heroCaptions.length

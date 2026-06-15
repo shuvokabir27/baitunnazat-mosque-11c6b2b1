@@ -20,6 +20,7 @@ import {
   ChevronDown,
   MessageSquare,
   HardHat,
+  Settings,
 } from "lucide-react";
 import { defaultContent, type SiteContent } from "@/lib/site-content";
 import {
@@ -155,6 +156,7 @@ function AdminPage() {
             <h2 className="mb-5 text-2xl font-normal text-[#1d2327]">{TAB_LABELS[tab]}</h2>
             <div className="rounded border border-[#c3c4c7] bg-white p-5 shadow-sm">
               <div className="space-y-6">
+                {tab === "site" && <SiteTab content={content} setContent={setContent} />}
                 {tab === "mosque" && <MosqueTab content={content} setContent={setContent} />}
                 {tab === "slider" && <SliderTab content={content} setContent={setContent} />}
                 {tab === "sections" && <SectionsTab content={content} setContent={setContent} />}
@@ -172,8 +174,9 @@ function AdminPage() {
   );
 }
 
-type Tab = "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "footer";
+type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "footer";
 const TAB_LABELS: Record<Tab, string> = {
+  site: "সাইট সেটিংস",
   mosque: "মসজিদ",
   slider: "স্লাইডার",
   sections: "সেকশন লেখা",
@@ -185,6 +188,7 @@ const TAB_LABELS: Record<Tab, string> = {
 };
 
 const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
+  site: Settings,
   mosque: LayoutDashboard,
   slider: Images,
   sections: FileText,
@@ -262,6 +266,31 @@ function Field({
 function Card({ children }: { children: React.ReactNode }) {
   return <div className="space-y-4 rounded-2xl border border-border bg-card p-5 shadow-soft">{children}</div>;
 }
+
+function SiteTab({ content, setContent }: TabProps) {
+  const s = content.site;
+  return (
+    <Card>
+      <Field
+        label="সাইট টাইটেল (ব্রাউজার ট্যাবে দেখাবে)"
+        value={s.title}
+        onChange={(v) => setContent((c) => ({ ...c, site: { ...c.site, title: v } }))}
+      />
+      <ImageCropUpload
+        label="সাইট আইকন (ফ্যাভিকন)"
+        value={s.icon}
+        aspect={1}
+        round={false}
+        outputWidth={256}
+        onChange={(img) => setContent((c) => ({ ...c, site: { ...c.site, icon: img } }))}
+      />
+      <p className="text-xs text-muted-foreground">
+        আইকন বর্গাকারে ক্রোপ হবে এবং ব্রাউজার ট্যাবে দেখাবে। পরিবর্তন সংরক্ষণের পর কিছুক্ষণের মধ্যে কার্যকর হবে।
+      </p>
+    </Card>
+  );
+}
+
 
 function MosqueTab({ content, setContent }: TabProps) {
   const m = content.mosque;
