@@ -1,0 +1,22 @@
+{
+  "name": "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ - মহিপুর",
+  "short_name": "বাইতুন নাজাত মসজিদ",
+  "description": "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদের অফিসিয়াল ওয়েবসাইট — নামাজের সময়সূচি, দান, উন্নয়ন কাজ ও নামাজ শিক্ষা।",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f5f0",
+  "theme_color": "#0d7377",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
