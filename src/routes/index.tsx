@@ -326,8 +326,14 @@ function useNextPrayer(prayerTimes: { name: string; time: string }[]) {
     next = daily[0]; // tomorrow's first prayer
     diff = 24 * 60 - nowMins + next.mins;
   }
-  const totalMin = Math.floor(diff);
-  return { name: next.name, time: next.time, hours: Math.floor(totalMin / 60), minutes: totalMin % 60 };
+  const totalSec = Math.max(0, Math.floor(diff * 60));
+  return {
+    name: next.name,
+    time: next.time,
+    hours: Math.floor(totalSec / 3600),
+    minutes: Math.floor((totalSec % 3600) / 60),
+    seconds: totalSec % 60,
+  };
 }
 
 function PrayerSection() {
@@ -337,14 +343,17 @@ function PrayerSection() {
     <section className="px-4 py-10">
       <SectionTitle>{sections.prayerTitle}</SectionTitle>
       {next && (
-        <div className="mb-5 flex items-center justify-center gap-3 rounded-2xl gradient-emerald px-4 py-3 text-center text-primary-foreground shadow-soft">
+        <div className="mb-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-2xl gradient-emerald px-4 py-3 text-center text-primary-foreground shadow-soft">
           <Clock className="h-5 w-5 shrink-0 animate-pulse" />
           <p className="text-sm font-semibold">
             পরবর্তী নামাজ <span className="font-bold">{next.name}</span> ({next.time}) —{" "}
-            {next.hours > 0 && <span>{toBnNumber(next.hours)} ঘন্টা </span>}
-            {toBnNumber(next.minutes)} মিনিট বাকি
           </p>
+          <span className="inline-flex items-center gap-1 rounded-lg bg-white/15 px-2.5 py-1 font-mono text-sm font-bold tabular-nums tracking-wider">
+            {toBnNumber(next.hours).padStart(2, "০")}:{toBnNumber(next.minutes).padStart(2, "০")}:{toBnNumber(next.seconds).padStart(2, "০")}
+          </span>
+          <span className="text-sm font-semibold">বাকি</span>
         </div>
+
       )}
       <div className="grid grid-cols-3 gap-3 lg:grid-cols-6">
         {prayerTimes.map((p) => {
