@@ -312,7 +312,7 @@ function useNextPrayer(prayerTimes: { name: string; time: string }[]) {
   const daily = prayerTimes
     .filter((p) => !p.name.includes("জুমা"))
     .map((p) => ({ ...p, mins: prayerMinutes(p.name, p.time) }))
-    .filter((p): p is { name: string; time: string; mins: number } => p.mins !== null)
+    .filter((p): p is { name: string; time: string; jamaat?: number; mins: number } => p.mins !== null)
     .sort((a, b) => a.mins - b.mins);
 
   if (!daily.length) return null;
