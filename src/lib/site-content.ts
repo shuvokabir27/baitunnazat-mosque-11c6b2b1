@@ -59,7 +59,13 @@ export type DevelopmentContent = {
   items: DevelopmentItem[];
 };
 
+export type SiteSettings = {
+  title: string;
+  icon?: string;
+};
+
 export type SiteContent = {
+  site: SiteSettings;
   mosque: MosqueInfo;
   heroCaptions: string[];
   heroSlides: HeroSlide[];
