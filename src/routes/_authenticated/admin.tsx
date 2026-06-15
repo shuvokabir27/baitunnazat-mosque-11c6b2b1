@@ -18,6 +18,7 @@ import {
   UsersRound,
   Home,
   ChevronDown,
+  MessageSquare,
 } from "lucide-react";
 import { defaultContent, type SiteContent } from "@/lib/site-content";
 import {
@@ -159,6 +160,7 @@ function AdminPage() {
                 {tab === "prayer" && <PrayerTab content={content} setContent={setContent} />}
                 {tab === "staff" && <StaffTab content={content} setContent={setContent} />}
                 {tab === "committee" && <CommitteeTab content={content} setContent={setContent} />}
+                {tab === "footer" && <FooterTab content={content} setContent={setContent} />}
               </div>
             </div>
           </div>
@@ -168,7 +170,7 @@ function AdminPage() {
   );
 }
 
-type Tab = "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee";
+type Tab = "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "footer";
 const TAB_LABELS: Record<Tab, string> = {
   mosque: "মসজিদ",
   slider: "স্লাইডার",
@@ -176,6 +178,7 @@ const TAB_LABELS: Record<Tab, string> = {
   prayer: "নামাজ",
   staff: "দায়িত্বপ্রাপ্ত",
   committee: "কমিটি",
+  footer: "ফুটার",
 };
 
 const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
@@ -185,6 +188,7 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   prayer: Clock,
   staff: Users,
   committee: UsersRound,
+  footer: MessageSquare,
 };
 
 function Sidebar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
@@ -338,6 +342,18 @@ function SectionsTab({ content, setContent }: TabProps) {
       <Field label="দান আহ্বান শিরোনাম" value={s.ctaTitle} onChange={(v) => set("ctaTitle", v)} />
       <Field label="দান আহ্বান বিবরণ" value={s.ctaText} onChange={(v) => set("ctaText", v)} textarea />
       <Field label="ফুটার উক্তি" value={s.footerQuote} onChange={(v) => set("footerQuote", v)} textarea />
+    </Card>
+  );
+}
+
+function FooterTab({ content, setContent }: TabProps) {
+  const s = content.sections;
+  const set = (k: keyof typeof s, v: string) =>
+    setContent((c) => ({ ...c, sections: { ...c.sections, [k]: v } }));
+  return (
+    <Card>
+      <Field label="ফুটার উক্তি" value={s.footerQuote} onChange={(v) => set("footerQuote", v)} textarea />
+      <Field label="ফুটার বার্তা" value={s.footerMessage} onChange={(v) => set("footerMessage", v)} textarea />
     </Card>
   );
 }

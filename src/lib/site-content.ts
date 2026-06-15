@@ -44,6 +44,7 @@ export type SiteSections = {
   ctaText: string;
   donateLabel: string;
   footerQuote: string;
+  footerMessage: string;
 };
 
 export type HeroSlide = { image?: string; caption: string };
@@ -82,6 +83,7 @@ export const defaultContent: SiteContent = {
     ctaText: "আপনার দান মসজিদের উন্নয়ন ও দ্বীনি শিক্ষায় কাজে লাগবে।",
     donateLabel: "দান করুন",
     footerQuote: "“নিশ্চয়ই মসজিদসমূহ আল্লাহরই জন্য।” — সূরা আল-জিন",
+    footerMessage: "এই মসজিদের ওয়েবসাইটের কাজ ফ্রি সদকা হিসেবে করা হয়েছে — আল্লাহ কবুল করুন।",
   },
 };
 
