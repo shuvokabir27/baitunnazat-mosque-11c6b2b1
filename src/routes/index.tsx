@@ -221,30 +221,7 @@ function Index() {
       </section>
 
       {/* Staff */}
-      <section className="bg-secondary/40 px-4 py-12">
-        <SectionTitle>মসজিদের দায়িত্বপ্রাপ্ত</SectionTitle>
-        <div className="space-y-5">
-          {staff.map((s) => (
-            <div key={s.role} className="flex items-center gap-4 rounded-3xl border border-border bg-card p-4 shadow-soft">
-              <img
-                src={s.image}
-                alt={s.name}
-                loading="lazy"
-                width={768}
-                height={768}
-                className="h-20 w-20 shrink-0 rounded-2xl object-cover"
-              />
-              <div>
-                <span className="rounded-full gradient-emerald px-3 py-0.5 text-xs font-semibold text-primary-foreground">
-                  {s.role}
-                </span>
-                <h3 className="mt-1.5 text-lg font-bold text-foreground">{s.name}</h3>
-                <p className="text-sm text-muted-foreground">{s.detail}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      <StaffSection />
 
       {/* Committee */}
       <CommitteeSection />
