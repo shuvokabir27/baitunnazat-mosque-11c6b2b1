@@ -59,16 +59,17 @@ function HeroSlider() {
   return (
     <section>
       {/* Mosque name & established year above the slider */}
-      <div className="flex flex-col items-center px-5 pt-6 pb-5 text-center">
-        <h1 className="text-2xl font-bold leading-tight text-primary">{mosque.name}</h1>
+      <div className="flex flex-col items-center px-5 pt-6 pb-5 text-center lg:pt-10">
+        <h1 className="text-2xl font-bold leading-tight text-primary lg:text-4xl">{mosque.name}</h1>
         <span className="mt-3 rounded-full gradient-gold px-4 py-1 text-sm font-semibold text-gold-foreground shadow-gold">
           প্রতিষ্ঠিত {mosque.established} সন
         </span>
-        <p className="mt-3 text-sm text-muted-foreground">{mosque.tagline}</p>
+        <p className="mt-3 text-sm text-muted-foreground lg:text-base">{mosque.tagline}</p>
       </div>
 
       {/* Image area with 16:9 aspect ratio */}
-      <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16 / 9" }}>
+      <div className="relative w-full overflow-hidden lg:mx-auto lg:max-w-4xl lg:rounded-3xl lg:shadow-soft" style={{ aspectRatio: "16 / 9" }}>
+
         {slides.map((slide, idx) => (
           <img
             key={slide.src}
@@ -177,7 +178,7 @@ function HeroSlider() {
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div className="mb-6 text-center">
-      <h2 className="text-2xl font-bold text-primary">{children}</h2>
+      <h2 className="text-2xl font-bold text-primary lg:text-3xl">{children}</h2>
       <div className="mx-auto mt-2 h-1 w-16 rounded-full gradient-gold" />
     </div>
   );
@@ -188,7 +189,7 @@ function StaffSection() {
   return (
     <section className="bg-secondary/40 px-4 py-12">
       <SectionTitle>{sections.staffTitle}</SectionTitle>
-      <div className="space-y-5">
+      <div className="space-y-5 lg:grid lg:grid-cols-3 lg:gap-5 lg:space-y-0">
         {staff.map((s) => (
           <Link
             key={s.slug}
@@ -227,7 +228,7 @@ function CommitteeSection() {
   return (
     <section className="px-4 py-12">
       <SectionTitle>{sections.committeeTitle}</SectionTitle>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-5">
         {visible.map((c) => (
           <Link
             key={c.slug}
@@ -345,7 +346,7 @@ function PrayerSection() {
           </p>
         </div>
       )}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-3 lg:grid-cols-6">
         {prayerTimes.map((p) => {
           const isNext = next?.name === p.name && !p.name.includes("জুমা");
           return (

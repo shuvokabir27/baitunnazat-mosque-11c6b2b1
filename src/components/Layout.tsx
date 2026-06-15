@@ -12,15 +12,34 @@ const navIcons: Record<string, typeof Home> = {
 };
 
 function Header() {
+  const { mosque } = useSiteContent();
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-md">
-      <div className="mx-auto flex max-w-screen-md items-center justify-center px-4 py-3">
+      <div className="mx-auto flex max-w-screen-md items-center justify-center px-4 py-3 lg:max-w-6xl lg:justify-between">
         <Link to="/" className="flex items-center gap-2">
           <span className="grid h-9 w-9 place-items-center rounded-full gradient-gold shadow-gold">
             <Moon className="h-5 w-5 text-gold-foreground" />
           </span>
-          
+          <span className="hidden text-base font-bold text-primary lg:inline">{mosque.shortName}</span>
         </Link>
+        {/* Desktop-only top navigation */}
+        <nav className="hidden items-center gap-1 lg:flex">
+          {navItems.map((item) => {
+            const Icon = navIcons[item.to] ?? Home;
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                activeOptions={{ exact: item.to === "/" }}
+                activeProps={{ className: "bg-primary/10 text-primary" }}
+                className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:bg-secondary/60 hover:text-primary"
+              >
+                <Icon className="h-4 w-4" />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
       </div>
     </header>
   );
@@ -28,7 +47,7 @@ function Header() {
 
 function BottomNav() {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border/60 bg-background/95 backdrop-blur-md">
+    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border/60 bg-background/95 backdrop-blur-md lg:hidden">
       <div className="mx-auto grid max-w-screen-md grid-cols-4 px-1 pb-[env(safe-area-inset-bottom)]">
         {navItems.map((item) => {
           const Icon = navIcons[item.to] ?? Home;
@@ -54,7 +73,7 @@ function Footer() {
   const { mosque, sections } = useSiteContent();
   return (
     <footer className="mt-16 gradient-hero text-primary-foreground">
-      <div className="mx-auto max-w-screen-md px-5 py-10 text-center">
+      <div className="mx-auto max-w-screen-md px-5 py-10 text-center lg:max-w-6xl">
         <h3 className="text-xl font-bold">{mosque.name}</h3>
         <p className="mt-2 text-sm text-primary-foreground/80">
           {mosque.location} • প্রতিষ্ঠিত {mosque.established}
@@ -80,9 +99,9 @@ function Footer() {
 
 export function Layout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col pb-20">
+    <div className="flex min-h-screen flex-col pb-20 lg:pb-0">
       <Header />
-      <main className="mx-auto w-full max-w-screen-md flex-1">{children}</main>
+      <main className="mx-auto w-full max-w-screen-md flex-1 lg:max-w-6xl">{children}</main>
       <Footer />
       <BottomNav />
     </div>
