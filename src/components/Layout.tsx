@@ -64,6 +64,9 @@ function Footer() {
         <p className="mt-6 text-xs text-primary-foreground/60">
           © {new Date().getFullYear()} {mosque.shortName} জামে মসজিদ
         </p>
+        <p className="mt-3 text-[11px] text-primary-foreground/50">
+          এই মসজিদের ওয়েবসাইটের কাজ ফ্রি সদকা হিসেবে করা হয়েছে — আল্লাহ কবুল করুন।
+        </p>
 
 
 
