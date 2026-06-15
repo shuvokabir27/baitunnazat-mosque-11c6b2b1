@@ -80,6 +80,5 @@ export const navItems = [
   { to: "/", label: "হোম" },
   { to: "/donate", label: "দান করুন" },
   { to: "/development", label: "উন্নয়ন কাজ" },
-  { to: "/ibadah", label: "ইবাদত" },
-  { to: "/namaz-shikkha", label: "নামাজ শিক্ষা" },
+  { to: "/ibadah", label: "ইবাদত ও নামাজ" },
 ] as const;
