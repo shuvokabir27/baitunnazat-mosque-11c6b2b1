@@ -78,6 +78,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "theme-color", content: "#0d7377" },
       { title: "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ - মহিপুর" },
       { name: "description", content: "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদের অফিসিয়াল ওয়েবসাইট — নামাজের সময়সূচি, দান, উন্নয়ন কাজ ও নামাজ শিক্ষা।" },
       { name: "author", content: "বায়তুল মামুর জামে মসজিদ" },
