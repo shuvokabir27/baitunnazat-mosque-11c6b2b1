@@ -4,6 +4,7 @@ import { Layout } from "@/components/Layout";
 import { committee } from "@/lib/mosque-data";
 import { useSiteContent } from "@/lib/use-site-content";
 import { ProfileReactions } from "@/components/ProfileReactions";
+import { ShareButton } from "@/components/ShareButton";
 
 
 export const Route = createFileRoute("/committee/$slug")({
@@ -72,6 +73,12 @@ function CommitteeProfilePage() {
 
           <ProfileReactions slug={member.slug} storagePrefix="committee-reaction" />
 
+          <div className="mt-4">
+            <ShareButton
+              title={member.name}
+              text={`${member.name} — ${member.role} | বাইতুন নাজাত জামে মসজিদ`}
+            />
+          </div>
         </div>
 
         <div className="mt-6 space-y-5 rounded-3xl border border-border bg-card p-6 shadow-soft">
