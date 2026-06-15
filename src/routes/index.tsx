@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronLeft, ChevronRight, Heart, Clock, X, Download, ZoomIn } from "lucide-react";
+import { ChevronLeft, ChevronRight, Heart, Clock, X, Download, ZoomIn, ChevronDown } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { mosque, heroSlides, staff, committee, prayerTimes } from "@/lib/mosque-data";
 
