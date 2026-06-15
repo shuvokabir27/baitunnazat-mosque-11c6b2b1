@@ -40,11 +40,15 @@ function HeaderDateTime() {
 
   if (!now) {
     return (
-      <div className="flex flex-col items-center text-center leading-tight lg:items-start lg:text-left">
-        <span className="text-sm font-bold text-primary">...</span>
-        <span className="text-xs text-muted-foreground">...</span>
-        <span dir="rtl" className="text-xs font-medium text-gold">...</span>
-        <span className="mt-0.5 text-base font-bold tabular-nums text-foreground">...</span>
+      <div className="flex items-center gap-6 text-center leading-tight lg:text-left">
+        <div className="flex flex-col items-center lg:items-start">
+          <span className="text-base font-bold tabular-nums text-foreground">...</span>
+          <span dir="rtl" className="text-xs font-medium text-gold">...</span>
+        </div>
+        <div className="flex flex-col items-center lg:items-start">
+          <span className="text-xs text-muted-foreground">...</span>
+          <span className="text-sm font-bold text-primary">...</span>
+        </div>
       </div>
     );
   }
@@ -79,11 +83,15 @@ function HeaderDateTime() {
   });
 
   return (
-    <div className="flex flex-col items-center text-center leading-tight lg:items-start lg:text-left">
-      <span className="text-sm font-bold text-primary">{bangla}</span>
-      <span className="text-xs text-muted-foreground">{english}</span>
-      <span dir="rtl" className="text-xs font-medium text-gold">{arabic}</span>
-      <span className="mt-0.5 text-base font-bold tabular-nums text-foreground">{time}</span>
+    <div className="flex items-center gap-6 text-center leading-tight lg:text-left">
+      <div className="flex flex-col items-center lg:items-start">
+        <span className="text-base font-bold tabular-nums text-foreground">{time}</span>
+        <span dir="rtl" className="text-xs font-medium text-gold">{arabic}</span>
+      </div>
+      <div className="flex flex-col items-center lg:items-start">
+        <span className="text-xs text-muted-foreground">{english}</span>
+        <span className="text-sm font-bold text-primary">{bangla}</span>
+      </div>
     </div>
   );
 }
