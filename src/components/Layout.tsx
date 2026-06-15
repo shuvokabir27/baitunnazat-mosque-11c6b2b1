@@ -151,8 +151,8 @@ function Header() {
 
 function BottomNav() {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border/60 bg-background/95 backdrop-blur-xl shadow-[0_-8px_24px_-6px_rgba(0,0,0,0.08)] lg:hidden">
-      <div className="mx-auto grid max-w-screen-md grid-cols-4 px-2 pb-[env(safe-area-inset-bottom)] pt-1">
+    <nav className="fixed inset-x-0 bottom-0 z-50 bg-primary shadow-[0_-8px_24px_-6px_oklch(0.4_0.1_165/0.35)] lg:hidden">
+      <div className="mx-auto grid max-w-screen-md grid-cols-4 px-2 pb-[env(safe-area-inset-bottom)] pt-2">
         {navItems.map((item) => {
           const Icon = navIcons[item.to] ?? Home;
           const c = navColors[item.to];
@@ -161,8 +161,8 @@ function BottomNav() {
               key={item.to}
               to={item.to}
               activeOptions={{ exact: item.to === "/" }}
-              activeProps={{ className: `${c.text} font-bold` }}
-              className="group flex flex-col items-center gap-1 rounded-xl px-1 py-2 text-muted-foreground transition-all active:scale-95"
+              activeProps={{ className: `text-white font-bold` }}
+              className="group flex flex-col items-center gap-1 rounded-xl px-1 py-1 text-primary-foreground/80 transition-all active:scale-95"
             >
               <span className={`flex h-9 w-9 items-center justify-center rounded-full transition-all group-hover:scale-110 ${c.bg}`}>
                 <Icon className={`h-4 w-4 ${c.text}`} />
