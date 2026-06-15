@@ -31,6 +31,7 @@ export type StaffMember = {
   previousJobs: string[];
   expertise: string[];
   education: string[];
+  image?: string;
 };
 
 export type CommitteeMember = StaffMember;

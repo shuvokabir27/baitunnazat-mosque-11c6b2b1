@@ -65,9 +65,17 @@ function CommitteeProfilePage() {
 
         <div className="rounded-3xl border border-border bg-card p-6 shadow-soft">
           <div className="flex flex-col items-center text-center">
-            <div className="grid h-28 w-28 place-items-center rounded-3xl gradient-gold text-4xl font-bold text-gold-foreground shadow-soft">
-              {initial}
-            </div>
+            {member.image ? (
+              <img
+                src={member.image}
+                alt={member.name}
+                className="h-28 w-28 rounded-3xl object-cover shadow-soft"
+              />
+            ) : (
+              <div className="grid h-28 w-28 place-items-center rounded-3xl gradient-gold text-4xl font-bold text-gold-foreground shadow-soft">
+                {initial}
+              </div>
+            )}
             <span className="mt-4 rounded-full gradient-emerald px-4 py-1 text-xs font-semibold text-primary-foreground">
               {member.role}
             </span>
