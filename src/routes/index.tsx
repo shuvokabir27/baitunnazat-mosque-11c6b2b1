@@ -194,7 +194,7 @@ function StaffSection() {
             className="flex w-full items-center gap-4 rounded-3xl border border-border bg-card p-4 text-left shadow-soft transition-transform active:scale-[0.98]"
           >
             <img
-              src={staffImageFor(s.slug)}
+              src={s.image || staffImageFor(s.slug)}
               alt={s.name}
               loading="lazy"
               width={768}
