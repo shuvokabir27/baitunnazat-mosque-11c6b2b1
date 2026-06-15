@@ -97,7 +97,13 @@ export const defaultContent: SiteContent = {
     footerQuote: "“নিশ্চয়ই মসজিদসমূহ আল্লাহরই জন্য।” — সূরা আল-জিন",
     footerMessage: "এই মসজিদের ওয়েবসাইটের কাজ ফ্রি সদকা হিসেবে করা হয়েছে — আল্লাহ কবুল করুন।",
   },
+  development: {
+    title: developmentDefault.title,
+    subtitle: developmentDefault.subtitle,
+    items: developmentDefault.gallery.map((g) => ({ image: g.src, caption: g.caption })),
+  },
 };
+
 
 /** Merge partial stored content over the defaults so missing keys are safe. */
 export function mergeContent(stored: Partial<SiteContent> | null | undefined): SiteContent {
