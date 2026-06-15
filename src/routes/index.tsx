@@ -3,7 +3,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Heart, Clock, X, Download, ZoomIn, ChevronDown } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { useSiteContent } from "@/lib/use-site-content";
-import { heroImages } from "@/lib/site-content";
+import { heroImages, staffImages } from "@/lib/site-content";
+
+function staffImageFor(slug: string) {
+  return staffImages[slug] ?? heroImages[0];
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
