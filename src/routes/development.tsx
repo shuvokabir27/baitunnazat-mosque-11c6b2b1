@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight, X, Download, ZoomIn } from "lucide-react";
 import { Layout, PageHeader } from "@/components/Layout";
-import { development } from "@/lib/mosque-data";
+import { useSiteContent } from "@/lib/use-site-content";
+import { heroImages } from "@/lib/site-content";
+
 
 export const Route = createFileRoute("/development")({
   head: () => ({
