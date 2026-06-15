@@ -39,6 +39,7 @@ export const development = {
 
 export const staff = [
   {
+    slug: "imam",
     name: "মাওলানা আব্দুর রহমান",
     role: "ইমাম",
     image: imam,
@@ -52,6 +53,7 @@ export const staff = [
     education: ["দাওরায়ে হাদিস (তাকমিল)", "ক্বিরাত বিশারদ"],
   },
   {
+    slug: "khatib",
     name: "মুফতি সাইফুল ইসলাম",
     role: "খতিব",
     image: khatib,
@@ -65,6 +67,7 @@ export const staff = [
     education: ["ইফতা সম্পন্ন (মুফতি)", "দাওরায়ে হাদিস"],
   },
   {
+    slug: "muazzin",
     name: "হাফেজ রবিউল হাসান",
     role: "মুয়াজ্জিন",
     image: muazzin,
@@ -78,6 +81,7 @@ export const staff = [
     education: ["হিফজুল কুরআন সম্পন্ন", "মাধ্যমিক দ্বীনি শিক্ষা"],
   },
 ];
+
 
 export const committee = [
   { name: "আলহাজ্ব মোহাম্মদ ইব্রাহিম", role: "সভাপতি" },
