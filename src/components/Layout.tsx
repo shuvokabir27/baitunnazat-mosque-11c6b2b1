@@ -124,18 +124,21 @@ function Header() {
       <div className="relative mx-auto flex max-w-screen-md items-center justify-center px-4 py-3 lg:max-w-6xl lg:justify-between">
         <HeaderDateTime />
         {/* Desktop-only top navigation */}
-        <nav className="hidden items-center gap-1 lg:absolute lg:left-1/2 lg:flex lg:-translate-x-1/2">
+        <nav className="hidden items-center gap-2 lg:absolute lg:left-1/2 lg:flex lg:-translate-x-1/2">
           {navItems.map((item) => {
             const Icon = navIcons[item.to] ?? Home;
+            const c = navColors[item.to];
             return (
               <Link
                 key={item.to}
                 to={item.to}
                 activeOptions={{ exact: item.to === "/" }}
-                activeProps={{ className: "bg-primary/10 text-primary" }}
-                className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:bg-secondary/60 hover:text-primary"
+                activeProps={{ className: `${c.activeBg} ${c.activeText} shadow-md` }}
+                className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold text-muted-foreground transition-all hover:bg-secondary hover:text-foreground hover:shadow-sm`}
               >
-                <Icon className="h-4 w-4" />
+                <span className={`flex h-7 w-7 items-center justify-center rounded-full ${c.bg} ${c.text}`}>
+                  <Icon className="h-3.5 w-3.5" />
+                </span>
                 <span>{item.label}</span>
               </Link>
             );
