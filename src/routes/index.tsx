@@ -170,6 +170,37 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
+function CommitteeSection() {
+  const [showAll, setShowAll] = useState(false);
+  const visible = showAll ? committee : committee.slice(0, 4);
+
+  return (
+    <section className="px-4 py-12">
+      <SectionTitle>মসজিদ কমিটি</SectionTitle>
+      <div className="grid grid-cols-2 gap-3">
+        {visible.map((c) => (
+          <div key={c.name} className="rounded-2xl border border-border bg-card p-4 text-center shadow-soft">
+            <div className="mx-auto grid h-12 w-12 place-items-center rounded-full gradient-gold text-lg font-bold text-gold-foreground">
+              {c.name.replace(/^(আলহাজ্ব |জনাব )/, "").charAt(0)}
+            </div>
+            <h3 className="mt-2 text-sm font-bold text-foreground">{c.name}</h3>
+            <p className="text-xs text-primary">{c.role}</p>
+          </div>
+        ))}
+      </div>
+      {committee.length > 4 && (
+        <button
+          onClick={() => setShowAll((s) => !s)}
+          className="mx-auto mt-5 flex items-center gap-1.5 rounded-full bg-card px-5 py-2.5 text-sm font-semibold text-primary shadow-soft"
+        >
+          {showAll ? "কম দেখুন" : "শো মোর"}
+          <ChevronDown className={`h-4 w-4 transition-transform ${showAll ? "rotate-180" : ""}`} />
+        </button>
+      )}
+    </section>
+  );
+}
+
 function Index() {
   return (
     <Layout>
