@@ -1,7 +1,8 @@
 import { type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Moon, Home, HeartHandshake, HardHat, BookOpen } from "lucide-react";
-import { mosque, navItems } from "@/lib/mosque-data";
+import { navItems } from "@/lib/mosque-data";
+import { useSiteContent } from "@/lib/use-site-content";
 
 const navIcons: Record<string, typeof Home> = {
   "/": Home,
@@ -50,6 +51,7 @@ function BottomNav() {
 }
 
 function Footer() {
+  const { mosque, sections } = useSiteContent();
   return (
     <footer className="mt-16 gradient-hero text-primary-foreground">
       <div className="mx-auto max-w-screen-md px-5 py-10 text-center">
@@ -58,12 +60,13 @@ function Footer() {
           {mosque.location} • প্রতিষ্ঠিত {mosque.established}
         </p>
         <div className="mx-auto my-5 h-px w-24 bg-gold/60" />
-        <p className="text-sm text-primary-foreground/70">
-          “নিশ্চয়ই মসজিদসমূহ আল্লাহরই জন্য।” — সূরা আল-জিন
-        </p>
+        <p className="text-sm text-primary-foreground/70">{sections.footerQuote}</p>
         <p className="mt-6 text-xs text-primary-foreground/60">
           © {new Date().getFullYear()} {mosque.shortName} জামে মসজিদ
         </p>
+        <Link to="/admin" className="mt-4 inline-block text-[11px] text-primary-foreground/40">
+          অ্যাডমিন
+        </Link>
       </div>
     </footer>
   );
