@@ -94,6 +94,10 @@ export function mergeContent(stored: Partial<SiteContent> | null | undefined): S
       stored.heroCaptions && stored.heroCaptions.length
         ? stored.heroCaptions
         : defaultContent.heroCaptions,
+    heroSlides:
+      stored.heroSlides && stored.heroSlides.length
+        ? stored.heroSlides
+        : defaultContent.heroSlides,
     prayerTimes:
       stored.prayerTimes && stored.prayerTimes.length
         ? stored.prayerTimes
