@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      profile_reactions: {
+        Row: {
+          count: number
+          created_at: string
+          id: string
+          kind: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          count?: number
+          created_at?: string
+          id?: string
+          kind: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          count?: number
+          created_at?: string
+          id?: string
+          kind?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       site_content: {
         Row: {
           content: Json
@@ -64,6 +91,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_reaction: {
+        Args: { _kind: string; _slug: string }
+        Returns: number
       }
     }
     Enums: {
