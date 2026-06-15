@@ -156,6 +156,7 @@ function AdminPage() {
             <h2 className="mb-5 text-2xl font-normal text-[#1d2327]">{TAB_LABELS[tab]}</h2>
             <div className="rounded border border-[#c3c4c7] bg-white p-5 shadow-sm">
               <div className="space-y-6">
+                {tab === "site" && <SiteTab content={content} setContent={setContent} />}
                 {tab === "mosque" && <MosqueTab content={content} setContent={setContent} />}
                 {tab === "slider" && <SliderTab content={content} setContent={setContent} />}
                 {tab === "sections" && <SectionsTab content={content} setContent={setContent} />}
