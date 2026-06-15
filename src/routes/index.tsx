@@ -37,11 +37,12 @@ async function saveImage(src: string, name: string) {
 }
 
 function HeroSlider() {
-  const { mosque, heroCaptions, sections } = useSiteContent();
-  const slides = heroImages.map((src, idx) => ({
-    src,
-    caption: heroCaptions[idx] ?? heroCaptions[0] ?? "",
-  }));
+  const { mosque, heroSlides, heroCaptions, sections } = useSiteContent();
+  const slides = (heroSlides.length ? heroSlides : heroCaptions.map((caption) => ({ caption })))
+    .map((s, idx) => ({
+      src: s.image || heroImages[idx] || heroImages[0],
+      caption: s.caption ?? heroCaptions[idx] ?? "",
+    }));
   const [i, setI] = useState(0);
   const [zoom, setZoom] = useState(false);
   const next = () => setI((p) => (p + 1) % slides.length);
