@@ -73,7 +73,7 @@ function StaffProfilePage() {
           {/* Reaction buttons */}
           <ProfileReactions slug={member.slug} />
 
-          <div className="mt-4">
+          <div className="mt-4 flex justify-center">
             <ShareButton
               title={member.name}
               text={`${member.name} — ${member.role} | বাইতুন নাজাত জামে মসজিদ`}
