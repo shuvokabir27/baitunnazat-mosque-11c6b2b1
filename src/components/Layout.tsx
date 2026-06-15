@@ -11,6 +11,25 @@ const navIcons: Record<string, typeof Home> = {
   "/ibadah": BookOpen,
 };
 
+const islamicMonthsBn = [
+  "মুহররম",
+  "সফর",
+  "রবিউল আউয়াল",
+  "রবিউস সানি",
+  "জমাদিউল আউয়াল",
+  "জমাদিউস সানি",
+  "রজব",
+  "শাবান",
+  "রমজান",
+  "শাওয়াল",
+  "জিলকদ",
+  "জিলহজ্জ",
+];
+
+function toBnNum(n: number): string {
+  return n.toString().replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[parseInt(d, 10)]);
+}
+
 function HeaderDateTime() {
   const [now, setNow] = useState(new Date());
   useEffect(() => {
@@ -30,11 +49,16 @@ function HeaderDateTime() {
     month: "short",
     year: "numeric",
   });
-  const arabic = now.toLocaleDateString("ar-SA-u-ca-islamic", {
+  const islamicFmt = new Intl.DateTimeFormat("en_US-u-ca-islamic", {
     day: "numeric",
-    month: "long",
+    month: "numeric",
     year: "numeric",
   });
+  const parts = islamicFmt.formatToParts(now);
+  const islamicDay = parseInt(parts.find((p) => p.type === "day")?.value ?? "1", 10);
+  const islamicMonth = parseInt(parts.find((p) => p.type === "month")?.value ?? "1", 10);
+  const islamicYear = parseInt(parts.find((p) => p.type === "year")?.value ?? "1", 10);
+  const arabic = `${toBnNum(islamicDay)} ${islamicMonthsBn[islamicMonth - 1]} ${toBnNum(islamicYear)} হিজরি`;
   const time = now.toLocaleTimeString("bn-BD", {
     hour: "2-digit",
     minute: "2-digit",
