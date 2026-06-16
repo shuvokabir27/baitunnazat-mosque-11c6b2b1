@@ -140,7 +140,17 @@ export const defaultContent: SiteContent = {
     methods: [
       { icon: "smartphone", title: "বিকাশ", value: "০১৭xx-xxxxxx", note: "পার্সোনাল / সেন্ড মানি" },
       { icon: "smartphone", title: "নগদ", value: "০১৮xx-xxxxxx", note: "পার্সোনাল / সেন্ড মানি" },
-      { icon: "bank", title: "ব্যাংক", value: "ইসলামী ব্যাংক — হিসাব নং ১২৩৪৫৬৭৮৯", note: "মিরপুর শাখা" },
+      {
+        icon: "bank",
+        title: "ব্যাংক",
+        value: "",
+        note: "",
+        bankName: "ইসলামী ব্যাংক বাংলাদেশ",
+        branch: "মিরপুর শাখা",
+        routingNumber: "১২৫২৬১৭৩৪",
+        holderName: "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ",
+        accountNumber: "১২৩৪৫৬৭৮৯০",
+      },
       { icon: "building", title: "সরাসরি", value: "মসজিদ অফিসে যোগাযোগ করুন", note: "দান বাক্সে দান করুন" },
     ],
     footerNote: "আপনার সদকা ও দান মসজিদের বিদ্যুৎ বিল, ইমাম-মুয়াজ্জিনের সম্মানী ও উন্নয়ন কাজে ব্যয় হয়।",
