@@ -313,6 +313,9 @@ function LeadsTab() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
+  const [savingName, setSavingName] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -340,6 +343,30 @@ function LeadsTab() {
     setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, called: next } : l)));
   };
 
+  const startEdit = (l: Lead) => {
+    setEditingId(l.id);
+    setEditValue(l.name ?? "");
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditValue("");
+  };
+
+  const saveName = async (id: string) => {
+    const trimmed = editValue.trim();
+    const next = trimmed.length > 0 ? trimmed.slice(0, 100) : null;
+    setSavingName(true);
+    const { error: e } = await supabase.from("volunteer_leads").update({ name: next }).eq("id", id);
+    setSavingName(false);
+    if (e) {
+      alert("নাম সংরক্ষণ করা যায়নি।");
+      return;
+    }
+    setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, name: next } : l)));
+    cancelEdit();
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center py-10">
@@ -362,8 +389,48 @@ function LeadsTab() {
       <div className="divide-y divide-border rounded-xl border border-border">
         {leads.map((l) => (
           <div key={l.id} className={`flex items-center justify-between gap-3 p-3 ${l.called ? "bg-emerald-50/50" : ""}`}>
-            <div className="min-w-0">
-              <p className="truncate font-semibold text-foreground">{l.name || "নাম দেননি"}</p>
+            <div className="min-w-0 flex-1">
+              {editingId === l.id ? (
+                <div className="flex items-center gap-2">
+                  <input
+                    autoFocus
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") saveName(l.id);
+                      if (e.key === "Escape") cancelEdit();
+                    }}
+                    maxLength={100}
+                    placeholder="নাম লিখুন"
+                    className="w-full min-w-0 rounded-lg border border-border bg-background px-2 py-1 text-sm outline-none focus:border-primary"
+                  />
+                  <button
+                    onClick={() => saveName(l.id)}
+                    disabled={savingName}
+                    className="shrink-0 rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-semibold text-white disabled:opacity-60"
+                  >
+                    {savingName ? "..." : "সংরক্ষণ"}
+                  </button>
+                  <button
+                    onClick={cancelEdit}
+                    className="shrink-0 rounded-lg bg-muted px-2.5 py-1 text-xs font-semibold text-muted-foreground"
+                  >
+                    বাতিল
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <p className={`truncate font-semibold ${l.name ? "text-foreground" : "text-muted-foreground italic"}`}>
+                    {l.name || "নাম দেননি"}
+                  </p>
+                  <button
+                    onClick={() => startEdit(l)}
+                    className="shrink-0 text-xs font-semibold text-primary hover:underline"
+                  >
+                    {l.name ? "এডিট" : "নাম যুক্ত করুন"}
+                  </button>
+                </div>
+              )}
               <p className="text-sm text-muted-foreground">{l.phone}</p>
               <p className="text-xs text-muted-foreground">
                 {new Date(l.created_at).toLocaleString("bn-BD")}
