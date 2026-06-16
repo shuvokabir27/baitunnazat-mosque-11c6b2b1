@@ -307,7 +307,7 @@ function Sidebar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
   );
 }
 
-type Lead = { id: string; name: string | null; phone: string; created_at: string };
+type Lead = { id: string; name: string | null; phone: string; created_at: string; called: boolean };
 
 function LeadsTab() {
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -319,7 +319,7 @@ function LeadsTab() {
     setError(null);
     const { data, error: e } = await supabase
       .from("volunteer_leads")
-      .select("id, name, phone, created_at")
+      .select("id, name, phone, created_at, called")
       .order("created_at", { ascending: false });
     if (e) setError("তালিকা লোড করা যায়নি।");
     else setLeads((data as Lead[]) ?? []);
@@ -330,14 +330,14 @@ function LeadsTab() {
     load();
   }, []);
 
-  const remove = async (id: string) => {
-    if (!confirm("এই নম্বরটি মুছে ফেলবেন?")) return;
-    const { error: e } = await supabase.from("volunteer_leads").delete().eq("id", id);
+  const toggleCalled = async (id: string, current: boolean) => {
+    const next = !current;
+    const { error: e } = await supabase.from("volunteer_leads").update({ called: next }).eq("id", id);
     if (e) {
-      alert("মুছে ফেলা যায়নি।");
+      alert("আপডেট করা যায়নি।");
       return;
     }
-    setLeads((prev) => prev.filter((l) => l.id !== id));
+    setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, called: next } : l)));
   };
 
   if (loading) {
@@ -361,7 +361,7 @@ function LeadsTab() {
       <p className="text-sm text-muted-foreground">মোট {leads.length} জন আগ্রহী ব্যক্তি যোগাযোগের জন্য নম্বর দিয়েছেন।</p>
       <div className="divide-y divide-border rounded-xl border border-border">
         {leads.map((l) => (
-          <div key={l.id} className="flex items-center justify-between gap-3 p-3">
+          <div key={l.id} className={`flex items-center justify-between gap-3 p-3 ${l.called ? "bg-emerald-50/50" : ""}`}>
             <div className="min-w-0">
               <p className="truncate font-semibold text-foreground">{l.name || "নাম দেননি"}</p>
               <p className="text-sm text-muted-foreground">{l.phone}</p>
@@ -378,11 +378,15 @@ function LeadsTab() {
                 কল
               </a>
               <button
-                onClick={() => remove(l.id)}
-                className="grid h-8 w-8 place-items-center rounded-lg bg-destructive/10 text-destructive"
-                aria-label="মুছুন"
+                onClick={() => toggleCalled(l.id, l.called)}
+                className={`inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+                  l.called
+                    ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                }`}
+                aria-label={l.called ? "কল করা হয়েছে" : "কল করা হয়নি"}
               >
-                <Trash2 className="h-4 w-4" />
+                {l.called ? "✓ কল করা হয়েছে" : "কল করুন"}
               </button>
             </div>
           </div>
