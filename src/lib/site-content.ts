@@ -128,6 +128,17 @@ export const defaultContent: SiteContent = {
     subtitle: developmentDefault.subtitle,
     items: developmentDefault.gallery.map((g) => ({ image: g.src, caption: g.caption })),
   },
+  donate: {
+    subtitle:
+      "“যে ব্যক্তি আল্লাহর সন্তুষ্টির জন্য একটি মসজিদ নির্মাণ করে, আল্লাহ তার জন্য জান্নাতে অনুরূপ ঘর নির্মাণ করেন।”",
+    methods: [
+      { icon: "smartphone", title: "বিকাশ", value: "০১৭xx-xxxxxx", note: "পার্সোনাল / সেন্ড মানি" },
+      { icon: "smartphone", title: "নগদ", value: "০১৮xx-xxxxxx", note: "পার্সোনাল / সেন্ড মানি" },
+      { icon: "bank", title: "ব্যাংক", value: "ইসলামী ব্যাংক — হিসাব নং ১২৩৪৫৬৭৮৯", note: "মিরপুর শাখা" },
+      { icon: "building", title: "সরাসরি", value: "মসজিদ অফিসে যোগাযোগ করুন", note: "দান বাক্সে দান করুন" },
+    ],
+    footerNote: "আপনার সদকা ও দান মসজিদের বিদ্যুৎ বিল, ইমাম-মুয়াজ্জিনের সম্মানী ও উন্নয়ন কাজে ব্যয় হয়।",
+  },
 };
 
 
