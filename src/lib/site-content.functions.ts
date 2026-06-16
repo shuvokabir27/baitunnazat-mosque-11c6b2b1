@@ -32,33 +32,6 @@ export const getMyAdminStatus = createServerFn({ method: "POST" })
     return { isAdmin: !!data };
   });
 
-/**
- * Grant admin to the caller if no admin exists yet (first sign-in onboarding).
- * Safe: once an admin exists, this is a no-op for everyone else.
- */
-export const claimAdmin = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { count } = await supabaseAdmin
-      .from("user_roles")
-      .select("id", { count: "exact", head: true })
-      .eq("role", "admin");
-    if ((count ?? 0) > 0) {
-      const { data: mine } = await supabaseAdmin
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", context.userId)
-        .eq("role", "admin")
-        .maybeSingle();
-      return { isAdmin: !!mine, claimed: false };
-    }
-    await supabaseAdmin
-      .from("user_roles")
-      .insert({ user_id: context.userId, role: "admin" });
-    return { isAdmin: true, claimed: true };
-  });
-
 /** Update the full site content document. Admin only. */
 export const updateSiteContent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
