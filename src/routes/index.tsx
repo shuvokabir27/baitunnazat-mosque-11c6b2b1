@@ -338,7 +338,16 @@ function useNextPrayer(prayerTimes: { name: string; time: string }[]) {
     return nowMins >= p.mins && nowMins < p.mins + dur;
   });
   if (ongoing) {
-    return { ongoing: true as const, name: ongoing.name, time: ongoing.time, hours: 0, minutes: 0, seconds: 0 };
+    return { ongoing: true as const, finished: false as const, name: ongoing.name, time: ongoing.time, hours: 0, minutes: 0, seconds: 0 };
+  }
+
+  // Check if a jamaat just finished (show "জামাত শেষ" for 20 minutes)
+  const finished = daily.find((p) => {
+    const dur = p.jamaat ?? 15;
+    return nowMins >= p.mins + dur && nowMins < p.mins + dur + 20;
+  });
+  if (finished) {
+    return { ongoing: false as const, finished: true as const, name: finished.name, time: finished.time, hours: 0, minutes: 0, seconds: 0 };
   }
 
   let next = daily.find((p) => p.mins > nowMins);
