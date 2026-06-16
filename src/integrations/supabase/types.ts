@@ -14,30 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      income_entries: {
-        Row: {
-          amount: number
-          closed: boolean
-          created_at: string
-          id: string
-          note: string | null
-        }
-        Insert: {
-          amount?: number
-          closed?: boolean
-          created_at?: string
-          id?: string
-          note?: string | null
-        }
-        Update: {
-          amount?: number
-          closed?: boolean
-          created_at?: string
-          id?: string
-          note?: string | null
-        }
-        Relationships: []
-      }
       profile_reactions: {
         Row: {
           count: number
