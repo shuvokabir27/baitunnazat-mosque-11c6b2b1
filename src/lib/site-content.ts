@@ -172,5 +172,13 @@ export function mergeContent(stored: Partial<SiteContent> | null | undefined): S
           ? stored.development.items
           : defaultContent.development.items,
     },
+    donate: {
+      ...defaultContent.donate,
+      ...(stored.donate ?? {}),
+      methods:
+        stored.donate?.methods && stored.donate.methods.length
+          ? stored.donate.methods
+          : defaultContent.donate.methods,
+    },
   };
 }
