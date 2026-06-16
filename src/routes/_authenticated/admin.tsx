@@ -23,6 +23,7 @@ import {
   HandCoins,
   ExternalLink,
   X,
+  Phone,
 } from "lucide-react";
 import { defaultContent, mergeContent, type SiteContent } from "@/lib/site-content";
 import { ImageCropUpload } from "@/components/ImageCropUpload";
