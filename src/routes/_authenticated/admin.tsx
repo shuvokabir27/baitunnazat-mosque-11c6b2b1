@@ -251,7 +251,7 @@ function AdminPage() {
   );
 }
 
-type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "donate" | "footer";
+type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "donate" | "footer" | "leads";
 const TAB_LABELS: Record<Tab, string> = {
   site: "সাইট সেটিংস",
   mosque: "মসজিদ",
@@ -263,6 +263,7 @@ const TAB_LABELS: Record<Tab, string> = {
   development: "উন্নয়ন কাজ",
   donate: "দান",
   footer: "ফুটার",
+  leads: "যোগাযোগ তালিকা",
 };
 
 const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
@@ -276,6 +277,7 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   development: HardHat,
   donate: HandCoins,
   footer: MessageSquare,
+  leads: Phone,
 };
 
 function Sidebar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
