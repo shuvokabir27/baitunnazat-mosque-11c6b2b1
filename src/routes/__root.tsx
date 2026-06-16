@@ -12,6 +12,8 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteContentProvider } from "@/lib/use-site-content";
+import { WelcomePopup } from "@/components/WelcomePopup";
+import { ClientOnly } from "@tanstack/react-router";
 
 function NotFoundComponent() {
   return (
@@ -134,6 +136,9 @@ function RootComponent() {
       <SiteContentProvider>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
+        <ClientOnly fallback={null}>
+          <WelcomePopup />
+        </ClientOnly>
       </SiteContentProvider>
     </QueryClientProvider>
   );
