@@ -69,8 +69,8 @@ function VolunteerJoinForm() {
     try {
       const { error: insertError } = await supabase
         .from("volunteer_leads")
-        .upsert({ name: name.trim() || null, phone: trimmed }, { onConflict: "phone", ignoreDuplicates: true });
-      if (insertError) throw insertError;
+        .insert({ name: name.trim() || null, phone: trimmed });
+      if (insertError && insertError.code !== "23505") throw insertError;
       setDone(true);
     } catch {
       setError("জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
