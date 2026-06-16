@@ -401,6 +401,168 @@ function LeadsTab() {
   );
 }
 
+type Income = { id: string; amount: number; note: string | null; closed: boolean; created_at: string };
+
+const bdt = (n: number) =>
+  "৳ " + n.toLocaleString("bn-BD", { maximumFractionDigits: 2 });
+
+function IncomeTab() {
+  const [items, setItems] = useState<Income[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [amount, setAmount] = useState("");
+  const [note, setNote] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const load = async () => {
+    setLoading(true);
+    setError(null);
+    const { data, error: e } = await supabase
+      .from("income_entries")
+      .select("id, amount, note, closed, created_at")
+      .order("created_at", { ascending: false });
+    if (e) setError("হিসাব লোড করা যায়নি।");
+    else setItems((data as Income[]) ?? []);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const add = async () => {
+    const amt = parseFloat(amount);
+    if (!amt || amt <= 0) {
+      alert("সঠিক টাকার পরিমাণ লিখুন।");
+      return;
+    }
+    setBusy(true);
+    const { error: e } = await supabase
+      .from("income_entries")
+      .insert({ amount: amt, note: note.trim() || null });
+    setBusy(false);
+    if (e) {
+      alert("যোগ করা যায়নি।");
+      return;
+    }
+    setAmount("");
+    setNote("");
+    load();
+  };
+
+  const doClosing = async () => {
+    const open = items.filter((i) => !i.closed);
+    if (open.length === 0) {
+      alert("ক্লোজ করার মতো নতুন ইনকাম নেই।");
+      return;
+    }
+    if (!confirm("নতুন ইনকামগুলো ক্লোজিং করবেন? এরপর এগুলো মোট ইনকামে যুক্ত থাকবে।")) return;
+    setBusy(true);
+    const { error: e } = await supabase
+      .from("income_entries")
+      .update({ closed: true })
+      .eq("closed", false);
+    setBusy(false);
+    if (e) {
+      alert("ক্লোজিং করা যায়নি।");
+      return;
+    }
+    load();
+  };
+
+  const newIncome = items.filter((i) => !i.closed).reduce((s, i) => s + Number(i.amount), 0);
+  const totalIncome = items.reduce((s, i) => s + Number(i.amount), 0);
+  const openItems = items.filter((i) => !i.closed);
+
+  return (
+    <div className="space-y-5">
+      <div className="grid grid-cols-2 gap-3">
+        <div className="rounded-2xl border border-border bg-card p-4 shadow-soft">
+          <p className="text-xs font-semibold text-muted-foreground">নতুন ইনকাম</p>
+          <p className="mt-1 text-xl font-bold text-emerald-600">{bdt(newIncome)}</p>
+          <p className="mt-0.5 text-[11px] text-muted-foreground">ক্লোজিং বাকি</p>
+        </div>
+        <div className="rounded-2xl border border-border bg-card p-4 shadow-soft">
+          <p className="text-xs font-semibold text-muted-foreground">মোট ইনকাম</p>
+          <p className="mt-1 text-xl font-bold text-foreground">{bdt(totalIncome)}</p>
+          <p className="mt-0.5 text-[11px] text-muted-foreground">সর্বমোট</p>
+        </div>
+      </div>
+
+      <Card>
+        <Field label="টাকার পরিমাণ" value={amount} onChange={setAmount} />
+        <Field label="নোট / উৎস (ঐচ্ছিক)" value={note} onChange={setNote} />
+        <button
+          onClick={add}
+          disabled={busy}
+          className="inline-flex items-center justify-center gap-2 rounded-xl gradient-emerald px-4 py-2.5 text-sm font-bold text-primary-foreground disabled:opacity-60"
+        >
+          <Plus className="h-4 w-4" /> ইনকাম যোগ করুন
+        </button>
+      </Card>
+
+      <button
+        onClick={doClosing}
+        disabled={busy || openItems.length === 0}
+        className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#1d2327] px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50"
+      >
+        <Lock className="h-4 w-4" /> ক্লোজিং করুন
+      </button>
+
+      {loading ? (
+        <div className="flex justify-center py-10">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        </div>
+      ) : error ? (
+        <p className="py-6 text-center text-sm text-destructive">{error}</p>
+      ) : items.length === 0 ? (
+        <p className="py-6 text-center text-sm text-muted-foreground">এখনও কোনো ইনকাম যোগ করা হয়নি।</p>
+      ) : (
+        <div className="space-y-4">
+          {openItems.length > 0 && (
+            <div>
+              <p className="mb-2 text-sm font-bold text-emerald-700">নতুন ইনকাম (ক্লোজিং বাকি)</p>
+              <div className="divide-y divide-border rounded-xl border border-border">
+                {openItems.map((i) => (
+                  <IncomeRow key={i.id} item={i} />
+                ))}
+              </div>
+            </div>
+          )}
+          {items.some((i) => i.closed) && (
+            <div>
+              <p className="mb-2 text-sm font-bold text-muted-foreground">ক্লোজ করা ইনকাম</p>
+              <div className="divide-y divide-border rounded-xl border border-border">
+                {items.filter((i) => i.closed).map((i) => (
+                  <IncomeRow key={i.id} item={i} />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function IncomeRow({ item }: { item: Income }) {
+  return (
+    <div className={`flex items-center justify-between gap-3 p-3 ${item.closed ? "bg-muted/30" : ""}`}>
+      <div className="min-w-0">
+        <p className="truncate font-semibold text-foreground">{bdt(Number(item.amount))}</p>
+        {item.note && <p className="truncate text-sm text-muted-foreground">{item.note}</p>}
+        <p className="text-xs text-muted-foreground">{new Date(item.created_at).toLocaleString("bn-BD")}</p>
+      </div>
+      {item.closed && (
+        <span className="shrink-0 rounded-lg bg-muted px-2.5 py-1 text-xs font-semibold text-muted-foreground">
+          ক্লোজড
+        </span>
+      )}
+    </div>
+  );
+}
+
+
 
 
 type TabProps = {
