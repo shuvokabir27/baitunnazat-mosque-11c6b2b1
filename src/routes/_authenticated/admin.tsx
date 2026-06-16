@@ -52,21 +52,51 @@ function AdminPage() {
   const [tab, setTab] = useState<Tab>("mosque");
 
   useEffect(() => {
+    let cancelled = false;
     (async () => {
-      try {
-        const claimed = await claim();
-        const admin = claimed.isAdmin ? claimed : await checkAdmin();
-        if (!admin.isAdmin) {
-          setStatus("denied");
-          return;
+      // Wait until the auth session is restored so the bearer token is
+      // attached to server-function calls (avoids a false "denied" right
+      // after login).
+      let session = (await supabase.auth.getSession()).data.session;
+      for (let i = 0; i < 10 && !session; i++) {
+        await new Promise((r) => setTimeout(r, 200));
+        session = (await supabase.auth.getSession()).data.session;
+      }
+      if (cancelled) return;
+      if (!session) {
+        navigate({ to: "/auth" });
+        return;
+      }
+
+      // Retry the admin check a couple of times in case the token is still
+      // propagating to the server.
+      let admin: { isAdmin: boolean } | null = null;
+      for (let i = 0; i < 3; i++) {
+        try {
+          const claimed = await claim();
+          admin = claimed.isAdmin ? claimed : await checkAdmin();
+          break;
+        } catch {
+          await new Promise((r) => setTimeout(r, 300));
         }
+      }
+      if (cancelled) return;
+      if (!admin?.isAdmin) {
+        setStatus("denied");
+        return;
+      }
+      try {
         const loaded = await getSiteContent();
+        if (cancelled) return;
         setContent(loaded);
         setStatus("ready");
       } catch {
-        setStatus("denied");
+        if (!cancelled) setStatus("denied");
       }
     })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const signOut = async () => {
