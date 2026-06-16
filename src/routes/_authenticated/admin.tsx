@@ -42,6 +42,7 @@ function AdminPage() {
   const [content, setContent] = useState<SiteContent>(defaultContent);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [showVisit, setShowVisit] = useState(false);
   const [tab, setTab] = useState<Tab>("mosque");
 
   useEffect(() => {
