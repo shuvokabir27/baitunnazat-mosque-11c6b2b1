@@ -500,17 +500,20 @@ function DonateTab({ content, setContent }: TabProps) {
             </select>
           </label>
           <Field label="শিরোনাম" value={m.title} onChange={(v) => setMethod(i, { title: v })} />
-          <Field label="নম্বর / বিবরণ" value={m.value} onChange={(v) => setMethod(i, { value: v })} />
-          <Field label="নোট" value={m.note} onChange={(v) => setMethod(i, { note: v })} />
-          {m.icon === "bank" && (
+          {m.icon === "bank" ? (
             <div className="space-y-3 rounded-xl border border-border bg-muted/30 p-3">
               <p className="text-xs font-semibold text-muted-foreground">ব্যাংক তথ্য</p>
-              <Field label="ব্যাংকের নাম" value={m.bankName ?? ""} onChange={(v) => setMethod(i, { bankName: v })} />
+              <Field label="ব্যাংক" value={m.bankName ?? ""} onChange={(v) => setMethod(i, { bankName: v })} />
               <Field label="শাখা" value={m.branch ?? ""} onChange={(v) => setMethod(i, { branch: v })} />
               <Field label="হোল্ডার নাম" value={m.holderName ?? ""} onChange={(v) => setMethod(i, { holderName: v })} />
-              <Field label="ব্যাংক একাউন্ট নম্বর" value={m.accountNumber ?? ""} onChange={(v) => setMethod(i, { accountNumber: v })} />
-              <Field label="রাউটিং নম্বর" value={m.routingNumber ?? ""} onChange={(v) => setMethod(i, { routingNumber: v })} />
+              <Field label="একাউন্ট নম্বর" value={m.accountNumber ?? ""} onChange={(v) => setMethod(i, { accountNumber: v })} />
+              <Field label="রাউটিং নং" value={m.routingNumber ?? ""} onChange={(v) => setMethod(i, { routingNumber: v })} />
             </div>
+          ) : (
+            <>
+              <Field label="নম্বর / বিবরণ" value={m.value} onChange={(v) => setMethod(i, { value: v })} />
+              <Field label="নোট" value={m.note} onChange={(v) => setMethod(i, { note: v })} />
+            </>
           )}
         </Card>
       ))}
