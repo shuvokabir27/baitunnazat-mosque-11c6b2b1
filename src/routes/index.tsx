@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Heart, Clock, X, Download, ZoomIn, ChevronDown } from "lucide-react";
 import { Layout } from "@/components/Layout";
-import { useSiteContent } from "@/lib/use-site-content";
+import { useSiteContent, siteContentQueryOptions } from "@/lib/use-site-content";
 import { heroImages, staffImages } from "@/lib/site-content";
 
 function staffImageFor(slug: string) {
@@ -10,6 +10,7 @@ function staffImageFor(slug: string) {
 }
 
 export const Route = createFileRoute("/")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(siteContentQueryOptions),
   head: () => ({
     meta: [
       { title: "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ, মহিপুর — হোম" },
@@ -17,6 +18,18 @@ export const Route = createFileRoute("/")({
     ],
   }),
   component: Index,
+  errorComponent: () => (
+    <Layout>
+      <div className="px-5 py-16 text-center text-muted-foreground">
+        কনটেন্ট লোড করা যায়নি। অনুগ্রহ করে পেজটি রিফ্রেশ করুন।
+      </div>
+    </Layout>
+  ),
+  notFoundComponent: () => (
+    <Layout>
+      <div className="px-5 py-16 text-center text-muted-foreground">পেজটি খুঁজে পাওয়া যায়নি।</div>
+    </Layout>
+  ),
 });
 
 async function saveImage(src: string, name: string) {
