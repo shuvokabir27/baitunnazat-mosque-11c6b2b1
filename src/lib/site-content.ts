@@ -64,6 +64,21 @@ export type SiteSettings = {
   icon?: string;
 };
 
+export type DonateIcon = "smartphone" | "bank" | "building";
+
+export type DonateMethod = {
+  icon: DonateIcon;
+  title: string;
+  value: string;
+  note: string;
+};
+
+export type DonateContent = {
+  subtitle: string;
+  methods: DonateMethod[];
+  footerNote: string;
+};
+
 export type SiteContent = {
   site: SiteSettings;
   mosque: MosqueInfo;
@@ -74,6 +89,7 @@ export type SiteContent = {
   committee: CommitteeMember[];
   sections: SiteSections;
   development: DevelopmentContent;
+  donate: DonateContent;
 };
 
 
