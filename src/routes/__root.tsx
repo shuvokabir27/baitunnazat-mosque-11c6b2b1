@@ -7,11 +7,11 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { Suspense, useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { SiteContentProvider } from "@/lib/use-site-content";
+import { SiteContentProvider, siteContentQueryOptions } from "@/lib/use-site-content";
 import { WelcomePopup } from "@/components/WelcomePopup";
 import { ClientOnly } from "@tanstack/react-router";
 
@@ -82,14 +82,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "theme-color", content: "#0d7377" },
       { title: "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ - মহিপুর" },
-      { name: "description", content: "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদের অফিসিয়াল ওয়েবসাইট — নামাজের সময়সূচি, দান, উন্নয়ন কাজ ও নামাজ শিক্ষা।" },
+      { name: "description", content: "বাইতুন নাজাত কেন্দ্রিয় মসজিদের অফিসিয়াল ওয়েবসাইট — নামাজের সময়সূচি, দান, উন্নয়ন কাজ ও নামাজ শিক্ষা।" },
       { name: "author", content: "বায়তুল মামুর জামে মসজিদ" },
       { property: "og:title", content: "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ - মহিপুর" },
-      { property: "og:description", content: "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদের অফিসিয়াল ওয়েবসাইট — নামাজের সময়সূচি, দান, উন্নয়ন কাজ ও নামাজ শিক্ষা।" },
+      { property: "og:description", content: "বাইতুন নাজাত কেন্দ্রিয় মসজিদের অফিসিয়াল ওয়েবসাইট — নামাজের সময়সূচি, দান, উন্নয়ন কাজ ও নামাজ শিক্ষা।" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:title", content: "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ - মহিপুর" },
-      { name: "twitter:description", content: "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদের অফিসিয়াল ওয়েবসাইট — নামাজের সময়সূচি, দান, উন্নয়ন কাজ ও নামাজ শিক্ষা।" },
+      { name: "twitter:description", content: "বাইতুন নাজাত কেন্দ্রিয় মসজিদের অফিসিয়াল ওয়েবসাইট — নামাজের সময়সূচি, দান, উন্নয়ন কাজ ও নামাজ শিক্ষা।" },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/aebf4c68-aa20-40d6-a16e-61af8cfc8a2e/id-preview-5bdf3404--ec9b5464-59a3-426c-921f-580dc73ec6a2.lovable.app-1781463411686.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/aebf4c68-aa20-40d6-a16e-61af8cfc8a2e/id-preview-5bdf3404--ec9b5464-59a3-426c-921f-580dc73ec6a2.lovable.app-1781463411686.png" },
     ],
@@ -108,6 +108,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
     ],
   }),
+  loader: ({ context }) => context.queryClient.ensureQueryData(siteContentQueryOptions),
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
@@ -133,13 +134,15 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SiteContentProvider>
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
-        <ClientOnly fallback={null}>
-          <WelcomePopup />
-        </ClientOnly>
-      </SiteContentProvider>
+      <Suspense fallback={null}>
+        <SiteContentProvider>
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+          <ClientOnly fallback={null}>
+            <WelcomePopup />
+          </ClientOnly>
+        </SiteContentProvider>
+      </Suspense>
     </QueryClientProvider>
   );
 }
