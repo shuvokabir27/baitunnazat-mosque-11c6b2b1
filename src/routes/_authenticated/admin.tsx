@@ -21,6 +21,8 @@ import {
   HardHat,
   Settings,
   HandCoins,
+  ExternalLink,
+  X,
 } from "lucide-react";
 import { defaultContent, mergeContent, type SiteContent } from "@/lib/site-content";
 import { ImageCropUpload } from "@/components/ImageCropUpload";
