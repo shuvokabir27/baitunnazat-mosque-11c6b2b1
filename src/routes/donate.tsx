@@ -51,10 +51,44 @@ function Donate() {
               >
                 <Icon className="h-6 w-6" />
               </span>
-              <div>
+              <div className="min-w-0">
                 <h3 className="text-lg font-bold text-primary">{m.title}</h3>
-                <p className="font-medium text-foreground">{m.value}</p>
-                <p className="text-sm text-muted-foreground">{m.note}</p>
+                {m.value && <p className="font-medium text-foreground">{m.value}</p>}
+                {(m.bankName || m.branch || m.routingNumber || m.holderName || m.accountNumber) && (
+                  <dl className="mt-1 space-y-1 text-sm">
+                    {m.bankName && (
+                      <div className="flex gap-2">
+                        <dt className="text-muted-foreground">ব্যাংক:</dt>
+                        <dd className="font-medium text-foreground">{m.bankName}</dd>
+                      </div>
+                    )}
+                    {m.branch && (
+                      <div className="flex gap-2">
+                        <dt className="text-muted-foreground">শাখা:</dt>
+                        <dd className="font-medium text-foreground">{m.branch}</dd>
+                      </div>
+                    )}
+                    {m.holderName && (
+                      <div className="flex gap-2">
+                        <dt className="text-muted-foreground">হোল্ডার নাম:</dt>
+                        <dd className="font-medium text-foreground">{m.holderName}</dd>
+                      </div>
+                    )}
+                    {m.accountNumber && (
+                      <div className="flex gap-2">
+                        <dt className="text-muted-foreground">একাউন্ট নম্বর:</dt>
+                        <dd className="font-medium text-foreground">{m.accountNumber}</dd>
+                      </div>
+                    )}
+                    {m.routingNumber && (
+                      <div className="flex gap-2">
+                        <dt className="text-muted-foreground">রাউটিং নম্বর:</dt>
+                        <dd className="font-medium text-foreground">{m.routingNumber}</dd>
+                      </div>
+                    )}
+                  </dl>
+                )}
+                {m.note && <p className="mt-1 text-sm text-muted-foreground">{m.note}</p>}
               </div>
             </div>
           );
