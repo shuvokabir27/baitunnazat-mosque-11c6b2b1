@@ -20,6 +20,7 @@ import {
   MessageSquare,
   HardHat,
   Settings,
+  HandCoins,
 } from "lucide-react";
 import { defaultContent, mergeContent, type SiteContent } from "@/lib/site-content";
 import { ImageCropUpload } from "@/components/ImageCropUpload";
