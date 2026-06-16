@@ -6,8 +6,9 @@ import { mergeContent, type SiteContent } from "@/lib/site-content";
 
 /** Public read of the site content. Falls back to defaults when empty. */
 export const getSiteContent = createServerFn({ method: "GET" }).handler(async () => {
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const publishableKey = process.env.SUPABASE_PUBLISHABLE_KEY;
+  const supabaseUrl = process.env.SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL;
+  const publishableKey =
+    process.env.SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
   if (!supabaseUrl || !publishableKey) throw new Error("Missing backend configuration");
   const supabasePublic = createClient<Database>(supabaseUrl, publishableKey, {
     auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
