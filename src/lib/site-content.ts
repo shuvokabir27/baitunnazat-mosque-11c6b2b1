@@ -64,6 +64,21 @@ export type SiteSettings = {
   icon?: string;
 };
 
+export type DonateIcon = "smartphone" | "bank" | "building";
+
+export type DonateMethod = {
+  icon: DonateIcon;
+  title: string;
+  value: string;
+  note: string;
+};
+
+export type DonateContent = {
+  subtitle: string;
+  methods: DonateMethod[];
+  footerNote: string;
+};
+
 export type SiteContent = {
   site: SiteSettings;
   mosque: MosqueInfo;
@@ -74,6 +89,7 @@ export type SiteContent = {
   committee: CommitteeMember[];
   sections: SiteSections;
   development: DevelopmentContent;
+  donate: DonateContent;
 };
 
 
@@ -112,6 +128,17 @@ export const defaultContent: SiteContent = {
     subtitle: developmentDefault.subtitle,
     items: developmentDefault.gallery.map((g) => ({ image: g.src, caption: g.caption })),
   },
+  donate: {
+    subtitle:
+      "“যে ব্যক্তি আল্লাহর সন্তুষ্টির জন্য একটি মসজিদ নির্মাণ করে, আল্লাহ তার জন্য জান্নাতে অনুরূপ ঘর নির্মাণ করেন।”",
+    methods: [
+      { icon: "smartphone", title: "বিকাশ", value: "০১৭xx-xxxxxx", note: "পার্সোনাল / সেন্ড মানি" },
+      { icon: "smartphone", title: "নগদ", value: "০১৮xx-xxxxxx", note: "পার্সোনাল / সেন্ড মানি" },
+      { icon: "bank", title: "ব্যাংক", value: "ইসলামী ব্যাংক — হিসাব নং ১২৩৪৫৬৭৮৯", note: "মিরপুর শাখা" },
+      { icon: "building", title: "সরাসরি", value: "মসজিদ অফিসে যোগাযোগ করুন", note: "দান বাক্সে দান করুন" },
+    ],
+    footerNote: "আপনার সদকা ও দান মসজিদের বিদ্যুৎ বিল, ইমাম-মুয়াজ্জিনের সম্মানী ও উন্নয়ন কাজে ব্যয় হয়।",
+  },
 };
 
 
@@ -144,6 +171,14 @@ export function mergeContent(stored: Partial<SiteContent> | null | undefined): S
         stored.development?.items && stored.development.items.length
           ? stored.development.items
           : defaultContent.development.items,
+    },
+    donate: {
+      ...defaultContent.donate,
+      ...(stored.donate ?? {}),
+      methods:
+        stored.donate?.methods && stored.donate.methods.length
+          ? stored.donate.methods
+          : defaultContent.donate.methods,
     },
   };
 }

@@ -20,6 +20,7 @@ import {
   MessageSquare,
   HardHat,
   Settings,
+  HandCoins,
 } from "lucide-react";
 import { defaultContent, mergeContent, type SiteContent } from "@/lib/site-content";
 import { ImageCropUpload } from "@/components/ImageCropUpload";
@@ -203,6 +204,7 @@ function AdminPage() {
                 {tab === "committee" && <CommitteeTab content={content} setContent={setContent} />}
                 {tab === "footer" && <FooterTab content={content} setContent={setContent} />}
                 {tab === "development" && <DevelopmentTab content={content} setContent={setContent} />}
+                {tab === "donate" && <DonateTab content={content} setContent={setContent} />}
               </div>
             </div>
           </div>
@@ -212,7 +214,7 @@ function AdminPage() {
   );
 }
 
-type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "footer";
+type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "donate" | "footer";
 const TAB_LABELS: Record<Tab, string> = {
   site: "সাইট সেটিংস",
   mosque: "মসজিদ",
@@ -222,6 +224,7 @@ const TAB_LABELS: Record<Tab, string> = {
   staff: "দায়িত্বপ্রাপ্ত",
   committee: "কমিটি",
   development: "উন্নয়ন কাজ",
+  donate: "দান",
   footer: "ফুটার",
 };
 
@@ -234,6 +237,7 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   staff: Users,
   committee: UsersRound,
   development: HardHat,
+  donate: HandCoins,
   footer: MessageSquare,
 };
 
@@ -428,6 +432,83 @@ function FooterTab({ content, setContent }: TabProps) {
     </Card>
   );
 }
+
+const DONATE_ICON_OPTIONS: { value: SiteContent["donate"]["methods"][number]["icon"]; label: string }[] = [
+  { value: "smartphone", label: "মোবাইল (বিকাশ/নগদ)" },
+  { value: "bank", label: "ব্যাংক" },
+  { value: "building", label: "ভবন / অফিস" },
+];
+
+function DonateTab({ content, setContent }: TabProps) {
+  const d = content.donate;
+  const setField = (k: "subtitle" | "footerNote", v: string) =>
+    setContent((c) => ({ ...c, donate: { ...c.donate, [k]: v } }));
+  const setMethod = (i: number, patch: Partial<SiteContent["donate"]["methods"][number]>) =>
+    setContent((c) => ({
+      ...c,
+      donate: {
+        ...c.donate,
+        methods: c.donate.methods.map((m, idx) => (idx === i ? { ...m, ...patch } : m)),
+      },
+    }));
+  const add = () =>
+    setContent((c) => ({
+      ...c,
+      donate: {
+        ...c.donate,
+        methods: [...c.donate.methods, { icon: "smartphone", title: "", value: "", note: "" }],
+      },
+    }));
+  const remove = (i: number) =>
+    setContent((c) => ({
+      ...c,
+      donate: { ...c.donate, methods: c.donate.methods.filter((_, idx) => idx !== i) },
+    }));
+
+  return (
+    <div className="space-y-5">
+      <Card>
+        <Field label="উপরের উক্তি / সাবটাইটেল" value={d.subtitle} onChange={(v) => setField("subtitle", v)} textarea />
+        <Field label="নিচের বার্তা" value={d.footerNote} onChange={(v) => setField("footerNote", v)} textarea />
+      </Card>
+      {d.methods.map((m, i) => (
+        <Card key={i}>
+          <div className="flex items-center justify-between">
+            <span className="rounded-full gradient-gold px-3 py-0.5 text-xs font-semibold text-gold-foreground">
+              দান পদ্ধতি {i + 1}
+            </span>
+            <button
+              onClick={() => remove(i)}
+              className="grid h-8 w-8 place-items-center rounded-lg bg-destructive/10 text-destructive"
+              aria-label="মুছুন"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+          <label className="block">
+            <span className="mb-1 block text-sm font-semibold text-foreground">আইকন</span>
+            <select
+              value={m.icon}
+              onChange={(e) => setMethod(i, { icon: e.target.value as SiteContent["donate"]["methods"][number]["icon"] })}
+              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+            >
+              {DONATE_ICON_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <Field label="শিরোনাম" value={m.title} onChange={(v) => setMethod(i, { title: v })} />
+          <Field label="নম্বর / বিবরণ" value={m.value} onChange={(v) => setMethod(i, { value: v })} />
+          <Field label="নোট" value={m.note} onChange={(v) => setMethod(i, { note: v })} />
+        </Card>
+      ))}
+      <AddButton onClick={add} label="নতুন দান পদ্ধতি যোগ করুন" />
+    </div>
+  );
+}
+
 
 function DevelopmentTab({ content, setContent }: TabProps) {
   const dev = content.development;
