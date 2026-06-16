@@ -14,6 +14,8 @@ export function WelcomePopup() {
 
   useEffect(() => {
     try {
+      const path = window.location.pathname;
+      if (path.startsWith("/admin") || path.startsWith("/auth")) return;
       if (!localStorage.getItem(STORAGE_KEY)) {
         const t = setTimeout(() => setOpen(true), 800);
         return () => clearTimeout(t);
