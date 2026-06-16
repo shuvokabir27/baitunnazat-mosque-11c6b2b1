@@ -82,18 +82,21 @@ export type Database = {
       }
       volunteer_leads: {
         Row: {
+          called: boolean
           created_at: string
           id: string
           name: string | null
           phone: string
         }
         Insert: {
+          called?: boolean
           created_at?: string
           id?: string
           name?: string | null
           phone: string
         }
         Update: {
+          called?: boolean
           created_at?: string
           id?: string
           name?: string | null
