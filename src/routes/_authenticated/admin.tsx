@@ -27,7 +27,6 @@ import {
   getSiteContent,
   updateSiteContent,
   getMyAdminStatus,
-  claimAdmin,
 } from "@/lib/site-content.functions";
 import { ImageCropUpload } from "@/components/ImageCropUpload";
 
@@ -43,7 +42,6 @@ function AdminPage() {
   const queryClient = useQueryClient();
   const update = useServerFn(updateSiteContent);
   const checkAdmin = useServerFn(getMyAdminStatus);
-  const claim = useServerFn(claimAdmin);
 
   const [status, setStatus] = useState<Status>("loading");
   const [content, setContent] = useState<SiteContent>(defaultContent);
@@ -73,8 +71,7 @@ function AdminPage() {
       let admin: { isAdmin: boolean } | null = null;
       for (let i = 0; i < 3; i++) {
         try {
-          const claimed = await claim();
-          admin = claimed.isAdmin ? claimed : await checkAdmin();
+          admin = await checkAdmin();
           break;
         } catch {
           await new Promise((r) => setTimeout(r, 300));
