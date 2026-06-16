@@ -1,0 +1,15 @@
+GRANT INSERT ON public.volunteer_leads TO anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.volunteer_leads TO authenticated;
+GRANT ALL ON public.volunteer_leads TO service_role;
+
+DROP POLICY IF EXISTS "Anyone can submit volunteer leads" ON public.volunteer_leads;
+CREATE POLICY "Anyone can submit volunteer leads"
+ON public.volunteer_leads
+FOR INSERT
+TO anon, authenticated
+WITH CHECK (
+  phone IS NOT NULL
+  AND char_length(btrim(phone)) >= 6
+  AND char_length(btrim(phone)) <= 20
+  AND (name IS NULL OR char_length(btrim(name)) <= 100)
+);
