@@ -25,10 +25,12 @@ export const getSiteContent = createServerFn({ method: "GET" }).handler(async ()
 export const getMyAdminStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data, error } = await context.supabase.rpc("has_role", {
-      _user_id: context.userId,
-      _role: "admin",
-    });
+    const { data, error } = await context.supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId)
+      .eq("role", "admin")
+      .maybeSingle();
     if (error) throw error;
     return { isAdmin: !!data };
   });
@@ -38,12 +40,14 @@ export const updateSiteContent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { content: SiteContent }) => input)
   .handler(async ({ data, context }) => {
-    const { data: isAdmin, error: roleError } = await context.supabase.rpc("has_role", {
-      _user_id: context.userId,
-      _role: "admin",
-    });
+    const { data: role, error: roleError } = await context.supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId)
+      .eq("role", "admin")
+      .maybeSingle();
     if (roleError) throw roleError;
-    if (!isAdmin) throw new Error("Forbidden");
+    if (!role) throw new Error("Forbidden");
 
     const clean = mergeContent(data.content);
     const { error } = await context.supabase
