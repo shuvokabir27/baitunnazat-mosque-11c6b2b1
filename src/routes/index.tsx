@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Heart, Clock, X, Download, ZoomIn, ChevronDown } from "lucide-react";
 import { Layout } from "@/components/Layout";
-import { useSiteContent } from "@/lib/use-site-content";
+import { useSiteContent, siteContentQueryOptions } from "@/lib/use-site-content";
 import { heroImages, staffImages } from "@/lib/site-content";
 
 function staffImageFor(slug: string) {
@@ -10,6 +10,7 @@ function staffImageFor(slug: string) {
 }
 
 export const Route = createFileRoute("/")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(siteContentQueryOptions),
   head: () => ({
     meta: [
       { title: "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ, মহিপুর — হোম" },
