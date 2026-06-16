@@ -50,6 +50,82 @@ async function saveImage(src: string, name: string) {
   }
 }
 
+function VolunteerJoinForm() {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = phone.trim();
+    if (trimmed.length < 6) {
+      setError("সঠিক মোবাইল নম্বর দিন।");
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      const { error: insertError } = await supabase
+        .from("volunteer_leads")
+        .upsert({ name: name.trim() || null, phone: trimmed }, { onConflict: "phone", ignoreDuplicates: true });
+      if (insertError) throw insertError;
+      setDone(true);
+    } catch {
+      setError("জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (done) {
+    return (
+      <div className="mt-6 w-full max-w-sm rounded-2xl border border-border bg-card p-5 text-center shadow-soft">
+        <div className="mx-auto grid h-12 w-12 place-items-center rounded-full gradient-emerald text-primary-foreground">
+          <HeartHandshake className="h-6 w-6" />
+        </div>
+        <h3 className="mt-3 text-base font-bold text-primary">জাজাকাল্লাহু খাইরান</h3>
+        <p className="mt-1 text-sm text-muted-foreground">আপনার তথ্য জমা হয়েছে। শীঘ্রই যোগাযোগ করা হবে ইনশাআল্লাহ।</p>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={submit} className="mt-6 w-full max-w-sm rounded-2xl border border-border bg-card p-5 text-left shadow-soft">
+      <h3 className="mb-3 text-center text-base font-bold text-primary">মসজিদের কাজে যুক্ত হউন</h3>
+      <div className="space-y-2.5">
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="আপনার নাম (ঐচ্ছিক)"
+          maxLength={100}
+          className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary"
+        />
+        <input
+          type="tel"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="মোবাইল নম্বর"
+          maxLength={20}
+          required
+          className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary"
+        />
+        {error && <p className="text-sm text-destructive">{error}</p>}
+        <button
+          type="submit"
+          disabled={saving}
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl gradient-emerald px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-soft disabled:opacity-60"
+        >
+          {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+          জমা দিন
+        </button>
+      </div>
+    </form>
+  );
+}
+
 function HeroSlider() {
   const { mosque, heroSlides, heroCaptions, sections } = useSiteContent();
   const baseSlides: { image?: string; caption: string }[] = heroSlides.length
