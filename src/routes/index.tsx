@@ -153,6 +153,7 @@ function HeroSlider() {
         >
           <Heart className="h-5 w-5" /> {sections.donateLabel}
         </Link>
+        <VolunteerJoinForm />
       </div>
 
       {/* Zoom lightbox */}
