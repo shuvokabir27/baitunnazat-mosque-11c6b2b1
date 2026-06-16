@@ -166,6 +166,15 @@ function AdminPage() {
           </span>
         </div>
         <div className="flex items-center gap-2">
+          <a
+            href="/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded bg-white/10 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/20"
+          >
+            <ExternalLink className="h-4 w-4" />
+            সাইট ভিজিট
+          </a>
           <button
             onClick={save}
             disabled={saving}
@@ -183,6 +192,29 @@ function AdminPage() {
           </button>
         </div>
       </header>
+
+      {showVisit && (
+        <div className="fixed bottom-5 right-5 z-[60] w-72 animate-in fade-in slide-in-from-bottom-4 rounded-xl border border-[#c3c4c7] bg-white p-4 shadow-lg">
+          <button
+            onClick={() => setShowVisit(false)}
+            className="absolute right-2 top-2 grid h-6 w-6 place-items-center rounded text-[#646970] hover:bg-[#f0f0f1]"
+            aria-label="বন্ধ করুন"
+          >
+            <X className="h-4 w-4" />
+          </button>
+          <p className="text-sm font-semibold text-[#1d2327]">সফলভাবে সংরক্ষিত হয়েছে ✓</p>
+          <p className="mt-1 text-xs text-[#646970]">পরিবর্তনগুলো সাইটে দেখুন।</p>
+          <a
+            href="/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-flex items-center gap-1.5 rounded bg-[#2271b1] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#135e96]"
+          >
+            <ExternalLink className="h-4 w-4" />
+            সাইট ভিজিট করুন
+          </a>
+        </div>
+      )}
 
       {saved && (
         <p className="bg-[#00a32a] py-1.5 text-center text-xs font-semibold text-white">
