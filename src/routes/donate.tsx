@@ -38,7 +38,11 @@ function Donate() {
           return (
             <div key={i} className="flex items-start gap-4 rounded-3xl border border-border bg-card p-5 shadow-soft">
               <span
-                className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl"
+                className={
+                  brand
+                    ? "grid h-12 w-12 shrink-0 place-items-center rounded-2xl"
+                    : "grid h-12 w-12 shrink-0 place-items-center rounded-2xl gradient-gold text-gold-foreground"
+                }
                 style={
                   brand
                     ? { backgroundImage: brand.bg, color: brand.text }
