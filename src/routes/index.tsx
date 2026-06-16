@@ -18,6 +18,18 @@ export const Route = createFileRoute("/")({
     ],
   }),
   component: Index,
+  errorComponent: () => (
+    <Layout>
+      <div className="px-5 py-16 text-center text-muted-foreground">
+        কনটেন্ট লোড করা যায়নি। অনুগ্রহ করে পেজটি রিফ্রেশ করুন।
+      </div>
+    </Layout>
+  ),
+  notFoundComponent: () => (
+    <Layout>
+      <div className="px-5 py-16 text-center text-muted-foreground">পেজটি খুঁজে পাওয়া যায়নি।</div>
+    </Layout>
+  ),
 });
 
 async function saveImage(src: string, name: string) {
