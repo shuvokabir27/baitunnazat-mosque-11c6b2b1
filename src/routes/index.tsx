@@ -361,6 +361,7 @@ function useNextPrayer(prayerTimes: { name: string; time: string }[]) {
   const totalSec = Math.max(0, Math.floor(diff * 60));
   return {
     ongoing: false as const,
+    finished: false as const,
     name: next.name,
     time: next.time,
     hours: Math.floor(totalSec / 3600),
