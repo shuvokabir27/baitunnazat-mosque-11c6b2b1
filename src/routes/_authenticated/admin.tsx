@@ -204,6 +204,7 @@ function AdminPage() {
                 {tab === "committee" && <CommitteeTab content={content} setContent={setContent} />}
                 {tab === "footer" && <FooterTab content={content} setContent={setContent} />}
                 {tab === "development" && <DevelopmentTab content={content} setContent={setContent} />}
+                {tab === "donate" && <DonateTab content={content} setContent={setContent} />}
               </div>
             </div>
           </div>
