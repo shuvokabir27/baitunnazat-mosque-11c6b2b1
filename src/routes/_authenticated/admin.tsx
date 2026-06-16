@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import {
   LogOut,
@@ -22,13 +21,7 @@ import {
   HardHat,
   Settings,
 } from "lucide-react";
-import { defaultContent, type SiteContent } from "@/lib/site-content";
-import {
-  getSiteContent,
-  updateSiteContent,
-  getMyAdminStatus,
-  claimAdmin,
-} from "@/lib/site-content.functions";
+import { defaultContent, mergeContent, type SiteContent } from "@/lib/site-content";
 import { ImageCropUpload } from "@/components/ImageCropUpload";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -41,9 +34,6 @@ type Status = "loading" | "denied" | "ready";
 function AdminPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const update = useServerFn(updateSiteContent);
-  const checkAdmin = useServerFn(getMyAdminStatus);
-  const claim = useServerFn(claimAdmin);
 
   const [status, setStatus] = useState<Status>("loading");
   const [content, setContent] = useState<SiteContent>(defaultContent);
@@ -73,8 +63,14 @@ function AdminPage() {
       let admin: { isAdmin: boolean } | null = null;
       for (let i = 0; i < 3; i++) {
         try {
-          const claimed = await claim();
-          admin = claimed.isAdmin ? claimed : await checkAdmin();
+          const { data: role, error } = await supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", session.user.id)
+            .eq("role", "admin")
+            .maybeSingle();
+          if (error) throw error;
+          admin = { isAdmin: !!role };
           break;
         } catch {
           await new Promise((r) => setTimeout(r, 300));
@@ -86,7 +82,13 @@ function AdminPage() {
         return;
       }
       try {
-        const loaded = await getSiteContent();
+        const { data, error } = await supabase
+          .from("site_content")
+          .select("content")
+          .eq("id", 1)
+          .maybeSingle();
+        if (error) throw error;
+        const loaded = mergeContent((data?.content as Partial<SiteContent>) ?? null);
         if (cancelled) return;
         setContent(loaded);
         setStatus("ready");
@@ -108,7 +110,13 @@ function AdminPage() {
     setSaving(true);
     setSaved(false);
     try {
-      await update({ data: { content } });
+      const clean = mergeContent(content);
+      const { error } = await supabase
+        .from("site_content")
+        .update({ content: clean, updated_at: new Date().toISOString() })
+        .eq("id", 1);
+      if (error) throw error;
+      setContent(clean);
       await queryClient.invalidateQueries({ queryKey: ["site-content"] });
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);

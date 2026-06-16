@@ -1,11 +1,18 @@
 import { createServerFn } from "@tanstack/react-start";
+import { createClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { Database } from "@/integrations/supabase/types";
 import { mergeContent, type SiteContent } from "@/lib/site-content";
 
 /** Public read of the site content. Falls back to defaults when empty. */
 export const getSiteContent = createServerFn({ method: "GET" }).handler(async () => {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data } = await supabaseAdmin
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const publishableKey = process.env.SUPABASE_PUBLISHABLE_KEY;
+  if (!supabaseUrl || !publishableKey) throw new Error("Missing backend configuration");
+  const supabasePublic = createClient<Database>(supabaseUrl, publishableKey, {
+    auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+  });
+  const { data } = await supabasePublic
     .from("site_content")
     .select("content")
     .eq("id", 1)
@@ -17,41 +24,12 @@ export const getSiteContent = createServerFn({ method: "GET" }).handler(async ()
 export const getMyAdminStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data } = await supabaseAdmin
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", context.userId)
-      .eq("role", "admin")
-      .maybeSingle();
+    const { data, error } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (error) throw error;
     return { isAdmin: !!data };
-  });
-
-/**
- * Grant admin to the caller if no admin exists yet (first sign-in onboarding).
- * Safe: once an admin exists, this is a no-op for everyone else.
- */
-export const claimAdmin = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { count } = await supabaseAdmin
-      .from("user_roles")
-      .select("id", { count: "exact", head: true })
-      .eq("role", "admin");
-    if ((count ?? 0) > 0) {
-      const { data: mine } = await supabaseAdmin
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", context.userId)
-        .eq("role", "admin")
-        .maybeSingle();
-      return { isAdmin: !!mine, claimed: false };
-    }
-    await supabaseAdmin
-      .from("user_roles")
-      .insert({ user_id: context.userId, role: "admin" });
-    return { isAdmin: true, claimed: true };
   });
 
 /** Update the full site content document. Admin only. */
@@ -59,17 +37,15 @@ export const updateSiteContent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { content: SiteContent }) => input)
   .handler(async ({ data, context }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: isAdminRow } = await supabaseAdmin
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", context.userId)
-      .eq("role", "admin")
-      .maybeSingle();
-    if (!isAdminRow) throw new Error("Forbidden");
+    const { data: isAdmin, error: roleError } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (roleError) throw roleError;
+    if (!isAdmin) throw new Error("Forbidden");
 
     const clean = mergeContent(data.content);
-    const { error } = await supabaseAdmin
+    const { error } = await context.supabase
       .from("site_content")
       .update({ content: clean, updated_at: new Date().toISOString() })
       .eq("id", 1);
