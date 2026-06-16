@@ -307,6 +307,91 @@ function Sidebar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
   );
 }
 
+type Lead = { id: string; name: string | null; phone: string; created_at: string };
+
+function LeadsTab() {
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = async () => {
+    setLoading(true);
+    setError(null);
+    const { data, error: e } = await supabase
+      .from("volunteer_leads")
+      .select("id, name, phone, created_at")
+      .order("created_at", { ascending: false });
+    if (e) setError("তালিকা লোড করা যায়নি।");
+    else setLeads((data as Lead[]) ?? []);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const remove = async (id: string) => {
+    if (!confirm("এই নম্বরটি মুছে ফেলবেন?")) return;
+    const { error: e } = await supabase.from("volunteer_leads").delete().eq("id", id);
+    if (e) {
+      alert("মুছে ফেলা যায়নি।");
+      return;
+    }
+    setLeads((prev) => prev.filter((l) => l.id !== id));
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-10">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <p className="py-6 text-center text-sm text-destructive">{error}</p>;
+  }
+
+  if (leads.length === 0) {
+    return <p className="py-6 text-center text-sm text-muted-foreground">এখনও কোনো নম্বর জমা পড়েনি।</p>;
+  }
+
+  return (
+    <div className="space-y-3">
+      <p className="text-sm text-muted-foreground">মোট {leads.length} জন আগ্রহী ব্যক্তি যোগাযোগের জন্য নম্বর দিয়েছেন।</p>
+      <div className="divide-y divide-border rounded-xl border border-border">
+        {leads.map((l) => (
+          <div key={l.id} className="flex items-center justify-between gap-3 p-3">
+            <div className="min-w-0">
+              <p className="truncate font-semibold text-foreground">{l.name || "নাম দেননি"}</p>
+              <p className="text-sm text-muted-foreground">{l.phone}</p>
+              <p className="text-xs text-muted-foreground">
+                {new Date(l.created_at).toLocaleString("bn-BD")}
+              </p>
+            </div>
+            <div className="flex shrink-0 items-center gap-2">
+              <a
+                href={`tel:${l.phone}`}
+                className="inline-flex items-center gap-1.5 rounded-lg gradient-emerald px-3 py-1.5 text-xs font-semibold text-primary-foreground"
+              >
+                <Phone className="h-4 w-4" />
+                কল
+              </a>
+              <button
+                onClick={() => remove(l.id)}
+                className="grid h-8 w-8 place-items-center rounded-lg bg-destructive/10 text-destructive"
+                aria-label="মুছুন"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 
 
 type TabProps = {
