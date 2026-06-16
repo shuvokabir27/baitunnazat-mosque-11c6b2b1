@@ -20,6 +20,12 @@ const ICONS: Record<DonateIcon, typeof Smartphone> = {
   building: Building2,
 };
 
+const BRAND_STYLES: Record<string, { bg: string; text: string }> = {
+  বিকাশ: { bg: "linear-gradient(135deg, #E2136E, #C20F5E)", text: "#ffffff" },
+  নগদ: { bg: "linear-gradient(135deg, #F7931E, #E07D0A)", text: "#ffffff" },
+  ব্যাংক: { bg: "linear-gradient(135deg, #0066B2, #004C8C)", text: "#ffffff" },
+};
+
 function Donate() {
   const { donate } = useSiteContent();
   return (
@@ -28,9 +34,21 @@ function Donate() {
       <section className="space-y-4 px-4 py-10">
         {donate.methods.map((m, i) => {
           const Icon = ICONS[m.icon] ?? Smartphone;
+          const brand = BRAND_STYLES[m.title];
           return (
             <div key={i} className="flex items-start gap-4 rounded-3xl border border-border bg-card p-5 shadow-soft">
-              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl gradient-gold text-gold-foreground">
+              <span
+                className={
+                  brand
+                    ? "grid h-12 w-12 shrink-0 place-items-center rounded-2xl"
+                    : "grid h-12 w-12 shrink-0 place-items-center rounded-2xl gradient-gold text-gold-foreground"
+                }
+                style={
+                  brand
+                    ? { backgroundImage: brand.bg, color: brand.text }
+                    : undefined
+                }
+              >
                 <Icon className="h-6 w-6" />
               </span>
               <div>
