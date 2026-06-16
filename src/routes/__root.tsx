@@ -7,11 +7,11 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { Suspense, useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { SiteContentProvider } from "@/lib/use-site-content";
+import { SiteContentProvider, siteContentQueryOptions } from "@/lib/use-site-content";
 import { WelcomePopup } from "@/components/WelcomePopup";
 import { ClientOnly } from "@tanstack/react-router";
 
