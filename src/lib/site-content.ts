@@ -71,6 +71,12 @@ export type DonateMethod = {
   title: string;
   value: string;
   note: string;
+  // Optional bank-specific fields (shown when provided, e.g. for ব্যাংক)
+  bankName?: string;
+  branch?: string;
+  routingNumber?: string;
+  holderName?: string;
+  accountNumber?: string;
 };
 
 export type DonateContent = {
