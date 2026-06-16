@@ -25,12 +25,33 @@ export function WelcomePopup() {
     }
   }, []);
 
-  const close = () => {
+  const markDone = () => {
     try {
       localStorage.setItem(STORAGE_KEY, "1");
     } catch {
       /* ignore */
     }
+  };
+
+  // Insert the lead; duplicate phone numbers are ignored (unique constraint).
+  const saveLead = async (trimmed: string) => {
+    const { error: insertError } = await supabase
+      .from("volunteer_leads")
+      .upsert({ name: name.trim() || null, phone: trimmed }, { onConflict: "phone", ignoreDuplicates: true });
+    if (insertError) throw insertError;
+  };
+
+  // Closing the popup: if a valid number was typed, save it automatically.
+  const close = async () => {
+    const trimmed = phone.trim();
+    if (trimmed.length >= 6) {
+      try {
+        await saveLead(trimmed);
+      } catch {
+        /* ignore — user is dismissing anyway */
+      }
+    }
+    markDone();
     setOpen(false);
   };
 
@@ -44,15 +65,8 @@ export function WelcomePopup() {
     setSaving(true);
     setError(null);
     try {
-      const { error: insertError } = await supabase
-        .from("volunteer_leads")
-        .insert({ name: name.trim() || null, phone: trimmed });
-      if (insertError) throw insertError;
-      try {
-        localStorage.setItem(STORAGE_KEY, "1");
-      } catch {
-        /* ignore */
-      }
+      await saveLead(trimmed);
+      markDone();
       setDone(true);
       setTimeout(() => setOpen(false), 3500);
     } catch {
