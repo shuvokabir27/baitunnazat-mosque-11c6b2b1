@@ -124,6 +124,8 @@ function AdminPage() {
       await queryClient.invalidateQueries({ queryKey: ["site-content"] });
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
+      setShowVisit(true);
+      setTimeout(() => setShowVisit(false), 5000);
     } catch (e) {
       alert("সংরক্ষণ ব্যর্থ হয়েছে। আবার চেষ্টা করুন।");
     } finally {
