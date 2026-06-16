@@ -136,6 +136,9 @@ function RootComponent() {
       <SiteContentProvider>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
+        <ClientOnly fallback={null}>
+          <WelcomePopup />
+        </ClientOnly>
       </SiteContentProvider>
     </QueryClientProvider>
   );
