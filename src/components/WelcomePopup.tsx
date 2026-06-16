@@ -33,12 +33,12 @@ export function WelcomePopup() {
     }
   };
 
-  // Insert the lead; duplicate phone numbers are ignored (unique constraint).
+  // Insert the lead; duplicate phone numbers are treated as already submitted.
   const saveLead = async (trimmed: string) => {
     const { error: insertError } = await supabase
       .from("volunteer_leads")
-      .upsert({ name: name.trim() || null, phone: trimmed }, { onConflict: "phone", ignoreDuplicates: true });
-    if (insertError) throw insertError;
+      .insert({ name: name.trim() || null, phone: trimmed });
+    if (insertError && insertError.code !== "23505") throw insertError;
   };
 
   // Closing the popup: if a valid number was typed, save it automatically.
