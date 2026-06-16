@@ -313,6 +313,9 @@ function LeadsTab() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
+  const [savingName, setSavingName] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -338,6 +341,30 @@ function LeadsTab() {
       return;
     }
     setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, called: next } : l)));
+  };
+
+  const startEdit = (l: Lead) => {
+    setEditingId(l.id);
+    setEditValue(l.name ?? "");
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditValue("");
+  };
+
+  const saveName = async (id: string) => {
+    const trimmed = editValue.trim();
+    const next = trimmed.length > 0 ? trimmed.slice(0, 100) : null;
+    setSavingName(true);
+    const { error: e } = await supabase.from("volunteer_leads").update({ name: next }).eq("id", id);
+    setSavingName(false);
+    if (e) {
+      alert("নাম সংরক্ষণ করা যায়নি।");
+      return;
+    }
+    setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, name: next } : l)));
+    cancelEdit();
   };
 
   if (loading) {
