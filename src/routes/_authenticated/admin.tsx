@@ -63,12 +63,14 @@ function AdminPage() {
       let admin: { isAdmin: boolean } | null = null;
       for (let i = 0; i < 3; i++) {
         try {
-          const { data: isAdmin, error } = await supabase.rpc("has_role", {
-            _user_id: session.user.id,
-            _role: "admin",
-          });
+          const { data: role, error } = await supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", session.user.id)
+            .eq("role", "admin")
+            .maybeSingle();
           if (error) throw error;
-          admin = { isAdmin: !!isAdmin };
+          admin = { isAdmin: !!role };
           break;
         } catch {
           await new Promise((r) => setTimeout(r, 300));
