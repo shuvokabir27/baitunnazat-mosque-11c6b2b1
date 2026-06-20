@@ -237,6 +237,10 @@ function Members() {
               </div>
               <dl className="mt-3 space-y-1.5 text-sm">
                 <div className="flex justify-between gap-3">
+                  <dt className="text-muted-foreground">সদস্য নম্বর</dt>
+                  <dd className="font-semibold text-foreground">{checkResult.member_no} নং সদস্য</dd>
+                </div>
+                <div className="flex justify-between gap-3">
                   <dt className="text-muted-foreground">নাম</dt>
                   <dd className="font-semibold text-foreground">{checkResult.name}</dd>
                 </div>
