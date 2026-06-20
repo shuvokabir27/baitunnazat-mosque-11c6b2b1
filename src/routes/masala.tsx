@@ -48,8 +48,18 @@ function Masala() {
       return;
     }
     setError("");
-    const text = `আসসালামু আলাইকুম, ${scholar.name} (${scholar.role})।\nআমার একটি মাসয়ালা জানার ছিল:\n\n${q}`;
+
+    const text = `আসসালামু আলাইকুম ওয়া রাহমাতুল্লাহ।\n\nমুহতারাম ${scholar.name} (${scholar.role}), আশা করি মহান আল্লাহর রহমতে আপনি ভালো আছেন। হুজুর, আপনার কাছে আমার একটি শরয়ী মাসয়ালা জানার ছিল।\n\nমাসয়ালা: ${q}\n\nবিষয়টি জানালে অনেক উপকৃত হতাম। জাযাকাল্লাহু খায়রান।`;
     const url = `https://wa.me/${scholar.whatsapp.replace(/[^\d]/g, "")}?text=${encodeURIComponent(text)}`;
+
+    // আবেদনটি ব্যাকেন্ডে সংরক্ষণ (fire-and-forget যাতে হোয়াটসঅ্যাপ খুলতে দেরি না হয়)
+    void supabase.from("masala_requests").insert({
+      scholar_slug: scholar.slug,
+      scholar_name: scholar.name,
+      scholar_role: scholar.role,
+      subject: q,
+    });
+
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
