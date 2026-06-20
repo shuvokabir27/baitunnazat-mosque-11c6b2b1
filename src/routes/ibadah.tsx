@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Layout, PageHeader } from "@/components/Layout";
-import { prayerTimes } from "@/lib/mosque-data";
+
 
 export const Route = createFileRoute("/ibadah")({
   head: () => ({
@@ -89,19 +89,6 @@ function Ibadah() {
               </div>
             </div>
           ))}
-        </div>
-
-        {/* Prayer times */}
-        <Heading>নামাজের সময়সূচি</Heading>
-        <div className="rounded-3xl border border-border bg-card p-5 shadow-soft">
-          <ul className="divide-y divide-border">
-            {prayerTimes.map((p) => (
-              <li key={p.name} className="flex items-center justify-between py-3">
-                <span className="font-medium text-foreground">{p.name}</span>
-                <span className="font-bold text-primary">{p.time}</span>
-              </li>
-            ))}
-          </ul>
         </div>
 
         {/* Ibadah programs */}
