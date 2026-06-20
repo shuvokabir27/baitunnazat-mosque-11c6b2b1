@@ -594,6 +594,26 @@ function AddressesTab() {
       </form>
       {error && <p className="text-sm text-destructive">{error}</p>}
 
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-muted-foreground">মোট {addresses.length} টি ঠিকানা।</p>
+        <div className="flex gap-2">
+          <button
+            onClick={downloadExcel}
+            disabled={addresses.length === 0}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
+          >
+            <FileSpreadsheet className="h-4 w-4" /> এক্সেল
+          </button>
+          <button
+            onClick={downloadPdf}
+            disabled={addresses.length === 0}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-rose-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
+          >
+            <FileDown className="h-4 w-4" /> পিডিএফ
+          </button>
+        </div>
+      </div>
+
       {loading ? (
         <div className="flex justify-center py-10">
           <Loader2 className="h-6 w-6 animate-spin text-primary" />
@@ -605,6 +625,9 @@ function AddressesTab() {
           {addresses.map((a) => (
             <div key={a.id} className="flex items-center justify-between gap-3 p-3">
               <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">{a.label}</span>
+              <span className="shrink-0 rounded-full bg-muted px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">
+                {counts[a.label] ?? 0} জন
+              </span>
               <button
                 onClick={() => remove(a.id)}
                 className="shrink-0 rounded-lg bg-destructive/10 p-2 text-destructive hover:bg-destructive/20"
