@@ -16,7 +16,7 @@ export const Route = createFileRoute("/members")({
 
 type AddressOption = { id: string; label: string };
 
-type MemberInfo = { member_no: number; name: string; father_name: string; address: string };
+type MemberInfo = { member_no: number; name: string; father_name: string; address: string; monthly_donation: number };
 
 function Members() {
   const [addresses, setAddresses] = useState<AddressOption[]>([]);
