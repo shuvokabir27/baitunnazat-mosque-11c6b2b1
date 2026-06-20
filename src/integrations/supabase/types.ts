@@ -197,6 +197,7 @@ export type Database = {
         Returns: {
           address: string
           father_name: string
+          member_no: number
           name: string
         }[]
       }

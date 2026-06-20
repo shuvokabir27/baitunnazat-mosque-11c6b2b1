@@ -16,7 +16,7 @@ export const Route = createFileRoute("/members")({
 
 type AddressOption = { id: string; label: string };
 
-type MemberInfo = { name: string; father_name: string; address: string };
+type MemberInfo = { member_no: number; name: string; father_name: string; address: string };
 
 function Members() {
   const [addresses, setAddresses] = useState<AddressOption[]>([]);
@@ -236,6 +236,10 @@ function Members() {
                 <span className="text-sm font-bold">আপনি একজন নিবন্ধিত সদস্য</span>
               </div>
               <dl className="mt-3 space-y-1.5 text-sm">
+                <div className="flex justify-between gap-3">
+                  <dt className="text-muted-foreground">সদস্য নম্বর</dt>
+                  <dd className="font-semibold text-foreground">{checkResult.member_no} নং সদস্য</dd>
+                </div>
                 <div className="flex justify-between gap-3">
                   <dt className="text-muted-foreground">নাম</dt>
                   <dd className="font-semibold text-foreground">{checkResult.name}</dd>
