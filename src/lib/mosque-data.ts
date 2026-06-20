@@ -158,6 +158,9 @@ export const prayerTimes = [
 export const navItems = [
   { to: "/", label: "হোম" },
   { to: "/donate", label: "দান করুন" },
+] as const;
+
+export const moreNavItems = [
   { to: "/development", label: "উন্নয়ন কাজ" },
   { to: "/ibadah", label: "ইবাদত ও নামাজ" },
 ] as const;
