@@ -41,6 +41,28 @@ function Members() {
   const [checking, setChecking] = useState(false);
   const [checkResult, setCheckResult] = useState<MemberInfo | null>(null);
   const [notMember, setNotMember] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [downloading, setDownloading] = useState(false);
+
+  const downloadCard = useCallback(async () => {
+    if (!cardRef.current) return;
+    setDownloading(true);
+    try {
+      const dataUrl = await toPng(cardRef.current, {
+        cacheBust: true,
+        pixelRatio: 3,
+        backgroundColor: "#ffffff",
+      });
+      const a = document.createElement("a");
+      a.download = `সদস্য-কার্ড-${checkResult?.member_no ?? ""}.png`;
+      a.href = dataUrl;
+      a.click();
+    } catch {
+      /* ignore */
+    } finally {
+      setDownloading(false);
+    }
+  }, [checkResult]);
 
   const loadAddresses = useCallback(async () => {
     const { data } = await supabase
