@@ -72,6 +72,18 @@ function Members() {
 
     setSaving(true);
     try {
+      const { data: existing, error: dupError } = await supabase
+        .from("members")
+        .select("id")
+        .eq("mobile", trimmedMobile)
+        .limit(1);
+      if (dupError) throw dupError;
+      if (existing && existing.length > 0) {
+        setError("এই মোবাইল নম্বরটি ইতিমধ্যে যুক্ত আছে।");
+        setSaving(false);
+        return;
+      }
+
       const donation = Math.max(0, Number(monthlyDonation) || 0);
       const { error: insertError } = await supabase.from("members").insert({
         name: trimmedName,
