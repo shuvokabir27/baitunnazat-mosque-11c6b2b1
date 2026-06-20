@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { Users, Plus, Loader2, CheckCircle2, Search, UserCheck, UserX } from "lucide-react";
 import { Layout, PageHeader } from "@/components/Layout";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,6 +27,7 @@ function Members() {
   const [addressSel, setAddressSel] = useState("");
   const [monthlyDonation, setMonthlyDonation] = useState("");
   const [saving, setSaving] = useState(false);
+  const submittingRef = useRef(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,6 +51,7 @@ function Members() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submittingRef.current) return;
     setError(null);
 
     const trimmedName = name.trim();
@@ -70,6 +72,7 @@ function Members() {
       return;
     }
 
+    submittingRef.current = true;
     setSaving(true);
     try {
       const { data: existing, error: dupError } = await supabase
@@ -81,6 +84,7 @@ function Members() {
       if (existing && existing.length > 0) {
         setError("এই মোবাইল নম্বরটি ইতিমধ্যে যুক্ত আছে।");
         setSaving(false);
+        submittingRef.current = false;
         return;
       }
 
@@ -104,6 +108,7 @@ function Members() {
       setError("জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
     } finally {
       setSaving(false);
+      submittingRef.current = false;
     }
   };
 
