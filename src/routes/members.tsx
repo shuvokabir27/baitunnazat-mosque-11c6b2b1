@@ -312,7 +312,7 @@ function Members() {
                   placeholder="মোবাইল নম্বর (১১ ডিজিট)"
                   required
                   className={`w-full rounded-xl border bg-background px-4 py-3 text-sm outline-none ${
-                    mobile.length > 0 && mobile.length !== 11
+                    (mobile.length > 0 && mobile.length !== 11) || mobileExists
                       ? "border-destructive focus:border-destructive"
                       : "border-border focus:border-primary"
                   }`}
@@ -320,6 +320,11 @@ function Members() {
                 {mobile.length > 0 && mobile.length !== 11 && (
                   <p className="mt-1 text-xs font-medium text-destructive">
                     মোবাইল নম্বর অবশ্যই ১১ ডিজিট হতে হবে। (এখন {mobile.length} ডিজিট)
+                  </p>
+                )}
+                {mobile.length === 11 && mobileExists && (
+                  <p className="mt-1 text-xs font-medium text-destructive">
+                    এই মোবাইল নম্বরটি ইতিমধ্যে সদস্য হিসেবে যুক্ত আছে।
                   </p>
                 )}
               </div>
