@@ -99,7 +99,8 @@ function Members() {
         return;
       }
 
-      const donation = Math.max(0, Number(monthlyDonation) || 0);
+      const donationRaw = donationSel === "other" ? monthlyDonation : donationSel;
+      const donation = Math.max(0, Number(donationRaw) || 0);
       const { error: insertError } = await supabase.from("members").insert({
         name: trimmedName,
         father_name: trimmedFather,
