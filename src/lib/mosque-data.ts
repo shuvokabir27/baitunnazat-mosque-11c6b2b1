@@ -8,7 +8,7 @@ import muazzin from "@/assets/muazzin.jpg";
 export const mosque = {
   name: "বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ, মহিপুর",
   shortName: "বাইতুন নাজাত",
-  established: "১৯৭৮",
+  established: "১৯৪০",
   location: "মহিপুর",
   tagline: "আল্লাহর ঘর — শান্তি ও ইবাদতের কেন্দ্র",
 };
