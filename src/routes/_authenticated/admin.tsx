@@ -784,7 +784,7 @@ function MembersTab() {
 
   const downloadExcel = () => {
     const header = ["ক্রমিক", "নাম", "পিতার নাম", "মোবাইল", "ঠিকানা", "মাসিক দান (টাকা)"];
-    const rows = members.map((m, i) => [String(i + 1), m.name, m.father_name, m.mobile, m.address, String(m.monthly_donation ?? 0)]);
+    const rows = filtered.map((m, i) => [String(i + 1), m.name, m.father_name, m.mobile, m.address, String(m.monthly_donation ?? 0)]);
     const esc = (v: string) => `"${v.replace(/"/g, '""')}"`;
     const csv = [header, ...rows].map((r) => r.map(esc).join(",")).join("\r\n");
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
@@ -797,13 +797,13 @@ function MembersTab() {
   };
 
   const downloadPdf = () => {
-    const rows = members
+    const rows = filtered
       .map(
         (m, i) =>
           `<tr><td>${i + 1}</td><td>${m.name}</td><td>${m.father_name}</td><td>${m.mobile}</td><td>${m.address}</td><td>${m.monthly_donation ?? 0}</td></tr>`,
       )
       .join("");
-    const total = members.reduce((s, m) => s + (Number(m.monthly_donation) || 0), 0);
+    const total = filtered.reduce((s, m) => s + (Number(m.monthly_donation) || 0), 0);
     const html = `<!DOCTYPE html><html lang="bn"><head><meta charset="utf-8"><title>সদস্য তালিকা</title>
       <style>
         body{font-family:'Noto Sans Bengali','Segoe UI',sans-serif;padding:24px;color:#1a1a1a}
@@ -814,7 +814,7 @@ function MembersTab() {
         th{background:#0f6e4f;color:#fff}
       </style></head><body>
       <h1>${mosque.name}</h1>
-      <p>সদস্য তালিকা — মোট ${members.length} জন · মাসিক দান মোট ${total} টাকা</p>
+      <p>সদস্য তালিকা — মোট ${filtered.length} জন · মাসিক দান মোট ${total} টাকা</p>
       <table><thead><tr><th>ক্রমিক</th><th>নাম</th><th>পিতার নাম</th><th>মোবাইল</th><th>ঠিকানা</th><th>মাসিক দান (টাকা)</th></tr></thead>
       <tbody>${rows}</tbody></table>
       <script>window.onload=function(){window.print()}<\/script>
@@ -824,6 +824,12 @@ function MembersTab() {
       w.document.write(html);
       w.document.close();
     }
+  };
+
+  const resetFilters = () => {
+    setAddressFilter("");
+    setMinDonation("");
+    setMaxDonation("");
   };
 
   if (loading) {
@@ -837,24 +843,79 @@ function MembersTab() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">মোট {members.length} জন সদস্য।</p>
+        <p className="text-sm text-muted-foreground">
+          মোট {filtered.length} জন সদস্য{filtered.length !== members.length ? ` (সর্বমোট ${members.length})` : ""}।
+        </p>
         <div className="flex gap-2">
           <button
             onClick={downloadExcel}
-            disabled={members.length === 0}
+            disabled={filtered.length === 0}
             className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
           >
             <FileSpreadsheet className="h-4 w-4" /> এক্সেল
           </button>
           <button
             onClick={downloadPdf}
-            disabled={members.length === 0}
+            disabled={filtered.length === 0}
             className="inline-flex items-center gap-1.5 rounded-lg bg-rose-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
           >
             <FileDown className="h-4 w-4" /> পিডিএফ
           </button>
         </div>
       </div>
+
+      <div className="grid gap-3 rounded-xl border border-border bg-muted/30 p-3 sm:grid-cols-4">
+        <div className="sm:col-span-2">
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">ঠিকানা</label>
+          <select
+            value={addressFilter}
+            onChange={(e) => setAddressFilter(e.target.value)}
+            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+          >
+            <option value="">সব ঠিকানা</option>
+            {addressOptions.map((a) => (
+              <option key={a} value={a}>
+                {a}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">দান সর্বনিম্ন</label>
+          <input
+            type="number"
+            inputMode="numeric"
+            min={0}
+            value={minDonation}
+            onChange={(e) => setMinDonation(e.target.value)}
+            placeholder="০"
+            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">দান সর্বোচ্চ</label>
+          <input
+            type="number"
+            inputMode="numeric"
+            min={0}
+            value={maxDonation}
+            onChange={(e) => setMaxDonation(e.target.value)}
+            placeholder="∞"
+            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+          />
+        </div>
+        {(addressFilter || minDonation !== "" || maxDonation !== "") && (
+          <div className="sm:col-span-4">
+            <button
+              onClick={resetFilters}
+              className="text-xs font-semibold text-primary underline-offset-2 hover:underline"
+            >
+              ফিল্টার মুছুন
+            </button>
+          </div>
+        )}
+      </div>
+
 
       {members.length === 0 ? (
         <p className="py-6 text-center text-sm text-muted-foreground">এখনো কোনো সদস্য যুক্ত করা হয়নি।</p>
