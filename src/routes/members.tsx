@@ -271,7 +271,7 @@ function Members() {
         </div>
 
 
-        {
+        {/* New member form */}
           <div className="rounded-3xl border border-border bg-card p-5 shadow-soft">
             <div className="flex items-start gap-3">
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl gradient-emerald text-primary-foreground">
