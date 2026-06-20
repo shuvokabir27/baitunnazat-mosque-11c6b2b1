@@ -26,7 +26,7 @@ type Member = {
 
 type AddressOption = { id: string; label: string };
 
-const ADD_NEW = "__add_new__";
+
 
 function Members() {
   const [addresses, setAddresses] = useState<AddressOption[]>([]);
