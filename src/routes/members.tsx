@@ -293,7 +293,7 @@ function Members() {
                   </span>
                   <div className="min-w-0">
                     <h4 className="text-base font-extrabold leading-tight">{mosque.name}</h4>
-                    <p className="text-[11px] text-white/80">সদস্য পরিচয় কার্ড · প্রতিষ্ঠাকাল {mosque.established}</p>
+                    <p className="mt-1 inline-block rounded-full bg-white/20 px-3 py-0.5 text-[11px] font-bold tracking-wide text-white">সদস্য পরিচয় কার্ড</p>
                   </div>
                 </div>
 
