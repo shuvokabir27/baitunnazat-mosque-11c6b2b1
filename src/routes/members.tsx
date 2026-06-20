@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useCallback } from "react";
-import { Users, Plus, Loader2, CheckCircle2 } from "lucide-react";
+import { Users, Plus, Loader2, CheckCircle2, Search, UserCheck, UserX } from "lucide-react";
 import { Layout, PageHeader } from "@/components/Layout";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -16,6 +16,8 @@ export const Route = createFileRoute("/members")({
 
 type AddressOption = { id: string; label: string };
 
+type MemberInfo = { name: string; father_name: string; address: string };
+
 function Members() {
   const [addresses, setAddresses] = useState<AddressOption[]>([]);
 
@@ -26,6 +28,12 @@ function Members() {
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // verification state
+  const [checkMobile, setCheckMobile] = useState("");
+  const [checking, setChecking] = useState(false);
+  const [checkResult, setCheckResult] = useState<MemberInfo | null>(null);
+  const [notMember, setNotMember] = useState(false);
 
   const loadAddresses = useCallback(async () => {
     const { data } = await supabase
@@ -83,6 +91,35 @@ function Members() {
     }
   };
 
+  const verify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCheckResult(null);
+    setNotMember(false);
+    const m = checkMobile.trim();
+    if (m.length < 6) {
+      setNotMember(false);
+      setCheckResult(null);
+      return;
+    }
+    setChecking(true);
+    try {
+      const { data, error: rpcError } = await supabase.rpc("verify_member_by_mobile", {
+        _mobile: m,
+      });
+      if (rpcError) throw rpcError;
+      const row = (data ?? [])[0] as MemberInfo | undefined;
+      if (row) {
+        setCheckResult(row);
+      } else {
+        setNotMember(true);
+      }
+    } catch {
+      setNotMember(true);
+    } finally {
+      setChecking(false);
+    }
+  };
+
   return (
     <Layout>
       <PageHeader
@@ -91,6 +128,79 @@ function Members() {
       />
 
       <div className="px-4 pb-10">
+        <div className="mb-5 rounded-3xl border border-border bg-card p-5 shadow-soft">
+          <div className="flex items-start gap-3">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl gradient-emerald text-primary-foreground">
+              <Search className="h-5 w-5" />
+            </span>
+            <div>
+              <h3 className="text-base font-bold text-primary">সদস্য যাচাই করুন</h3>
+              <p className="mt-0.5 text-sm text-muted-foreground">
+                মোবাইল নম্বর দিন, আপনার তথ্য স্বয়ংক্রিয়ভাবে দেখানো হবে।
+              </p>
+            </div>
+          </div>
+
+          <form onSubmit={verify} className="mt-4 flex gap-2">
+            <input
+              type="tel"
+              value={checkMobile}
+              onChange={(e) => {
+                setCheckMobile(e.target.value);
+                setCheckResult(null);
+                setNotMember(false);
+              }}
+              placeholder="মোবাইল নম্বর দিন"
+              maxLength={20}
+              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
+            />
+            <button
+              type="submit"
+              disabled={checking}
+              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl gradient-emerald px-4 py-3 text-sm font-semibold text-primary-foreground shadow-soft disabled:opacity-60"
+            >
+              {checking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+              যাচাই
+            </button>
+          </form>
+
+          {checkResult && (
+            <div className="mt-4 rounded-2xl border border-primary/30 bg-primary/5 p-4">
+              <div className="flex items-center gap-2 text-primary">
+                <UserCheck className="h-5 w-5" />
+                <span className="text-sm font-bold">আপনি একজন নিবন্ধিত সদস্য</span>
+              </div>
+              <dl className="mt-3 space-y-1.5 text-sm">
+                <div className="flex justify-between gap-3">
+                  <dt className="text-muted-foreground">নাম</dt>
+                  <dd className="font-semibold text-foreground">{checkResult.name}</dd>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <dt className="text-muted-foreground">পিতার নাম</dt>
+                  <dd className="font-semibold text-foreground">{checkResult.father_name}</dd>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <dt className="text-muted-foreground">ঠিকানা</dt>
+                  <dd className="font-semibold text-foreground">{checkResult.address}</dd>
+                </div>
+              </dl>
+            </div>
+          )}
+
+          {notMember && (
+            <div className="mt-4 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-amber-900">
+              <div className="flex items-center gap-2">
+                <UserX className="h-5 w-5" />
+                <span className="text-sm font-bold">আপনি এখনো সদস্য নন</span>
+              </div>
+              <p className="mt-1.5 text-sm">
+                এই মোবাইল নম্বরে কোনো সদস্য পাওয়া যায়নি। অনুগ্রহ করে নিচের ফর্মটি পূরণ করে সদস্য হিসেবে যুক্ত হোন।
+              </p>
+            </div>
+          )}
+        </div>
+
+
         {done ? (
           <div className="rounded-3xl border border-border bg-card p-6 text-center shadow-soft">
             <div className="mx-auto grid h-14 w-14 place-items-center rounded-full gradient-emerald text-primary-foreground">
