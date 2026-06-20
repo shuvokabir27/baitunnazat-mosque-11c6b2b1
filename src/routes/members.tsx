@@ -25,6 +25,7 @@ function Members() {
   const [fatherName, setFatherName] = useState("");
   const [mobile, setMobile] = useState("");
   const [addressSel, setAddressSel] = useState("");
+  const [donationSel, setDonationSel] = useState("");
   const [monthlyDonation, setMonthlyDonation] = useState("");
   const [saving, setSaving] = useState(false);
   const submittingRef = useRef(false);
