@@ -919,6 +919,8 @@ function MembersTab() {
 
       {members.length === 0 ? (
         <p className="py-6 text-center text-sm text-muted-foreground">এখনো কোনো সদস্য যুক্ত করা হয়নি।</p>
+      ) : filtered.length === 0 ? (
+        <p className="py-6 text-center text-sm text-muted-foreground">এই ফিল্টারে কোনো সদস্য পাওয়া যায়নি।</p>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-border">
           <table className="w-full text-sm">
