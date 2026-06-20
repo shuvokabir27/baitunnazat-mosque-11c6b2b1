@@ -72,6 +72,7 @@ function Members() {
       return;
     }
 
+    submittingRef.current = true;
     setSaving(true);
     try {
       const { data: existing, error: dupError } = await supabase
