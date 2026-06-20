@@ -697,6 +697,7 @@ function MembersTab() {
                 <th className="p-2">পিতার নাম</th>
                 <th className="p-2">মোবাইল</th>
                 <th className="p-2">ঠিকানা</th>
+                <th className="p-2">মাসিক দান</th>
                 <th className="p-2"></th>
               </tr>
             </thead>
