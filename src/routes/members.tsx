@@ -355,21 +355,37 @@ function Members() {
                   </option>
                 ))}
               </select>
-              <div className="relative">
-                <input
-                  type="number"
-                  min={0}
-                  step="1"
-                  inputMode="numeric"
-                  value={monthlyDonation}
-                  onChange={(e) => setMonthlyDonation(e.target.value)}
-                  placeholder="মাসিক দানের পরিমাণ"
-                  className="w-full rounded-xl border border-border bg-background px-4 py-3 pr-12 text-sm outline-none focus:border-primary"
-                />
-                <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                  টাকা
-                </span>
-              </div>
+              <select
+                value={donationSel}
+                onChange={(e) => setDonationSel(e.target.value)}
+                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
+              >
+                <option value="" disabled>
+                  মাসিক দানের পরিমাণ নির্বাচন করুন
+                </option>
+                <option value="100">১০০ টাকা</option>
+                <option value="200">২০০ টাকা</option>
+                <option value="500">৫০০ টাকা</option>
+                <option value="1000">১০০০ টাকা</option>
+                <option value="other">অন্যান্য</option>
+              </select>
+              {donationSel === "other" && (
+                <div className="relative">
+                  <input
+                    type="number"
+                    min={0}
+                    step="1"
+                    inputMode="numeric"
+                    value={monthlyDonation}
+                    onChange={(e) => setMonthlyDonation(e.target.value)}
+                    placeholder="টাকার পরিমাণ লিখুন"
+                    className="w-full rounded-xl border border-border bg-background px-4 py-3 pr-12 text-sm outline-none focus:border-primary"
+                  />
+                  <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                    টাকা
+                  </span>
+                </div>
+              )}
               {error && <p className="text-sm text-destructive">{error}</p>}
               <button
                 type="submit"
