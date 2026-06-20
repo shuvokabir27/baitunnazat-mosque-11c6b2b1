@@ -275,77 +275,86 @@ function Members() {
               {/* Downloadable membership card */}
               <div
                 ref={cardRef}
-                className="relative overflow-hidden rounded-2xl text-white shadow-lg"
-                style={{ background: "linear-gradient(135deg, #065f46 0%, #047857 55%, #0d9488 100%)" }}
+                className="relative overflow-hidden rounded-2xl shadow-lg"
+                style={{ background: "#f7f0df" }}
               >
-                {/* Islamic geometric background pattern */}
+                {/* Gold Islamic geometric pattern (fills card, visible as a border frame) */}
                 <svg
                   className="pointer-events-none absolute inset-0 h-full w-full"
                   xmlns="http://www.w3.org/2000/svg"
                   aria-hidden="true"
                 >
                   <defs>
-                    <pattern id="islamic-stars" width="56" height="56" patternUnits="userSpaceOnUse" patternTransform="rotate(0)">
-                      <g fill="none" stroke="rgba(255,255,255,0.14)" strokeWidth="1.1">
-                        <path d="M28 6 L34 22 L50 28 L34 34 L28 50 L22 34 L6 28 L22 22 Z" />
-                        <path d="M28 12 L31 25 L44 28 L31 31 L28 44 L25 31 L12 28 L25 25 Z" />
-                        <circle cx="28" cy="28" r="3" />
+                    <pattern id="islamic-stars" width="48" height="48" patternUnits="userSpaceOnUse">
+                      <g fill="none" stroke="#b08d4f" strokeWidth="1" opacity="0.85">
+                        <path d="M24 3 L29 19 L45 24 L29 29 L24 45 L19 29 L3 24 L19 19 Z" />
+                        <path d="M24 9 L27 21 L39 24 L27 27 L24 39 L21 27 L9 24 L21 21 Z" />
+                        <circle cx="24" cy="24" r="2.4" />
+                        <circle cx="0" cy="0" r="2.4" />
+                        <circle cx="48" cy="0" r="2.4" />
+                        <circle cx="0" cy="48" r="2.4" />
+                        <circle cx="48" cy="48" r="2.4" />
                       </g>
                     </pattern>
                   </defs>
                   <rect width="100%" height="100%" fill="url(#islamic-stars)" />
                 </svg>
 
-                {/* decorative arches / circles */}
-                <div className="pointer-events-none absolute -right-12 -top-14 h-44 w-44 rounded-full border border-white/15 bg-white/5" />
-                <div className="pointer-events-none absolute -bottom-16 -left-12 h-48 w-48 rounded-full border border-white/10 bg-white/5" />
-
-                {/* header */}
-                <div className="relative flex flex-col items-center gap-2 border-b border-white/20 px-5 py-4 text-center">
-                  <span className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-full bg-white/15">
-                    {siteIcon ? (
-                      <img src={siteIcon} alt="লোগো" className="h-full w-full object-cover" crossOrigin="anonymous" />
-                    ) : (
-                      <Moon className="h-6 w-6 text-white" />
-                    )}
-                  </span>
-                  <div className="min-w-0">
-                    <h4 className="text-base font-extrabold leading-tight">{mosque.name}</h4>
-                    <p className="mt-1 inline-block rounded-full bg-white/20 px-3 py-0.5 text-[11px] font-bold tracking-wide text-white">সদস্য পরিচয় কার্ড</p>
-                  </div>
-                </div>
-
-                {/* body */}
-                <div className="relative px-5 py-4">
-                  <div className="mb-3 flex items-center justify-between gap-3 rounded-xl bg-white/15 px-3 py-2">
-                    <span className="text-xs font-medium text-white/80">সদস্য নম্বর</span>
-                    <span className="text-xl font-extrabold tracking-wide">{checkResult.member_no}</span>
+                {/* Inner panel with mihrab arch top — keeps text crisp & readable */}
+                <div
+                  className="relative m-3.5 border-2 border-[#b08d4f] bg-[#fffdf6]"
+                  style={{ borderRadius: "44% 44% 14px 14px / 90px 90px 14px 14px" }}
+                >
+                  {/* header */}
+                  <div className="flex flex-col items-center gap-2 px-5 pt-6 pb-4 text-center">
+                    <span className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-[#b08d4f] bg-[#0f5132]">
+                      {siteIcon ? (
+                        <img src={siteIcon} alt="লোগো" className="h-full w-full object-cover" crossOrigin="anonymous" />
+                      ) : (
+                        <Moon className="h-6 w-6 text-[#d4af5f]" />
+                      )}
+                    </span>
+                    <h4 className="text-base font-extrabold leading-tight text-[#0f5132]">{mosque.name}</h4>
+                    <p className="inline-block rounded-full bg-[#0f5132] px-3 py-0.5 text-[11px] font-bold tracking-wide text-[#f7e9c6]">
+                      সদস্য পরিচয় কার্ড
+                    </p>
                   </div>
 
-                  <dl className="space-y-2 text-sm">
-                    <div className="flex justify-between gap-3">
-                      <dt className="text-white/75">নাম</dt>
-                      <dd className="text-right font-bold">{checkResult.name}</dd>
-                    </div>
-                    <div className="flex justify-between gap-3">
-                      <dt className="text-white/75">পিতার নাম</dt>
-                      <dd className="text-right font-bold">{checkResult.father_name}</dd>
-                    </div>
-                    <div className="flex justify-between gap-3">
-                      <dt className="text-white/75">ঠিকানা</dt>
-                      <dd className="text-right font-bold">{checkResult.address}</dd>
-                    </div>
-                  </dl>
+                  {/* gold divider */}
+                  <div className="mx-5 h-px bg-gradient-to-r from-transparent via-[#b08d4f] to-transparent" />
 
-                  <div className="mt-3 flex items-center justify-between gap-3 rounded-xl bg-white px-3 py-2.5">
-                    <span className="text-sm font-bold text-emerald-800">মাসিক দান</span>
-                    <span className="text-lg font-extrabold text-emerald-700">{checkResult.monthly_donation ?? 0} ৳</span>
+                  {/* body */}
+                  <div className="px-5 py-4">
+                    <div className="mb-3 flex items-center justify-between gap-3 rounded-lg border border-[#b08d4f]/40 bg-[#f7f0df] px-3 py-2">
+                      <span className="text-xs font-medium text-[#7a6233]">সদস্য নম্বর</span>
+                      <span className="text-xl font-extrabold tracking-wide text-[#0f5132]">{checkResult.member_no}</span>
+                    </div>
+
+                    <dl className="space-y-2 text-sm">
+                      <div className="flex justify-between gap-3">
+                        <dt className="text-[#7a6233]">নাম</dt>
+                        <dd className="text-right font-bold text-[#1c1c1c]">{checkResult.name}</dd>
+                      </div>
+                      <div className="flex justify-between gap-3">
+                        <dt className="text-[#7a6233]">পিতার নাম</dt>
+                        <dd className="text-right font-bold text-[#1c1c1c]">{checkResult.father_name}</dd>
+                      </div>
+                      <div className="flex justify-between gap-3">
+                        <dt className="text-[#7a6233]">ঠিকানা</dt>
+                        <dd className="text-right font-bold text-[#1c1c1c]">{checkResult.address}</dd>
+                      </div>
+                    </dl>
+
+                    <div className="mt-3 flex items-center justify-between gap-3 rounded-lg bg-[#0f5132] px-3 py-2.5">
+                      <span className="text-sm font-bold text-[#f7e9c6]">মাসিক দান</span>
+                      <span className="text-lg font-extrabold text-[#d4af5f]">{checkResult.monthly_donation ?? 0} ৳</span>
+                    </div>
                   </div>
-                </div>
 
-                {/* footer */}
-                <div className="relative border-t border-white/20 px-5 py-2.5 text-center text-[11px] text-white/80">
-                  {mosque.tagline}
+                  {/* footer */}
+                  <div className="px-5 pb-4 pt-1 text-center text-[11px] font-medium text-[#7a6233]">
+                    {mosque.tagline}
+                  </div>
                 </div>
               </div>
 
