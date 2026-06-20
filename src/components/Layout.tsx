@@ -111,7 +111,6 @@ function HeaderDateTime() {
           <span dir="rtl" className="text-xs font-medium text-gold">{arabic}</span>
         </div>
         <div className="flex flex-col items-center lg:items-start">
-          <span className="text-xs text-muted-foreground">{english}</span>
           <span className="text-sm font-bold text-primary">{bangla}</span>
         </div>
       </div>
