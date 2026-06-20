@@ -864,8 +864,8 @@ function MembersTab() {
         </div>
       </div>
 
-      <div className="grid gap-3 rounded-xl border border-border bg-muted/30 p-3 sm:grid-cols-4">
-        <div className="sm:col-span-2">
+      <div className="grid gap-3 rounded-xl border border-border bg-muted/30 p-3 sm:grid-cols-2">
+        <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">ঠিকানা</label>
           <select
             value={addressFilter}
@@ -881,31 +881,23 @@ function MembersTab() {
           </select>
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-muted-foreground">দান সর্বনিম্ন</label>
-          <input
-            type="number"
-            inputMode="numeric"
-            min={0}
-            value={minDonation}
-            onChange={(e) => setMinDonation(e.target.value)}
-            placeholder="০"
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">দান পরিমাণ</label>
+          <select
+            value={donationFilter}
+            onChange={(e) => setDonationFilter(e.target.value)}
             className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
-          />
+          >
+            <option value="">সব দান</option>
+            {donationOptions.map((d) => (
+              <option key={d} value={String(d)}>
+                {d} ৳
+              </option>
+            ))}
+          </select>
         </div>
-        <div>
-          <label className="mb-1 block text-xs font-medium text-muted-foreground">দান সর্বোচ্চ</label>
-          <input
-            type="number"
-            inputMode="numeric"
-            min={0}
-            value={maxDonation}
-            onChange={(e) => setMaxDonation(e.target.value)}
-            placeholder="∞"
-            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
-          />
-        </div>
-        {(addressFilter || minDonation !== "" || maxDonation !== "") && (
-          <div className="sm:col-span-4">
+        {(addressFilter || donationFilter !== "") && (
+          <div className="sm:col-span-2">
+
             <button
               onClick={resetFilters}
               className="text-xs font-semibold text-primary underline-offset-2 hover:underline"
