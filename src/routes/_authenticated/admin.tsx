@@ -739,18 +739,19 @@ function MembersTab() {
   const [confirmTarget, setConfirmTarget] = useState<Member | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [addressFilter, setAddressFilter] = useState("");
-  const [minDonation, setMinDonation] = useState("");
-  const [maxDonation, setMaxDonation] = useState("");
+  const [donationFilter, setDonationFilter] = useState("");
 
   const addressOptions = Array.from(new Set(members.map((m) => m.address).filter(Boolean))).sort((a, b) =>
     a.localeCompare(b, "bn"),
   );
 
+  const donationOptions = Array.from(new Set(members.map((m) => Number(m.monthly_donation) || 0))).sort(
+    (a, b) => a - b,
+  );
+
   const filtered = members.filter((m) => {
     if (addressFilter && m.address !== addressFilter) return false;
-    const d = Number(m.monthly_donation) || 0;
-    if (minDonation !== "" && d < Number(minDonation)) return false;
-    if (maxDonation !== "" && d > Number(maxDonation)) return false;
+    if (donationFilter !== "" && (Number(m.monthly_donation) || 0) !== Number(donationFilter)) return false;
     return true;
   });
 
