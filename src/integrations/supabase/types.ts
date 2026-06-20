@@ -189,6 +189,14 @@ export type Database = {
         Args: { _kind: string; _slug: string }
         Returns: number
       }
+      verify_member_by_mobile: {
+        Args: { _mobile: string }
+        Returns: {
+          address: string
+          father_name: string
+          name: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "user"
