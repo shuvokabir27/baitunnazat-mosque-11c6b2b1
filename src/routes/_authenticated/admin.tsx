@@ -919,7 +919,7 @@ function MembersTab() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/40 text-left text-xs text-muted-foreground">
-                <th className="p-2">#</th>
+                <th className="p-2">সদস্য নম্বর</th>
                 <th className="p-2">নাম</th>
                 <th className="p-2">পিতার নাম</th>
                 <th className="p-2">মোবাইল</th>
