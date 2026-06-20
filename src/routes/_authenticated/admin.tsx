@@ -664,17 +664,57 @@ function AddressesTab() {
         <div className="divide-y divide-border rounded-xl border border-border">
           {addresses.map((a) => (
             <div key={a.id} className="flex items-center justify-between gap-3 p-3">
-              <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">{a.label}</span>
-              <span className="shrink-0 rounded-full bg-muted px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">
-                {counts[a.label] ?? 0} জন
-              </span>
-              <button
-                onClick={() => remove(a.id)}
-                className="shrink-0 rounded-lg bg-destructive/10 p-2 text-destructive hover:bg-destructive/20"
-                aria-label="মুছুন"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
+              {editId === a.id ? (
+                <>
+                  <input
+                    value={editLabel}
+                    onChange={(e) => setEditLabel(e.target.value)}
+                    maxLength={150}
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") saveEdit(a);
+                      if (e.key === "Escape") cancelEdit();
+                    }}
+                    className="min-w-0 flex-1 rounded-lg border border-primary bg-background px-3 py-1.5 text-sm outline-none"
+                  />
+                  <button
+                    onClick={() => saveEdit(a)}
+                    disabled={editSaving}
+                    className="shrink-0 rounded-lg bg-emerald-600/10 p-2 text-emerald-600 hover:bg-emerald-600/20 disabled:opacity-60"
+                    aria-label="সংরক্ষণ"
+                  >
+                    {editSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                  </button>
+                  <button
+                    onClick={cancelEdit}
+                    className="shrink-0 rounded-lg bg-muted p-2 text-muted-foreground hover:bg-muted/70"
+                    aria-label="বাতিল"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </>
+              ) : (
+                <>
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">{a.label}</span>
+                  <span className="shrink-0 rounded-full bg-muted px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">
+                    {counts[a.label] ?? 0} জন
+                  </span>
+                  <button
+                    onClick={() => startEdit(a)}
+                    className="shrink-0 rounded-lg bg-primary/10 p-2 text-primary hover:bg-primary/20"
+                    aria-label="সম্পাদনা"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => remove(a.id)}
+                    className="shrink-0 rounded-lg bg-destructive/10 p-2 text-destructive hover:bg-destructive/20"
+                    aria-label="মুছুন"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </>
+              )}
             </div>
           ))}
         </div>
