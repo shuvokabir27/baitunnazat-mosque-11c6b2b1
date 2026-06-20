@@ -116,6 +116,13 @@ function Members() {
         throw insertError;
       }
 
+      // fetch the permanent member number that was generated
+      const { data: verified } = await supabase.rpc("verify_member_by_mobile", {
+        _mobile: trimmedMobile,
+      });
+      const newRow = (verified ?? [])[0] as MemberInfo | undefined;
+      setNewMember(newRow ?? null);
+
       setName("");
       setFatherName("");
       setMobile("");
