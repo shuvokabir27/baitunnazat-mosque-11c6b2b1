@@ -579,6 +579,7 @@ type Member = {
   father_name: string;
   mobile: string;
   address: string;
+  monthly_donation: number;
   created_at: string;
 };
 
@@ -590,7 +591,7 @@ function MembersTab() {
     setLoading(true);
     const { data } = await supabase
       .from("members")
-      .select("id, name, father_name, mobile, address, created_at")
+      .select("id, name, father_name, mobile, address, monthly_donation, created_at")
       .order("created_at", { ascending: false });
     setMembers((data as Member[]) ?? []);
     setLoading(false);
@@ -611,8 +612,8 @@ function MembersTab() {
   };
 
   const downloadExcel = () => {
-    const header = ["ক্রমিক", "নাম", "পিতার নাম", "মোবাইল", "ঠিকানা"];
-    const rows = members.map((m, i) => [String(i + 1), m.name, m.father_name, m.mobile, m.address]);
+    const header = ["ক্রমিক", "নাম", "পিতার নাম", "মোবাইল", "ঠিকানা", "মাসিক দান (টাকা)"];
+    const rows = members.map((m, i) => [String(i + 1), m.name, m.father_name, m.mobile, m.address, String(m.monthly_donation ?? 0)]);
     const esc = (v: string) => `"${v.replace(/"/g, '""')}"`;
     const csv = [header, ...rows].map((r) => r.map(esc).join(",")).join("\r\n");
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
@@ -628,9 +629,10 @@ function MembersTab() {
     const rows = members
       .map(
         (m, i) =>
-          `<tr><td>${i + 1}</td><td>${m.name}</td><td>${m.father_name}</td><td>${m.mobile}</td><td>${m.address}</td></tr>`,
+          `<tr><td>${i + 1}</td><td>${m.name}</td><td>${m.father_name}</td><td>${m.mobile}</td><td>${m.address}</td><td>${m.monthly_donation ?? 0}</td></tr>`,
       )
       .join("");
+    const total = members.reduce((s, m) => s + (Number(m.monthly_donation) || 0), 0);
     const html = `<!DOCTYPE html><html lang="bn"><head><meta charset="utf-8"><title>সদস্য তালিকা</title>
       <style>
         body{font-family:'Noto Sans Bengali','Segoe UI',sans-serif;padding:24px;color:#1a1a1a}
@@ -641,8 +643,8 @@ function MembersTab() {
         th{background:#0f6e4f;color:#fff}
       </style></head><body>
       <h1>${mosque.name}</h1>
-      <p>সদস্য তালিকা — মোট ${members.length} জন</p>
-      <table><thead><tr><th>ক্রমিক</th><th>নাম</th><th>পিতার নাম</th><th>মোবাইল</th><th>ঠিকানা</th></tr></thead>
+      <p>সদস্য তালিকা — মোট ${members.length} জন · মাসিক দান মোট ${total} টাকা</p>
+      <table><thead><tr><th>ক্রমিক</th><th>নাম</th><th>পিতার নাম</th><th>মোবাইল</th><th>ঠিকানা</th><th>মাসিক দান (টাকা)</th></tr></thead>
       <tbody>${rows}</tbody></table>
       <script>window.onload=function(){window.print()}<\/script>
       </body></html>`;
@@ -695,6 +697,7 @@ function MembersTab() {
                 <th className="p-2">পিতার নাম</th>
                 <th className="p-2">মোবাইল</th>
                 <th className="p-2">ঠিকানা</th>
+                <th className="p-2">মাসিক দান</th>
                 <th className="p-2"></th>
               </tr>
             </thead>
@@ -706,6 +709,7 @@ function MembersTab() {
                   <td className="p-2 text-foreground">{m.father_name}</td>
                   <td className="p-2 text-foreground">{m.mobile}</td>
                   <td className="p-2 text-muted-foreground">{m.address}</td>
+                  <td className="p-2 text-foreground">{m.monthly_donation ?? 0} ৳</td>
                   <td className="p-2 text-right">
                     <button
                       onClick={() => removeMember(m.id)}

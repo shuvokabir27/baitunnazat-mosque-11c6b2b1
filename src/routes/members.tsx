@@ -25,6 +25,7 @@ function Members() {
   const [fatherName, setFatherName] = useState("");
   const [mobile, setMobile] = useState("");
   const [addressSel, setAddressSel] = useState("");
+  const [monthlyDonation, setMonthlyDonation] = useState("");
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -71,11 +72,13 @@ function Members() {
 
     setSaving(true);
     try {
+      const donation = Math.max(0, Number(monthlyDonation) || 0);
       const { error: insertError } = await supabase.from("members").insert({
         name: trimmedName,
         father_name: trimmedFather,
         mobile: trimmedMobile,
         address,
+        monthly_donation: donation,
       });
       if (insertError) throw insertError;
 
@@ -83,6 +86,7 @@ function Members() {
       setFatherName("");
       setMobile("");
       setAddressSel("");
+      setMonthlyDonation("");
       setDone(true);
     } catch {
       setError("জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
@@ -274,6 +278,21 @@ function Members() {
                   </option>
                 ))}
               </select>
+              <div className="relative">
+                <input
+                  type="number"
+                  min={0}
+                  step="1"
+                  inputMode="numeric"
+                  value={monthlyDonation}
+                  onChange={(e) => setMonthlyDonation(e.target.value)}
+                  placeholder="মাসিক দানের পরিমাণ"
+                  className="w-full rounded-xl border border-border bg-background px-4 py-3 pr-12 text-sm outline-none focus:border-primary"
+                />
+                <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                  টাকা
+                </span>
+              </div>
               {error && <p className="text-sm text-destructive">{error}</p>}
               <button
                 type="submit"
