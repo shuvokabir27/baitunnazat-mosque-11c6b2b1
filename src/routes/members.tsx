@@ -107,17 +107,10 @@ function Members() {
     }
   };
 
-  const verify = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const runVerify = useCallback(async (m: string) => {
+    setChecking(true);
     setCheckResult(null);
     setNotMember(false);
-    const m = checkMobile.trim();
-    if (m.length < 6) {
-      setNotMember(false);
-      setCheckResult(null);
-      return;
-    }
-    setChecking(true);
     try {
       const { data, error: rpcError } = await supabase.rpc("verify_member_by_mobile", {
         _mobile: m,
@@ -134,7 +127,18 @@ function Members() {
     } finally {
       setChecking(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (checkMobile.length !== 11) {
+      setCheckResult(null);
+      setNotMember(false);
+      return;
+    }
+    const t = setTimeout(() => runVerify(checkMobile), 300);
+    return () => clearTimeout(t);
+  }, [checkMobile, runVerify]);
+
 
   return (
     <Layout>
