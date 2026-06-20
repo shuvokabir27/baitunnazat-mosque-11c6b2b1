@@ -279,7 +279,7 @@ function Members() {
                 <div className="pointer-events-none absolute -bottom-14 -left-10 h-44 w-44 rounded-full bg-white/5" />
 
                 {/* header */}
-                <div className="relative flex items-center gap-3 border-b border-white/20 px-5 py-4">
+                <div className="relative flex flex-col items-center gap-2 border-b border-white/20 px-5 py-4 text-center">
                   <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/15">
                     <Moon className="h-6 w-6 text-white" />
                   </span>
