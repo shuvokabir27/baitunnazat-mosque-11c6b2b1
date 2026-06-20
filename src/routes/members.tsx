@@ -271,33 +271,7 @@ function Members() {
         </div>
 
 
-        {done ? (
-          <div className="rounded-3xl border border-border bg-card p-6 text-center shadow-soft">
-            <div className="mx-auto grid h-14 w-14 place-items-center rounded-full gradient-emerald text-primary-foreground">
-              <CheckCircle2 className="h-7 w-7" />
-            </div>
-            <h3 className="mt-4 text-lg font-bold text-primary">জাজাকাল্লাহু খাইরান</h3>
-            <p className="mt-2 text-sm text-muted-foreground">
-              আপনাকে অসংখ্য ধন্যবাদ ও শুকরিয়া। আপনার তথ্য সফলভাবে যুক্ত হয়েছে। আল্লাহ আপনার নেক ইচ্ছা কবুল করুন।
-            </p>
-            {newMember && (
-              <div className="mx-auto mt-4 max-w-xs rounded-2xl border border-primary/30 bg-primary/5 p-4">
-                <p className="text-xs text-muted-foreground">আপনার সদস্য নম্বর</p>
-                <p className="mt-1 text-2xl font-extrabold text-primary">{newMember.member_no} নং</p>
-                <p className="mt-1 text-sm font-semibold text-foreground">{newMember.name}</p>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  এই নম্বরটি স্থায়ীভাবে আপনার নামের সাথে যুক্ত থাকবে।
-                </p>
-              </div>
-            )}
-            <button
-              onClick={() => setDone(false)}
-              className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl gradient-emerald px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-soft"
-            >
-              <Plus className="h-4 w-4" /> আরেকজন যুক্ত করুন
-            </button>
-          </div>
-        ) : (
+        {
           <div className="rounded-3xl border border-border bg-card p-5 shadow-soft">
             <div className="flex items-start gap-3">
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl gradient-emerald text-primary-foreground">
