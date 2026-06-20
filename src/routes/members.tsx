@@ -30,6 +30,7 @@ function Members() {
   const submittingRef = useRef(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mobileExists, setMobileExists] = useState(false);
 
   // verification state
   const [checkMobile, setCheckMobile] = useState("");
@@ -149,6 +150,26 @@ function Members() {
     const t = setTimeout(() => runVerify(checkMobile), 300);
     return () => clearTimeout(t);
   }, [checkMobile, runVerify]);
+
+  useEffect(() => {
+    if (mobile.length !== 11) {
+      setMobileExists(false);
+      return;
+    }
+    let active = true;
+    const t = setTimeout(async () => {
+      const { data } = await supabase
+        .from("members")
+        .select("id")
+        .eq("mobile", mobile)
+        .limit(1);
+      if (active) setMobileExists(!!data && data.length > 0);
+    }, 300);
+    return () => {
+      active = false;
+      clearTimeout(t);
+    };
+  }, [mobile]);
 
 
   return (
@@ -291,7 +312,7 @@ function Members() {
                   placeholder="মোবাইল নম্বর (১১ ডিজিট)"
                   required
                   className={`w-full rounded-xl border bg-background px-4 py-3 text-sm outline-none ${
-                    mobile.length > 0 && mobile.length !== 11
+                    (mobile.length > 0 && mobile.length !== 11) || mobileExists
                       ? "border-destructive focus:border-destructive"
                       : "border-border focus:border-primary"
                   }`}
@@ -299,6 +320,11 @@ function Members() {
                 {mobile.length > 0 && mobile.length !== 11 && (
                   <p className="mt-1 text-xs font-medium text-destructive">
                     মোবাইল নম্বর অবশ্যই ১১ ডিজিট হতে হবে। (এখন {mobile.length} ডিজিট)
+                  </p>
+                )}
+                {mobile.length === 11 && mobileExists && (
+                  <p className="mt-1 text-xs font-medium text-destructive">
+                    এই মোবাইল নম্বরটি ইতিমধ্যে সদস্য হিসেবে যুক্ত আছে।
                   </p>
                 )}
               </div>
@@ -335,7 +361,7 @@ function Members() {
               {error && <p className="text-sm text-destructive">{error}</p>}
               <button
                 type="submit"
-                disabled={saving}
+                disabled={saving || mobileExists}
                 className="inline-flex w-full items-center justify-center gap-2 rounded-xl gradient-emerald px-4 py-3 text-sm font-semibold text-primary-foreground shadow-soft disabled:opacity-60"
               >
                 {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
