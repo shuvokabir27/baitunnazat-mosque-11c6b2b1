@@ -68,12 +68,6 @@ function HeaderDateTime() {
     month: "long",
     year: "numeric",
   });
-  const english = now.toLocaleDateString("en-US", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
   // বাংলাদেশের চাঁদ দেখা উম-আল-কুরা ক্যালেন্ডারের চেয়ে সাধারণত ১ দিন পিছিয়ে থাকে
   const islamicDate = new Date(now);
   islamicDate.setDate(islamicDate.getDate() - 1);
@@ -111,7 +105,6 @@ function HeaderDateTime() {
           <span dir="rtl" className="text-xs font-medium text-gold">{arabic}</span>
         </div>
         <div className="flex flex-col items-center lg:items-start">
-          <span className="text-xs text-muted-foreground">{english}</span>
           <span className="text-sm font-bold text-primary">{bangla}</span>
         </div>
       </div>
