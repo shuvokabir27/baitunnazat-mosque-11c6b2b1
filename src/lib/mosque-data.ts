@@ -58,6 +58,7 @@ export const staff = [
     name: "মুফতি সাইফুল ইসলাম",
     role: "খতিব",
     image: khatib,
+    whatsapp: "8801700000002",
     detail: "জুমার খুতবা ও দ্বীনি শিক্ষাদানে নিবেদিত",
     experience: "২০ বছরের খিতাবত ও ফতোয়া প্রদানের অভিজ্ঞতা।",
     previousJobs: [
