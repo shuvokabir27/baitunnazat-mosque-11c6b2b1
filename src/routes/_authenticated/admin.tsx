@@ -293,6 +293,7 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   donate: HandCoins,
   footer: MessageSquare,
   leads: Phone,
+  masala: MessageCircleQuestion,
   addresses: MapPin,
   members: UserPlus,
 };
