@@ -224,18 +224,8 @@ function Members() {
                   {a.label}
                 </option>
               ))}
-              <option value={ADD_NEW}>+ নতুন ঠিকানা যুক্ত করুন</option>
             </select>
-            {addressSel === ADD_NEW && (
-              <input
-                type="text"
-                value={customAddress}
-                onChange={(e) => setCustomAddress(e.target.value)}
-                placeholder="নতুন ঠিকানা লিখুন"
-                maxLength={150}
-                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
-              />
-            )}
+
             {error && <p className="text-sm text-destructive">{error}</p>}
             <button
               type="submit"
