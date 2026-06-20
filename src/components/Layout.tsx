@@ -74,10 +74,12 @@ function HeaderDateTime() {
     month: "long",
     year: "numeric",
   });
+  // বাংলাদেশের চাঁদ দেখা উম-আল-কুরা ক্যালেন্ডারের চেয়ে সাধারণত ১ দিন পিছিয়ে থাকে
+  const islamicDate = new Date(now);
+  islamicDate.setDate(islamicDate.getDate() - 1);
   // আরবি/হিজরি তারিখ মাগরিব (সূর্যাস্ত) এর পর পরবর্তী দিনে গণনা হয়
   const maghribHour = 18;
   const maghribMinute = 35;
-  const islamicDate = new Date(now);
   if (
     now.getHours() > maghribHour ||
     (now.getHours() === maghribHour && now.getMinutes() >= maghribMinute)
