@@ -736,6 +736,8 @@ type Member = {
 function MembersTab() {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
+  const [confirmTarget, setConfirmTarget] = useState<Member | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -751,15 +753,19 @@ function MembersTab() {
     load();
   }, []);
 
-  const removeMember = async (id: string) => {
-    if (!confirm("এই সদস্য মুছে ফেলবেন?")) return;
-    const { error } = await supabase.from("members").delete().eq("id", id);
+  const confirmDelete = async () => {
+    if (!confirmTarget) return;
+    setDeleting(true);
+    const { error } = await supabase.from("members").delete().eq("id", confirmTarget.id);
+    setDeleting(false);
     if (error) {
       alert("মুছে ফেলা যায়নি।");
       return;
     }
-    setMembers((prev) => prev.filter((m) => m.id !== id));
+    setMembers((prev) => prev.filter((m) => m.id !== confirmTarget.id));
+    setConfirmTarget(null);
   };
+
 
   const downloadExcel = () => {
     const header = ["ক্রমিক", "নাম", "পিতার নাম", "মোবাইল", "ঠিকানা", "মাসিক দান (টাকা)"];
