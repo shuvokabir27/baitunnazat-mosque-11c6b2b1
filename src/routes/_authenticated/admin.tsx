@@ -929,9 +929,9 @@ function MembersTab() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((m, i) => (
+              {filtered.map((m) => (
                 <tr key={m.id} className="border-b border-border/60">
-                  <td className="p-2 text-muted-foreground">{i + 1}</td>
+                  <td className="p-2 font-semibold text-primary">{m.member_no}</td>
                   <td className="p-2 font-medium text-foreground">{m.name}</td>
                   <td className="p-2 text-foreground">{m.father_name}</td>
                   <td className="p-2 text-foreground">{m.mobile}</td>
