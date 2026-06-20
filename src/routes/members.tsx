@@ -16,6 +16,8 @@ export const Route = createFileRoute("/members")({
 
 type AddressOption = { id: string; label: string };
 
+type MemberInfo = { name: string; father_name: string; address: string };
+
 function Members() {
   const [addresses, setAddresses] = useState<AddressOption[]>([]);
 
@@ -26,6 +28,12 @@ function Members() {
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // verification state
+  const [checkMobile, setCheckMobile] = useState("");
+  const [checking, setChecking] = useState(false);
+  const [checkResult, setCheckResult] = useState<MemberInfo | null>(null);
+  const [notMember, setNotMember] = useState(false);
 
   const loadAddresses = useCallback(async () => {
     const { data } = await supabase
