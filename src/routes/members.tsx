@@ -72,11 +72,13 @@ function Members() {
 
     setSaving(true);
     try {
+      const donation = Math.max(0, Number(monthlyDonation) || 0);
       const { error: insertError } = await supabase.from("members").insert({
         name: trimmedName,
         father_name: trimmedFather,
         mobile: trimmedMobile,
         address,
+        monthly_donation: donation,
       });
       if (insertError) throw insertError;
 
@@ -84,6 +86,7 @@ function Members() {
       setFatherName("");
       setMobile("");
       setAddressSel("");
+      setMonthlyDonation("");
       setDone(true);
     } catch {
       setError("জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
