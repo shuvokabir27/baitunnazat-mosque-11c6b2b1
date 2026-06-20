@@ -251,6 +251,7 @@ function AdminPage() {
                 {tab === "development" && <DevelopmentTab content={content} setContent={setContent} />}
                 {tab === "donate" && <DonateTab content={content} setContent={setContent} />}
                 {tab === "leads" && <LeadsTab />}
+                {tab === "masala" && <MasalaTab />}
                 {tab === "addresses" && <AddressesTab />}
                 {tab === "members" && <MembersTab />}
               </div>
