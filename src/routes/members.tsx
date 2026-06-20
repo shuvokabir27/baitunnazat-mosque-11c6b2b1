@@ -61,8 +61,8 @@ function Members() {
       setError("নাম ও পিতার নাম দিন।");
       return;
     }
-    if (trimmedMobile.length < 6) {
-      setError("সঠিক মোবাইল নম্বর দিন।");
+    if (trimmedMobile.length !== 11) {
+      setError("মোবাইল নম্বর অবশ্যই ১১ ডিজিট হতে হবে।");
       return;
     }
     if (!address) {
