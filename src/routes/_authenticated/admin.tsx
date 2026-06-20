@@ -709,6 +709,7 @@ function MembersTab() {
                   <td className="p-2 text-foreground">{m.father_name}</td>
                   <td className="p-2 text-foreground">{m.mobile}</td>
                   <td className="p-2 text-muted-foreground">{m.address}</td>
+                  <td className="p-2 text-foreground">{m.monthly_donation ?? 0} ৳</td>
                   <td className="p-2 text-right">
                     <button
                       onClick={() => removeMember(m.id)}
