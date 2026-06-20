@@ -74,12 +74,22 @@ function HeaderDateTime() {
     month: "long",
     year: "numeric",
   });
+  // আরবি/হিজরি তারিখ মাগরিব (সূর্যাস্ত) এর পর পরবর্তী দিনে গণনা হয়
+  const maghribHour = 18;
+  const maghribMinute = 35;
+  const islamicDate = new Date(now);
+  if (
+    now.getHours() > maghribHour ||
+    (now.getHours() === maghribHour && now.getMinutes() >= maghribMinute)
+  ) {
+    islamicDate.setDate(islamicDate.getDate() + 1);
+  }
   const islamicFmt = new Intl.DateTimeFormat("en-US-u-ca-islamic", {
     day: "numeric",
     month: "numeric",
     year: "numeric",
   });
-  const parts = islamicFmt.formatToParts(now);
+  const parts = islamicFmt.formatToParts(islamicDate);
   const islamicDay = parseInt(parts.find((p) => p.type === "day")?.value ?? "1", 10);
   const islamicMonth = parseInt(parts.find((p) => p.type === "month")?.value ?? "1", 10);
   const islamicYear = parseInt(parts.find((p) => p.type === "year")?.value ?? "1", 10);
