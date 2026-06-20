@@ -38,6 +38,33 @@ export type Database = {
         }
         Relationships: []
       }
+      masala_requests: {
+        Row: {
+          created_at: string
+          id: string
+          scholar_name: string
+          scholar_role: string
+          scholar_slug: string
+          subject: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          scholar_name: string
+          scholar_role: string
+          scholar_slug: string
+          subject: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          scholar_name?: string
+          scholar_role?: string
+          scholar_slug?: string
+          subject?: string
+        }
+        Relationships: []
+      }
       member_addresses: {
         Row: {
           created_at: string
