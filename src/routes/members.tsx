@@ -84,6 +84,7 @@ function Members() {
       if (existing && existing.length > 0) {
         setError("এই মোবাইল নম্বরটি ইতিমধ্যে যুক্ত আছে।");
         setSaving(false);
+        submittingRef.current = false;
         return;
       }
 
