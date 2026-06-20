@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as MembersRouteImport } from './routes/members'
+import { Route as MasalaRouteImport } from './routes/masala'
 import { Route as IbadahRouteImport } from './routes/ibadah'
 import { Route as DonateRouteImport } from './routes/donate'
 import { Route as DevelopmentRouteImport } from './routes/development'
@@ -29,6 +30,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const MembersRoute = MembersRouteImport.update({
   id: '/members',
   path: '/members',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MasalaRoute = MasalaRouteImport.update({
+  id: '/masala',
+  path: '/masala',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IbadahRoute = IbadahRouteImport.update({
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/development': typeof DevelopmentRoute
   '/donate': typeof DonateRoute
   '/ibadah': typeof IbadahRoute
+  '/masala': typeof MasalaRoute
   '/members': typeof MembersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/development': typeof DevelopmentRoute
   '/donate': typeof DonateRoute
   '/ibadah': typeof IbadahRoute
+  '/masala': typeof MasalaRoute
   '/members': typeof MembersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -108,6 +116,7 @@ export interface FileRoutesById {
   '/development': typeof DevelopmentRoute
   '/donate': typeof DonateRoute
   '/ibadah': typeof IbadahRoute
+  '/masala': typeof MasalaRoute
   '/members': typeof MembersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
@@ -122,6 +131,7 @@ export interface FileRouteTypes {
     | '/development'
     | '/donate'
     | '/ibadah'
+    | '/masala'
     | '/members'
     | '/sitemap.xml'
     | '/admin'
@@ -134,6 +144,7 @@ export interface FileRouteTypes {
     | '/development'
     | '/donate'
     | '/ibadah'
+    | '/masala'
     | '/members'
     | '/sitemap.xml'
     | '/admin'
@@ -147,6 +158,7 @@ export interface FileRouteTypes {
     | '/development'
     | '/donate'
     | '/ibadah'
+    | '/masala'
     | '/members'
     | '/sitemap.xml'
     | '/_authenticated/admin'
@@ -161,6 +173,7 @@ export interface RootRouteChildren {
   DevelopmentRoute: typeof DevelopmentRoute
   DonateRoute: typeof DonateRoute
   IbadahRoute: typeof IbadahRoute
+  MasalaRoute: typeof MasalaRoute
   MembersRoute: typeof MembersRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   CommitteeSlugRoute: typeof CommitteeSlugRoute
@@ -181,6 +194,13 @@ declare module '@tanstack/react-router' {
       path: '/members'
       fullPath: '/members'
       preLoaderRoute: typeof MembersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/masala': {
+      id: '/masala'
+      path: '/masala'
+      fullPath: '/masala'
+      preLoaderRoute: typeof MasalaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ibadah': {
@@ -267,6 +287,7 @@ const rootRouteChildren: RootRouteChildren = {
   DevelopmentRoute: DevelopmentRoute,
   DonateRoute: DonateRoute,
   IbadahRoute: IbadahRoute,
+  MasalaRoute: MasalaRoute,
   MembersRoute: MembersRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   CommitteeSlugRoute: CommitteeSlugRoute,

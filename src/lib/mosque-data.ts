@@ -43,6 +43,7 @@ export const staff = [
     name: "মাওলানা আব্দুর রহমান",
     role: "ইমাম",
     image: imam,
+    whatsapp: "8801700000001",
     detail: "৩৫ বছরের অভিজ্ঞ ক্বারী ও আলেম",
     experience: "৩৫ বছরের ইমামতি ও ক্বিরাত শিক্ষাদানের অভিজ্ঞতা।",
     previousJobs: [
@@ -57,6 +58,7 @@ export const staff = [
     name: "মুফতি সাইফুল ইসলাম",
     role: "খতিব",
     image: khatib,
+    whatsapp: "8801700000002",
     detail: "জুমার খুতবা ও দ্বীনি শিক্ষাদানে নিবেদিত",
     experience: "২০ বছরের খিতাবত ও ফতোয়া প্রদানের অভিজ্ঞতা।",
     previousJobs: [
@@ -164,4 +166,5 @@ export const navItems = [
 export const moreNavItems = [
   { to: "/development", label: "উন্নয়ন কাজ" },
   { to: "/ibadah", label: "ইবাদত ও নামাজ" },
+  { to: "/masala", label: "মাসয়ালা জানুন" },
 ] as const;
