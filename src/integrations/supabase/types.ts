@@ -63,6 +63,7 @@ export type Database = {
           father_name: string
           id: string
           mobile: string
+          monthly_donation: number
           name: string
         }
         Insert: {
@@ -71,6 +72,7 @@ export type Database = {
           father_name: string
           id?: string
           mobile: string
+          monthly_donation?: number
           name: string
         }
         Update: {
@@ -79,6 +81,7 @@ export type Database = {
           father_name?: string
           id?: string
           mobile?: string
+          monthly_donation?: number
           name?: string
         }
         Relationships: []
