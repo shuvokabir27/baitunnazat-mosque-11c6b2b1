@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Layout, PageHeader } from "@/components/Layout";
-import { prayerTimes } from "@/lib/mosque-data";
+
 
 export const Route = createFileRoute("/ibadah")({
   head: () => ({
