@@ -24,6 +24,7 @@ import {
   ExternalLink,
   X,
   Phone,
+  MapPin,
 } from "lucide-react";
 import { defaultContent, mergeContent, type SiteContent } from "@/lib/site-content";
 import { ImageCropUpload } from "@/components/ImageCropUpload";
@@ -244,6 +245,7 @@ function AdminPage() {
                 {tab === "development" && <DevelopmentTab content={content} setContent={setContent} />}
                 {tab === "donate" && <DonateTab content={content} setContent={setContent} />}
                 {tab === "leads" && <LeadsTab />}
+                {tab === "addresses" && <AddressesTab />}
               </div>
             </div>
           </div>
@@ -253,7 +255,7 @@ function AdminPage() {
   );
 }
 
-type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "donate" | "footer" | "leads";
+type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "donate" | "footer" | "leads" | "addresses";
 const TAB_LABELS: Record<Tab, string> = {
   site: "সাইট সেটিংস",
   mosque: "মসজিদ",
@@ -266,6 +268,7 @@ const TAB_LABELS: Record<Tab, string> = {
   donate: "দান",
   footer: "ফুটার",
   leads: "যোগাযোগ তালিকা",
+  addresses: "ঠিকানা তালিকা",
 };
 
 const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
@@ -280,6 +283,7 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   donate: HandCoins,
   footer: MessageSquare,
   leads: Phone,
+  addresses: MapPin,
 };
 
 function Sidebar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
