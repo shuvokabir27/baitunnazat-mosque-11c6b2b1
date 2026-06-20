@@ -478,6 +478,7 @@ type AddressRow = { id: string; label: string };
 
 function AddressesTab() {
   const [addresses, setAddresses] = useState<AddressRow[]>([]);
+  const [counts, setCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [label, setLabel] = useState("");
   const [saving, setSaving] = useState(false);
@@ -485,11 +486,16 @@ function AddressesTab() {
 
   const load = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from("member_addresses")
-      .select("id, label")
-      .order("label", { ascending: true });
-    setAddresses((data as AddressRow[]) ?? []);
+    const [{ data: addrData }, { data: memberData }] = await Promise.all([
+      supabase.from("member_addresses").select("id, label").order("label", { ascending: true }),
+      supabase.from("members").select("address"),
+    ]);
+    setAddresses((addrData as AddressRow[]) ?? []);
+    const map: Record<string, number> = {};
+    ((memberData as { address: string }[]) ?? []).forEach((m) => {
+      map[m.address] = (map[m.address] ?? 0) + 1;
+    });
+    setCounts(map);
     setLoading(false);
   };
 
@@ -523,6 +529,47 @@ function AddressesTab() {
     setAddresses((prev) => prev.filter((a) => a.id !== id));
   };
 
+  const downloadExcel = () => {
+    const header = ["ক্রমিক", "ঠিকানা", "সদস্য সংখ্যা"];
+    const rows = addresses.map((a, i) => [String(i + 1), a.label, String(counts[a.label] ?? 0)]);
+    const esc = (v: string) => `"${v.replace(/"/g, '""')}"`;
+    const csv = [header, ...rows].map((r) => r.map(esc).join(",")).join("\r\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "ঠিকানা-ডাটাশিট.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadPdf = () => {
+    const rows = addresses
+      .map((a, i) => `<tr><td>${i + 1}</td><td>${a.label}</td><td>${counts[a.label] ?? 0}</td></tr>`)
+      .join("");
+    const total = addresses.reduce((s, a) => s + (counts[a.label] ?? 0), 0);
+    const html = `<!DOCTYPE html><html lang="bn"><head><meta charset="utf-8"><title>ঠিকানা ডাটাশিট</title>
+      <style>
+        body{font-family:'Noto Sans Bengali','Segoe UI',sans-serif;padding:24px;color:#1a1a1a}
+        h1{font-size:18px;text-align:center;margin:0 0 4px}
+        p{text-align:center;margin:0 0 16px;color:#555;font-size:12px}
+        table{width:100%;border-collapse:collapse;font-size:12px}
+        th,td{border:1px solid #999;padding:6px 8px;text-align:left}
+        th{background:#0f6e4f;color:#fff}
+      </style></head><body>
+      <h1>${mosque.name}</h1>
+      <p>ঠিকানা ডাটাশিট — মোট ${addresses.length} টি ঠিকানা · ${total} জন সদস্য</p>
+      <table><thead><tr><th>ক্রমিক</th><th>ঠিকানা</th><th>সদস্য সংখ্যা</th></tr></thead>
+      <tbody>${rows}</tbody></table>
+      <script>window.onload=function(){window.print()}<\/script>
+      </body></html>`;
+    const w = window.open("", "_blank");
+    if (w) {
+      w.document.write(html);
+      w.document.close();
+    }
+  };
+
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
@@ -547,6 +594,26 @@ function AddressesTab() {
       </form>
       {error && <p className="text-sm text-destructive">{error}</p>}
 
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-muted-foreground">মোট {addresses.length} টি ঠিকানা।</p>
+        <div className="flex gap-2">
+          <button
+            onClick={downloadExcel}
+            disabled={addresses.length === 0}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
+          >
+            <FileSpreadsheet className="h-4 w-4" /> এক্সেল
+          </button>
+          <button
+            onClick={downloadPdf}
+            disabled={addresses.length === 0}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-rose-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
+          >
+            <FileDown className="h-4 w-4" /> পিডিএফ
+          </button>
+        </div>
+      </div>
+
       {loading ? (
         <div className="flex justify-center py-10">
           <Loader2 className="h-6 w-6 animate-spin text-primary" />
@@ -558,6 +625,9 @@ function AddressesTab() {
           {addresses.map((a) => (
             <div key={a.id} className="flex items-center justify-between gap-3 p-3">
               <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">{a.label}</span>
+              <span className="shrink-0 rounded-full bg-muted px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">
+                {counts[a.label] ?? 0} জন
+              </span>
               <button
                 onClick={() => remove(a.id)}
                 className="shrink-0 rounded-lg bg-destructive/10 p-2 text-destructive hover:bg-destructive/20"
