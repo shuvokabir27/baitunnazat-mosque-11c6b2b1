@@ -161,28 +161,29 @@ function Members() {
             </div>
           </div>
 
-          <form onSubmit={verify} className="mt-4 flex gap-2">
+          <div className="mt-4">
             <input
               type="tel"
+              inputMode="numeric"
               value={checkMobile}
-              onChange={(e) => {
-                setCheckMobile(e.target.value);
-                setCheckResult(null);
-                setNotMember(false);
-              }}
-              placeholder="মোবাইল নম্বর দিন"
-              maxLength={20}
+              onChange={(e) =>
+                setCheckMobile(e.target.value.replace(/\D/g, "").slice(0, 11))
+              }
+              placeholder="মোবাইল নম্বর দিন (১১ ডিজিট)"
               className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
             />
-            <button
-              type="submit"
-              disabled={checking}
-              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl gradient-emerald px-4 py-3 text-sm font-semibold text-primary-foreground shadow-soft disabled:opacity-60"
-            >
-              {checking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-              যাচাই
-            </button>
-          </form>
+            <div className="mt-2 flex h-5 items-center gap-2 text-xs text-muted-foreground">
+              {checking && (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" /> যাচাই করা হচ্ছে...
+                </>
+              )}
+              {!checking && checkMobile.length > 0 && checkMobile.length !== 11 && (
+                <span className="text-destructive">আরও {11 - checkMobile.length} ডিজিট দিন।</span>
+              )}
+            </div>
+          </div>
+
 
           {checkResult && (
             <div className="mt-4 rounded-2xl border border-primary/30 bg-primary/5 p-4">
