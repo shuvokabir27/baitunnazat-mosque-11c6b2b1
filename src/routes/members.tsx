@@ -386,6 +386,36 @@ function Members() {
               </button>
             </form>
           </div>
+
+        {/* Popup card after adding a new member */}
+        {done && newMember && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/60 p-4">
+            <div className="relative my-auto w-full max-w-sm rounded-3xl bg-card p-5 shadow-2xl">
+              <button
+                onClick={() => setDone(false)}
+                aria-label="বন্ধ করুন"
+                className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full bg-muted text-muted-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
+              <div className="mb-3 text-center">
+                <div className="mx-auto grid h-12 w-12 place-items-center rounded-full gradient-emerald text-primary-foreground">
+                  <CheckCircle2 className="h-6 w-6" />
+                </div>
+                <h3 className="mt-2 text-base font-bold text-primary">জাজাকাল্লাহু খাইরান</h3>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  আপনার তথ্য সফলভাবে যুক্ত হয়েছে। নিচের কার্ডটি ডাউনলোড করে সংরক্ষণ করুন।
+                </p>
+              </div>
+              <MemberCardBlock member={newMember} siteIcon={siteIcon} />
+              <button
+                onClick={() => setDone(false)}
+                className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold text-foreground"
+              >
+                <Plus className="h-4 w-4" /> আরেকজন যুক্ত করুন
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </Layout>
