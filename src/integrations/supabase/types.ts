@@ -38,6 +38,51 @@ export type Database = {
         }
         Relationships: []
       }
+      member_addresses: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+        }
+        Relationships: []
+      }
+      members: {
+        Row: {
+          address: string
+          created_at: string
+          father_name: string
+          id: string
+          mobile: string
+          name: string
+        }
+        Insert: {
+          address: string
+          created_at?: string
+          father_name: string
+          id?: string
+          mobile: string
+          name: string
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          father_name?: string
+          id?: string
+          mobile?: string
+          name?: string
+        }
+        Relationships: []
+      }
       profile_reactions: {
         Row: {
           count: number
