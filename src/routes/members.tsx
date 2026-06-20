@@ -120,6 +120,7 @@ function Members() {
       setFatherName("");
       setMobile("");
       setAddressSel("");
+      setDonationSel("");
       setMonthlyDonation("");
       setDone(true);
     } catch {
