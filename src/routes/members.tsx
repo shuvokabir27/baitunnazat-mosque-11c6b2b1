@@ -278,9 +278,27 @@ function Members() {
                 className="relative overflow-hidden rounded-2xl text-white shadow-lg"
                 style={{ background: "linear-gradient(135deg, #065f46 0%, #047857 55%, #0d9488 100%)" }}
               >
-                {/* decorative circles */}
-                <div className="pointer-events-none absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white/10" />
-                <div className="pointer-events-none absolute -bottom-14 -left-10 h-44 w-44 rounded-full bg-white/5" />
+                {/* Islamic geometric background pattern */}
+                <svg
+                  className="pointer-events-none absolute inset-0 h-full w-full"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <defs>
+                    <pattern id="islamic-stars" width="56" height="56" patternUnits="userSpaceOnUse" patternTransform="rotate(0)">
+                      <g fill="none" stroke="rgba(255,255,255,0.14)" strokeWidth="1.1">
+                        <path d="M28 6 L34 22 L50 28 L34 34 L28 50 L22 34 L6 28 L22 22 Z" />
+                        <path d="M28 12 L31 25 L44 28 L31 31 L28 44 L25 31 L12 28 L25 25 Z" />
+                        <circle cx="28" cy="28" r="3" />
+                      </g>
+                    </pattern>
+                  </defs>
+                  <rect width="100%" height="100%" fill="url(#islamic-stars)" />
+                </svg>
+
+                {/* decorative arches / circles */}
+                <div className="pointer-events-none absolute -right-12 -top-14 h-44 w-44 rounded-full border border-white/15 bg-white/5" />
+                <div className="pointer-events-none absolute -bottom-16 -left-12 h-48 w-48 rounded-full border border-white/10 bg-white/5" />
 
                 {/* header */}
                 <div className="relative flex flex-col items-center gap-2 border-b border-white/20 px-5 py-4 text-center">
