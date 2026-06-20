@@ -725,6 +725,7 @@ function AddressesTab() {
 
 type Member = {
   id: string;
+  member_no: number;
   name: string;
   father_name: string;
   mobile: string;
@@ -759,8 +760,8 @@ function MembersTab() {
     setLoading(true);
     const { data } = await supabase
       .from("members")
-      .select("id, name, father_name, mobile, address, monthly_donation, created_at")
-      .order("created_at", { ascending: false });
+      .select("id, member_no, name, father_name, mobile, address, monthly_donation, created_at")
+      .order("member_no", { ascending: true });
     setMembers((data as Member[]) ?? []);
     setLoading(false);
   };
@@ -784,8 +785,8 @@ function MembersTab() {
 
 
   const downloadExcel = () => {
-    const header = ["ক্রমিক", "নাম", "পিতার নাম", "মোবাইল", "ঠিকানা", "মাসিক দান (টাকা)"];
-    const rows = filtered.map((m, i) => [String(i + 1), m.name, m.father_name, m.mobile, m.address, String(m.monthly_donation ?? 0)]);
+    const header = ["সদস্য নম্বর", "নাম", "পিতার নাম", "মোবাইল", "ঠিকানা", "মাসিক দান (টাকা)"];
+    const rows = filtered.map((m) => [String(m.member_no), m.name, m.father_name, m.mobile, m.address, String(m.monthly_donation ?? 0)]);
     const esc = (v: string) => `"${v.replace(/"/g, '""')}"`;
     const csv = [header, ...rows].map((r) => r.map(esc).join(",")).join("\r\n");
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
@@ -800,8 +801,8 @@ function MembersTab() {
   const downloadPdf = () => {
     const rows = filtered
       .map(
-        (m, i) =>
-          `<tr><td>${i + 1}</td><td>${m.name}</td><td>${m.father_name}</td><td>${m.mobile}</td><td>${m.address}</td><td>${m.monthly_donation ?? 0}</td></tr>`,
+        (m) =>
+          `<tr><td>${m.member_no}</td><td>${m.name}</td><td>${m.father_name}</td><td>${m.mobile}</td><td>${m.address}</td><td>${m.monthly_donation ?? 0}</td></tr>`,
       )
       .join("");
     const total = filtered.reduce((s, m) => s + (Number(m.monthly_donation) || 0), 0);
@@ -816,7 +817,7 @@ function MembersTab() {
       </style></head><body>
       <h1>${mosque.name}</h1>
       <p>সদস্য তালিকা — মোট ${filtered.length} জন · মাসিক দান মোট ${total} টাকা</p>
-      <table><thead><tr><th>ক্রমিক</th><th>নাম</th><th>পিতার নাম</th><th>মোবাইল</th><th>ঠিকানা</th><th>মাসিক দান (টাকা)</th></tr></thead>
+      <table><thead><tr><th>সদস্য নম্বর</th><th>নাম</th><th>পিতার নাম</th><th>মোবাইল</th><th>ঠিকানা</th><th>মাসিক দান (টাকা)</th></tr></thead>
       <tbody>${rows}</tbody></table>
       <script>window.onload=function(){window.print()}<\/script>
       </body></html>`;
@@ -918,7 +919,7 @@ function MembersTab() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/40 text-left text-xs text-muted-foreground">
-                <th className="p-2">#</th>
+                <th className="p-2">সদস্য নম্বর</th>
                 <th className="p-2">নাম</th>
                 <th className="p-2">পিতার নাম</th>
                 <th className="p-2">মোবাইল</th>
@@ -928,9 +929,9 @@ function MembersTab() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((m, i) => (
+              {filtered.map((m) => (
                 <tr key={m.id} className="border-b border-border/60">
-                  <td className="p-2 text-muted-foreground">{i + 1}</td>
+                  <td className="p-2 font-semibold text-primary">{m.member_no}</td>
                   <td className="p-2 font-medium text-foreground">{m.name}</td>
                   <td className="p-2 text-foreground">{m.father_name}</td>
                   <td className="p-2 text-foreground">{m.mobile}</td>
