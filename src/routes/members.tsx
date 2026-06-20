@@ -30,6 +30,7 @@ function Members() {
   const submittingRef = useRef(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mobileExists, setMobileExists] = useState(false);
 
   // verification state
   const [checkMobile, setCheckMobile] = useState("");
