@@ -829,8 +829,7 @@ function MembersTab() {
 
   const resetFilters = () => {
     setAddressFilter("");
-    setMinDonation("");
-    setMaxDonation("");
+    setDonationFilter("");
   };
 
   if (loading) {
