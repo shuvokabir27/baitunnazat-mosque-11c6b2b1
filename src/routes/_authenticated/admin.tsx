@@ -24,6 +24,7 @@ import {
   ExternalLink,
   X,
   Phone,
+  MapPin,
 } from "lucide-react";
 import { defaultContent, mergeContent, type SiteContent } from "@/lib/site-content";
 import { ImageCropUpload } from "@/components/ImageCropUpload";
@@ -244,6 +245,7 @@ function AdminPage() {
                 {tab === "development" && <DevelopmentTab content={content} setContent={setContent} />}
                 {tab === "donate" && <DonateTab content={content} setContent={setContent} />}
                 {tab === "leads" && <LeadsTab />}
+                {tab === "addresses" && <AddressesTab />}
               </div>
             </div>
           </div>
@@ -253,7 +255,7 @@ function AdminPage() {
   );
 }
 
-type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "donate" | "footer" | "leads";
+type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "donate" | "footer" | "leads" | "addresses";
 const TAB_LABELS: Record<Tab, string> = {
   site: "সাইট সেটিংস",
   mosque: "মসজিদ",
@@ -266,6 +268,7 @@ const TAB_LABELS: Record<Tab, string> = {
   donate: "দান",
   footer: "ফুটার",
   leads: "যোগাযোগ তালিকা",
+  addresses: "ঠিকানা তালিকা",
 };
 
 const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
@@ -280,6 +283,7 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   donate: HandCoins,
   footer: MessageSquare,
   leads: Phone,
+  addresses: MapPin,
 };
 
 function Sidebar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
@@ -462,6 +466,107 @@ function LeadsTab() {
     </div>
   );
 }
+
+type AddressRow = { id: string; label: string };
+
+function AddressesTab() {
+  const [addresses, setAddresses] = useState<AddressRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [label, setLabel] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = async () => {
+    setLoading(true);
+    const { data } = await supabase
+      .from("member_addresses")
+      .select("id, label")
+      .order("label", { ascending: true });
+    setAddresses((data as AddressRow[]) ?? []);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const add = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = label.trim();
+    if (!trimmed) return;
+    setSaving(true);
+    setError(null);
+    const { error: e1 } = await supabase.from("member_addresses").insert({ label: trimmed.slice(0, 150) });
+    setSaving(false);
+    if (e1) {
+      setError(e1.code === "23505" ? "এই ঠিকানা ইতিমধ্যে আছে।" : "যুক্ত করা যায়নি।");
+      return;
+    }
+    setLabel("");
+    await load();
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("এই ঠিকানা মুছে ফেলবেন?")) return;
+    const { error: e1 } = await supabase.from("member_addresses").delete().eq("id", id);
+    if (e1) {
+      alert("মুছে ফেলা যায়নি।");
+      return;
+    }
+    setAddresses((prev) => prev.filter((a) => a.id !== id));
+  };
+
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        এখানে যুক্ত করা ঠিকানাগুলো সদস্য পেজের ড্রপডাউনে পাবলিক দেখতে পাবে।
+      </p>
+      <form onSubmit={add} className="flex gap-2">
+        <input
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
+          placeholder="নতুন ঠিকানা লিখুন"
+          maxLength={150}
+          className="w-full min-w-0 rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+        />
+        <button
+          type="submit"
+          disabled={saving}
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-2 text-sm font-semibold text-white disabled:opacity-60"
+        >
+          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+          যুক্ত করুন
+        </button>
+      </form>
+      {error && <p className="text-sm text-destructive">{error}</p>}
+
+      {loading ? (
+        <div className="flex justify-center py-10">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        </div>
+      ) : addresses.length === 0 ? (
+        <p className="py-6 text-center text-sm text-muted-foreground">এখনো কোনো ঠিকানা যুক্ত করা হয়নি।</p>
+      ) : (
+        <div className="divide-y divide-border rounded-xl border border-border">
+          {addresses.map((a) => (
+            <div key={a.id} className="flex items-center justify-between gap-3 p-3">
+              <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">{a.label}</span>
+              <button
+                onClick={() => remove(a.id)}
+                className="shrink-0 rounded-lg bg-destructive/10 p-2 text-destructive hover:bg-destructive/20"
+                aria-label="মুছুন"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
 
 
 

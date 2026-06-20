@@ -26,7 +26,7 @@ type Member = {
 
 type AddressOption = { id: string; label: string };
 
-const ADD_NEW = "__add_new__";
+
 
 function Members() {
   const [addresses, setAddresses] = useState<AddressOption[]>([]);
@@ -37,7 +37,6 @@ function Members() {
   const [fatherName, setFatherName] = useState("");
   const [mobile, setMobile] = useState("");
   const [addressSel, setAddressSel] = useState("");
-  const [customAddress, setCustomAddress] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -71,7 +70,7 @@ function Members() {
     const trimmedName = name.trim();
     const trimmedFather = fatherName.trim();
     const trimmedMobile = mobile.trim();
-    let address = addressSel === ADD_NEW ? customAddress.trim() : addressSel.trim();
+    const address = addressSel.trim();
 
     if (!trimmedName || !trimmedFather) {
       setError("নাম ও পিতার নাম দিন।");
@@ -82,17 +81,12 @@ function Members() {
       return;
     }
     if (!address) {
-      setError("ঠিকানা নির্বাচন করুন বা যুক্ত করুন।");
+      setError("ঠিকানা নির্বাচন করুন।");
       return;
     }
 
     setSaving(true);
     try {
-      // নতুন ঠিকানা হলে ড্রপডাউনে যোগ করি
-      if (addressSel === ADD_NEW && !addresses.some((a) => a.label === address)) {
-        await supabase.from("member_addresses").insert({ label: address });
-        await loadAddresses();
-      }
 
       const { error: insertError } = await supabase.from("members").insert({
         name: trimmedName,
@@ -106,7 +100,6 @@ function Members() {
       setFatherName("");
       setMobile("");
       setAddressSel("");
-      setCustomAddress("");
       await loadMembers();
     } catch {
       setError("জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
@@ -229,18 +222,8 @@ function Members() {
                   {a.label}
                 </option>
               ))}
-              <option value={ADD_NEW}>+ নতুন ঠিকানা যুক্ত করুন</option>
             </select>
-            {addressSel === ADD_NEW && (
-              <input
-                type="text"
-                value={customAddress}
-                onChange={(e) => setCustomAddress(e.target.value)}
-                placeholder="নতুন ঠিকানা লিখুন"
-                maxLength={150}
-                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
-              />
-            )}
+
             {error && <p className="text-sm text-destructive">{error}</p>}
             <button
               type="submit"
