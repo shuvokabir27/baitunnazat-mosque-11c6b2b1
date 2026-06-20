@@ -25,7 +25,11 @@ import {
   X,
   Phone,
   MapPin,
+  UserPlus,
+  FileSpreadsheet,
+  FileDown,
 } from "lucide-react";
+import { mosque } from "@/lib/mosque-data";
 import { defaultContent, mergeContent, type SiteContent } from "@/lib/site-content";
 import { ImageCropUpload } from "@/components/ImageCropUpload";
 
@@ -246,6 +250,7 @@ function AdminPage() {
                 {tab === "donate" && <DonateTab content={content} setContent={setContent} />}
                 {tab === "leads" && <LeadsTab />}
                 {tab === "addresses" && <AddressesTab />}
+                {tab === "members" && <MembersTab />}
               </div>
             </div>
           </div>
@@ -255,7 +260,7 @@ function AdminPage() {
   );
 }
 
-type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "donate" | "footer" | "leads" | "addresses";
+type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "donate" | "footer" | "leads" | "addresses" | "members";
 const TAB_LABELS: Record<Tab, string> = {
   site: "সাইট সেটিংস",
   mosque: "মসজিদ",
@@ -269,6 +274,7 @@ const TAB_LABELS: Record<Tab, string> = {
   footer: "ফুটার",
   leads: "যোগাযোগ তালিকা",
   addresses: "ঠিকানা তালিকা",
+  members: "সদস্য তালিকা",
 };
 
 const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
@@ -284,6 +290,7 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   footer: MessageSquare,
   leads: Phone,
   addresses: MapPin,
+  members: UserPlus,
 };
 
 function Sidebar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
@@ -566,8 +573,157 @@ function AddressesTab() {
   );
 }
 
+type Member = {
+  id: string;
+  name: string;
+  father_name: string;
+  mobile: string;
+  address: string;
+  created_at: string;
+};
 
+function MembersTab() {
+  const [members, setMembers] = useState<Member[]>([]);
+  const [loading, setLoading] = useState(true);
 
+  const load = async () => {
+    setLoading(true);
+    const { data } = await supabase
+      .from("members")
+      .select("id, name, father_name, mobile, address, created_at")
+      .order("created_at", { ascending: false });
+    setMembers((data as Member[]) ?? []);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const removeMember = async (id: string) => {
+    if (!confirm("এই সদস্য মুছে ফেলবেন?")) return;
+    const { error } = await supabase.from("members").delete().eq("id", id);
+    if (error) {
+      alert("মুছে ফেলা যায়নি।");
+      return;
+    }
+    setMembers((prev) => prev.filter((m) => m.id !== id));
+  };
+
+  const downloadExcel = () => {
+    const header = ["ক্রমিক", "নাম", "পিতার নাম", "মোবাইল", "ঠিকানা"];
+    const rows = members.map((m, i) => [String(i + 1), m.name, m.father_name, m.mobile, m.address]);
+    const esc = (v: string) => `"${v.replace(/"/g, '""')}"`;
+    const csv = [header, ...rows].map((r) => r.map(esc).join(",")).join("\r\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "সদস্য-তালিকা.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadPdf = () => {
+    const rows = members
+      .map(
+        (m, i) =>
+          `<tr><td>${i + 1}</td><td>${m.name}</td><td>${m.father_name}</td><td>${m.mobile}</td><td>${m.address}</td></tr>`,
+      )
+      .join("");
+    const html = `<!DOCTYPE html><html lang="bn"><head><meta charset="utf-8"><title>সদস্য তালিকা</title>
+      <style>
+        body{font-family:'Noto Sans Bengali','Segoe UI',sans-serif;padding:24px;color:#1a1a1a}
+        h1{font-size:18px;text-align:center;margin:0 0 4px}
+        p{text-align:center;margin:0 0 16px;color:#555;font-size:12px}
+        table{width:100%;border-collapse:collapse;font-size:12px}
+        th,td{border:1px solid #999;padding:6px 8px;text-align:left}
+        th{background:#0f6e4f;color:#fff}
+      </style></head><body>
+      <h1>${mosque.name}</h1>
+      <p>সদস্য তালিকা — মোট ${members.length} জন</p>
+      <table><thead><tr><th>ক্রমিক</th><th>নাম</th><th>পিতার নাম</th><th>মোবাইল</th><th>ঠিকানা</th></tr></thead>
+      <tbody>${rows}</tbody></table>
+      <script>window.onload=function(){window.print()}<\/script>
+      </body></html>`;
+    const w = window.open("", "_blank");
+    if (w) {
+      w.document.write(html);
+      w.document.close();
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-10">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-muted-foreground">মোট {members.length} জন সদস্য।</p>
+        <div className="flex gap-2">
+          <button
+            onClick={downloadExcel}
+            disabled={members.length === 0}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
+          >
+            <FileSpreadsheet className="h-4 w-4" /> এক্সেল
+          </button>
+          <button
+            onClick={downloadPdf}
+            disabled={members.length === 0}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-rose-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
+          >
+            <FileDown className="h-4 w-4" /> পিডিএফ
+          </button>
+        </div>
+      </div>
+
+      {members.length === 0 ? (
+        <p className="py-6 text-center text-sm text-muted-foreground">এখনো কোনো সদস্য যুক্ত করা হয়নি।</p>
+      ) : (
+        <div className="overflow-x-auto rounded-xl border border-border">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/40 text-left text-xs text-muted-foreground">
+                <th className="p-2">#</th>
+                <th className="p-2">নাম</th>
+                <th className="p-2">পিতার নাম</th>
+                <th className="p-2">মোবাইল</th>
+                <th className="p-2">ঠিকানা</th>
+                <th className="p-2"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {members.map((m, i) => (
+                <tr key={m.id} className="border-b border-border/60">
+                  <td className="p-2 text-muted-foreground">{i + 1}</td>
+                  <td className="p-2 font-medium text-foreground">{m.name}</td>
+                  <td className="p-2 text-foreground">{m.father_name}</td>
+                  <td className="p-2 text-foreground">{m.mobile}</td>
+                  <td className="p-2 text-muted-foreground">{m.address}</td>
+                  <td className="p-2 text-right">
+                    <button
+                      onClick={() => removeMember(m.id)}
+                      className="rounded-lg bg-destructive/10 p-1.5 text-destructive hover:bg-destructive/20"
+                      aria-label="মুছুন"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
 
 
 type TabProps = {
