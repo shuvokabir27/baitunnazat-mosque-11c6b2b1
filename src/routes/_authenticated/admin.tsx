@@ -480,6 +480,250 @@ function LeadsTab() {
   );
 }
 
+type MasalaRow = {
+  id: string;
+  scholar_slug: string;
+  scholar_name: string;
+  scholar_role: string;
+  subject: string;
+  created_at: string;
+};
+
+type MasalaPeriod = "week" | "month" | "year" | "all";
+
+function MasalaTab() {
+  const [rows, setRows] = useState<MasalaRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [period, setPeriod] = useState<MasalaPeriod>("month");
+  const [scholarFilter, setScholarFilter] = useState("");
+  const [confirmTarget, setConfirmTarget] = useState<MasalaRow | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const load = async () => {
+    setLoading(true);
+    setError(null);
+    const { data, error: e } = await supabase
+      .from("masala_requests")
+      .select("id, scholar_slug, scholar_name, scholar_role, subject, created_at")
+      .order("created_at", { ascending: false });
+    if (e) setError("তালিকা লোড করা যায়নি।");
+    else setRows((data as MasalaRow[]) ?? []);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const periodStart = (p: MasalaPeriod): number => {
+    if (p === "all") return 0;
+    const d = new Date();
+    if (p === "week") d.setDate(d.getDate() - 7);
+    else if (p === "month") d.setMonth(d.getMonth() - 1);
+    else if (p === "year") d.setFullYear(d.getFullYear() - 1);
+    return d.getTime();
+  };
+
+  const scholarOptions = Array.from(new Set(rows.map((r) => r.scholar_name).filter(Boolean))).sort((a, b) =>
+    a.localeCompare(b, "bn"),
+  );
+
+  const start = periodStart(period);
+  const filtered = rows.filter((r) => {
+    if (start && new Date(r.created_at).getTime() < start) return false;
+    if (scholarFilter && r.scholar_name !== scholarFilter) return false;
+    return true;
+  });
+
+  const confirmDelete = async () => {
+    if (!confirmTarget) return;
+    setDeleting(true);
+    const { error: e } = await supabase.from("masala_requests").delete().eq("id", confirmTarget.id);
+    setDeleting(false);
+    if (e) {
+      alert("মুছে ফেলা যায়নি।");
+      return;
+    }
+    setRows((prev) => prev.filter((r) => r.id !== confirmTarget.id));
+    setConfirmTarget(null);
+  };
+
+  const periodLabel: Record<MasalaPeriod, string> = {
+    week: "সাপ্তাহিক",
+    month: "মাসিক",
+    year: "বাৎসরিক",
+    all: "সর্বমোট",
+  };
+
+  const downloadExcel = () => {
+    const header = ["তারিখ", "যাকে জিজ্ঞাসা", "পদবি", "মাসয়ালার বিষয়"];
+    const rowsCsv = filtered.map((r) => [
+      new Date(r.created_at).toLocaleString("bn-BD"),
+      r.scholar_name,
+      r.scholar_role,
+      r.subject,
+    ]);
+    const esc = (v: string) => `"${v.replace(/"/g, '""')}"`;
+    const csv = [header, ...rowsCsv].map((r) => r.map(esc).join(",")).join("\r\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `মাসয়ালা-আবেদন-${periodLabel[period]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadPdf = () => {
+    const body = filtered
+      .map(
+        (r, i) =>
+          `<tr><td>${i + 1}</td><td>${new Date(r.created_at).toLocaleString("bn-BD")}</td><td>${r.scholar_name} (${r.scholar_role})</td><td>${r.subject}</td></tr>`,
+      )
+      .join("");
+    const html = `<!DOCTYPE html><html lang="bn"><head><meta charset="utf-8"><title>মাসয়ালা আবেদন তালিকা</title>
+      <style>
+        body{font-family:'Noto Sans Bengali','Segoe UI',sans-serif;padding:24px;color:#1a1a1a}
+        h1{font-size:18px;text-align:center;margin:0 0 4px}
+        p{text-align:center;margin:0 0 16px;color:#555;font-size:12px}
+        table{width:100%;border-collapse:collapse;font-size:12px}
+        th,td{border:1px solid #999;padding:6px 8px;text-align:left;vertical-align:top}
+        th{background:#0f6e4f;color:#fff}
+      </style></head><body>
+      <h1>${mosque.name}</h1>
+      <p>মাসয়ালা আবেদন তালিকা (${periodLabel[period]}) — মোট ${filtered.length} টি</p>
+      <table><thead><tr><th>ক্রম</th><th>তারিখ</th><th>যাকে জিজ্ঞাসা</th><th>মাসয়ালার বিষয়</th></tr></thead>
+      <tbody>${body}</tbody></table>
+      <script>window.onload=function(){window.print()}<\/script>
+      </body></html>`;
+    const w = window.open("", "_blank");
+    if (w) {
+      w.document.write(html);
+      w.document.close();
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-10">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <p className="py-6 text-center text-sm text-destructive">{error}</p>;
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-muted-foreground">
+          {periodLabel[period]} মোট {filtered.length} টি আবেদন{filtered.length !== rows.length ? ` (সর্বমোট ${rows.length})` : ""}।
+        </p>
+        <div className="flex gap-2">
+          <button
+            onClick={downloadExcel}
+            disabled={filtered.length === 0}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
+          >
+            <FileSpreadsheet className="h-4 w-4" /> এক্সেল
+          </button>
+          <button
+            onClick={downloadPdf}
+            disabled={filtered.length === 0}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-rose-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
+          >
+            <FileDown className="h-4 w-4" /> পিডিএফ / প্রিন্ট
+          </button>
+        </div>
+      </div>
+
+      <div className="grid gap-3 rounded-xl border border-border bg-muted/30 p-3 sm:grid-cols-2">
+        <div>
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">সময়কাল</label>
+          <select
+            value={period}
+            onChange={(e) => setPeriod(e.target.value as MasalaPeriod)}
+            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+          >
+            <option value="week">সাপ্তাহিক (গত ৭ দিন)</option>
+            <option value="month">মাসিক (গত ৩০ দিন)</option>
+            <option value="year">বাৎসরিক (গত ১ বছর)</option>
+            <option value="all">সর্বমোট</option>
+          </select>
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">আলেম</label>
+          <select
+            value={scholarFilter}
+            onChange={(e) => setScholarFilter(e.target.value)}
+            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+          >
+            <option value="">সবাই</option>
+            {scholarOptions.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {filtered.length === 0 ? (
+        <p className="py-6 text-center text-sm text-muted-foreground">এই সময়কালে কোনো মাসয়ালা আবেদন নেই।</p>
+      ) : (
+        <div className="divide-y divide-border rounded-xl border border-border">
+          {filtered.map((r) => (
+            <div key={r.id} className="flex items-start justify-between gap-3 p-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-foreground">
+                  {r.scholar_name} <span className="text-xs font-normal text-muted-foreground">({r.scholar_role})</span>
+                </p>
+                <p className="mt-0.5 whitespace-pre-wrap text-sm text-foreground">{r.subject}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{new Date(r.created_at).toLocaleString("bn-BD")}</p>
+              </div>
+              <button
+                onClick={() => setConfirmTarget(r)}
+                className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-destructive/10 text-destructive"
+                aria-label="মুছুন"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {confirmTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-sm rounded-2xl bg-card p-5 shadow-xl">
+            <p className="text-sm font-semibold text-foreground">এই আবেদনটি মুছে ফেলবেন?</p>
+            <p className="mt-1 text-xs text-muted-foreground">এই কাজটি ফিরিয়ে আনা যাবে না।</p>
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                onClick={() => setConfirmTarget(null)}
+                className="rounded-lg bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground"
+              >
+                বাতিল
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={deleting}
+                className="rounded-lg bg-destructive px-3 py-2 text-xs font-semibold text-white disabled:opacity-60"
+              >
+                {deleting ? "..." : "মুছে ফেলুন"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
 type AddressRow = { id: string; label: string };
 
 function AddressesTab() {
