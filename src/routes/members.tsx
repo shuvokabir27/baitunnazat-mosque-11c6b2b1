@@ -27,6 +27,7 @@ function Members() {
   const [addressSel, setAddressSel] = useState("");
   const [monthlyDonation, setMonthlyDonation] = useState("");
   const [saving, setSaving] = useState(false);
+  const submittingRef = useRef(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
