@@ -524,6 +524,41 @@ function AddressesTab() {
     await load();
   };
 
+  const startEdit = (a: AddressRow) => {
+    setEditId(a.id);
+    setEditLabel(a.label);
+    setError(null);
+  };
+
+  const cancelEdit = () => {
+    setEditId(null);
+    setEditLabel("");
+  };
+
+  const saveEdit = async (a: AddressRow) => {
+    const trimmed = editLabel.trim().slice(0, 150);
+    if (!trimmed || trimmed === a.label) {
+      cancelEdit();
+      return;
+    }
+    setEditSaving(true);
+    setError(null);
+    const { error: e1 } = await supabase
+      .from("member_addresses")
+      .update({ label: trimmed })
+      .eq("id", a.id);
+    if (e1) {
+      setEditSaving(false);
+      setError(e1.code === "23505" ? "এই ঠিকানা ইতিমধ্যে আছে।" : "সম্পাদনা করা যায়নি।");
+      return;
+    }
+    // keep members in sync with the renamed address label
+    await supabase.from("members").update({ address: trimmed }).eq("address", a.label);
+    setEditSaving(false);
+    cancelEdit();
+    await load();
+  };
+
   const remove = async (id: string) => {
     if (!confirm("এই ঠিকানা মুছে ফেলবেন?")) return;
     const { error: e1 } = await supabase.from("member_addresses").delete().eq("id", id);
