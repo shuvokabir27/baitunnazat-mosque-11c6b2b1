@@ -307,6 +307,9 @@ function Members() {
                 >
                   {/* header */}
                   <div className="flex flex-col items-center gap-2 px-5 pt-6 pb-4 text-center">
+                    <p dir="rtl" lang="ar" className="text-sm font-semibold text-[#a07b3a]">
+                      بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+                    </p>
                     <span className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-[#b08d4f] bg-[#0f5132]">
                       {siteIcon ? (
                         <img src={siteIcon} alt="লোগো" className="h-full w-full object-cover" crossOrigin="anonymous" />
