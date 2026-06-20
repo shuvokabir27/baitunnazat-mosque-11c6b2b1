@@ -361,7 +361,7 @@ function Members() {
               {error && <p className="text-sm text-destructive">{error}</p>}
               <button
                 type="submit"
-                disabled={saving}
+                disabled={saving || mobileExists}
                 className="inline-flex w-full items-center justify-center gap-2 rounded-xl gradient-emerald px-4 py-3 text-sm font-semibold text-primary-foreground shadow-soft disabled:opacity-60"
               >
                 {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
