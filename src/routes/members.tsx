@@ -4,6 +4,7 @@ import { Users, Plus, Loader2, CheckCircle2, Search, UserCheck, UserX, Download,
 import { toPng } from "html-to-image";
 import { Layout, PageHeader } from "@/components/Layout";
 import { mosque } from "@/lib/mosque-data";
+import { useSiteContent } from "@/lib/use-site-content";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/members")({
