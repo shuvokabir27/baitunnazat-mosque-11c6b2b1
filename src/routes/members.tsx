@@ -284,7 +284,7 @@ function Members() {
                     <Moon className="h-6 w-6 text-white" />
                   </span>
                   <div className="min-w-0">
-                    <h4 className="truncate text-base font-extrabold leading-tight">{mosque.name}</h4>
+                    <h4 className="text-base font-extrabold leading-tight">{mosque.name}</h4>
                     <p className="text-[11px] text-white/80">সদস্য পরিচয় কার্ড · প্রতিষ্ঠাকাল {mosque.established}</p>
                   </div>
                 </div>
