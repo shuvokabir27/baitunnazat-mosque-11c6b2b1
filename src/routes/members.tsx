@@ -222,16 +222,28 @@ function Members() {
           </div>
 
           <div className="mt-4">
-            <input
-              type="tel"
-              inputMode="numeric"
-              value={checkMobile}
-              onChange={(e) =>
-                setCheckMobile(e.target.value.replace(/\D/g, "").slice(0, 11))
-              }
-              placeholder="মোবাইল নম্বর দিন (১১ ডিজিট)"
-              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
-            />
+            <div className="relative">
+              <input
+                type="tel"
+                inputMode="numeric"
+                value={checkMobile}
+                onChange={(e) =>
+                  setCheckMobile(e.target.value.replace(/\D/g, "").slice(0, 11))
+                }
+                placeholder="মোবাইল নম্বর দিন (১১ ডিজিট)"
+                className="w-full rounded-xl border border-border bg-background px-4 py-3 pr-11 text-sm outline-none focus:border-primary"
+              />
+              {checkMobile.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setCheckMobile("")}
+                  aria-label="মুছে ফেলুন"
+                  className="absolute right-2 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
             <div className="mt-2 flex h-5 items-center gap-2 text-xs text-muted-foreground">
               {checking && (
                 <>
