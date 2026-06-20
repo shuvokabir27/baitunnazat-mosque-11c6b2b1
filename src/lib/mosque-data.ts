@@ -43,6 +43,7 @@ export const staff = [
     name: "মাওলানা আব্দুর রহমান",
     role: "ইমাম",
     image: imam,
+    whatsapp: "8801700000001",
     detail: "৩৫ বছরের অভিজ্ঞ ক্বারী ও আলেম",
     experience: "৩৫ বছরের ইমামতি ও ক্বিরাত শিক্ষাদানের অভিজ্ঞতা।",
     previousJobs: [
