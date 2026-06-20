@@ -157,11 +157,11 @@ export const prayerTimes = [
 
 export const navItems = [
   { to: "/", label: "হোম" },
+  { to: "/members", label: "সদস্য" },
   { to: "/donate", label: "দান করুন" },
 ] as const;
 
 export const moreNavItems = [
   { to: "/development", label: "উন্নয়ন কাজ" },
   { to: "/ibadah", label: "ইবাদত ও নামাজ" },
-  { to: "/members", label: "সদস্য" },
 ] as const;
