@@ -579,6 +579,7 @@ type Member = {
   father_name: string;
   mobile: string;
   address: string;
+  monthly_donation: number;
   created_at: string;
 };
 
@@ -590,7 +591,7 @@ function MembersTab() {
     setLoading(true);
     const { data } = await supabase
       .from("members")
-      .select("id, name, father_name, mobile, address, created_at")
+      .select("id, name, father_name, mobile, address, monthly_donation, created_at")
       .order("created_at", { ascending: false });
     setMembers((data as Member[]) ?? []);
     setLoading(false);
