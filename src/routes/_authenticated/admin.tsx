@@ -25,6 +25,9 @@ import {
   X,
   Phone,
   MapPin,
+  UserPlus,
+  FileSpreadsheet,
+  FileDown,
 } from "lucide-react";
 import { defaultContent, mergeContent, type SiteContent } from "@/lib/site-content";
 import { ImageCropUpload } from "@/components/ImageCropUpload";
@@ -255,7 +258,7 @@ function AdminPage() {
   );
 }
 
-type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "donate" | "footer" | "leads" | "addresses";
+type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "donate" | "footer" | "leads" | "addresses" | "members";
 const TAB_LABELS: Record<Tab, string> = {
   site: "সাইট সেটিংস",
   mosque: "মসজিদ",
@@ -269,6 +272,7 @@ const TAB_LABELS: Record<Tab, string> = {
   footer: "ফুটার",
   leads: "যোগাযোগ তালিকা",
   addresses: "ঠিকানা তালিকা",
+  members: "সদস্য তালিকা",
 };
 
 const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
@@ -284,6 +288,7 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   footer: MessageSquare,
   leads: Phone,
   addresses: MapPin,
+  members: UserPlus,
 };
 
 function Sidebar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
