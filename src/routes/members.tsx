@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useCallback, useRef } from "react";
-import { Users, Plus, Loader2, CheckCircle2, Search, UserCheck, UserX } from "lucide-react";
+import { Users, Plus, Loader2, CheckCircle2, Search, UserCheck, UserX, Download, Moon } from "lucide-react";
+import { toPng } from "html-to-image";
 import { Layout, PageHeader } from "@/components/Layout";
+import { mosque } from "@/lib/mosque-data";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/members")({
@@ -39,6 +41,28 @@ function Members() {
   const [checking, setChecking] = useState(false);
   const [checkResult, setCheckResult] = useState<MemberInfo | null>(null);
   const [notMember, setNotMember] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [downloading, setDownloading] = useState(false);
+
+  const downloadCard = useCallback(async () => {
+    if (!cardRef.current) return;
+    setDownloading(true);
+    try {
+      const dataUrl = await toPng(cardRef.current, {
+        cacheBust: true,
+        pixelRatio: 3,
+        backgroundColor: "#ffffff",
+      });
+      const a = document.createElement("a");
+      a.download = `সদস্য-কার্ড-${checkResult?.member_no ?? ""}.png`;
+      a.href = dataUrl;
+      a.click();
+    } catch {
+      /* ignore */
+    } finally {
+      setDownloading(false);
+    }
+  }, [checkResult]);
 
   const loadAddresses = useCallback(async () => {
     const { data } = await supabase
@@ -238,35 +262,78 @@ function Members() {
 
 
           {checkResult && (
-            <div className="mt-4 rounded-2xl border border-primary/30 bg-primary/5 p-4">
-              <div className="flex items-center gap-2 text-primary">
+            <div className="mt-4">
+              <div className="mb-3 flex items-center gap-2 text-primary">
                 <UserCheck className="h-5 w-5" />
                 <span className="text-sm font-bold">আপনি একজন নিবন্ধিত সদস্য</span>
               </div>
-              <dl className="mt-3 space-y-1.5 text-sm">
-                <div className="flex justify-between gap-3">
-                  <dt className="text-muted-foreground">সদস্য নম্বর</dt>
-                  <dd className="font-semibold text-foreground">{checkResult.member_no}</dd>
+
+              {/* Downloadable membership card */}
+              <div
+                ref={cardRef}
+                className="relative overflow-hidden rounded-2xl text-white shadow-lg"
+                style={{ background: "linear-gradient(135deg, #065f46 0%, #047857 55%, #0d9488 100%)" }}
+              >
+                {/* decorative circles */}
+                <div className="pointer-events-none absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white/10" />
+                <div className="pointer-events-none absolute -bottom-14 -left-10 h-44 w-44 rounded-full bg-white/5" />
+
+                {/* header */}
+                <div className="relative flex items-center gap-3 border-b border-white/20 px-5 py-4">
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/15">
+                    <Moon className="h-6 w-6 text-white" />
+                  </span>
+                  <div className="min-w-0">
+                    <h4 className="truncate text-base font-extrabold leading-tight">{mosque.name}</h4>
+                    <p className="text-[11px] text-white/80">সদস্য পরিচয় কার্ড · প্রতিষ্ঠাকাল {mosque.established}</p>
+                  </div>
                 </div>
-                <div className="flex justify-between gap-3">
-                  <dt className="text-muted-foreground">নাম</dt>
-                  <dd className="font-semibold text-foreground">{checkResult.name}</dd>
+
+                {/* body */}
+                <div className="relative px-5 py-4">
+                  <div className="mb-3 flex items-center justify-between gap-3 rounded-xl bg-white/15 px-3 py-2">
+                    <span className="text-xs font-medium text-white/80">সদস্য নম্বর</span>
+                    <span className="text-xl font-extrabold tracking-wide">{checkResult.member_no}</span>
+                  </div>
+
+                  <dl className="space-y-2 text-sm">
+                    <div className="flex justify-between gap-3">
+                      <dt className="text-white/75">নাম</dt>
+                      <dd className="text-right font-bold">{checkResult.name}</dd>
+                    </div>
+                    <div className="flex justify-between gap-3">
+                      <dt className="text-white/75">পিতার নাম</dt>
+                      <dd className="text-right font-bold">{checkResult.father_name}</dd>
+                    </div>
+                    <div className="flex justify-between gap-3">
+                      <dt className="text-white/75">ঠিকানা</dt>
+                      <dd className="text-right font-bold">{checkResult.address}</dd>
+                    </div>
+                  </dl>
+
+                  <div className="mt-3 flex items-center justify-between gap-3 rounded-xl bg-white px-3 py-2.5">
+                    <span className="text-sm font-bold text-emerald-800">মাসিক দান</span>
+                    <span className="text-lg font-extrabold text-emerald-700">{checkResult.monthly_donation ?? 0} ৳</span>
+                  </div>
                 </div>
-                <div className="flex justify-between gap-3">
-                  <dt className="text-muted-foreground">পিতার নাম</dt>
-                  <dd className="font-semibold text-foreground">{checkResult.father_name}</dd>
+
+                {/* footer */}
+                <div className="relative border-t border-white/20 px-5 py-2.5 text-center text-[11px] text-white/80">
+                  {mosque.tagline}
                 </div>
-                <div className="flex justify-between gap-3">
-                  <dt className="text-muted-foreground">ঠিকানা</dt>
-                  <dd className="font-semibold text-foreground">{checkResult.address}</dd>
-                </div>
-                <div className="mt-2 flex items-center justify-between gap-3 rounded-xl bg-primary/10 px-3 py-2">
-                  <dt className="font-semibold text-primary">মাসিক দান</dt>
-                  <dd className="text-lg font-extrabold text-primary">{checkResult.monthly_donation ?? 0} ৳</dd>
-                </div>
-              </dl>
+              </div>
+
+              <button
+                onClick={downloadCard}
+                disabled={downloading}
+                className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl gradient-emerald px-4 py-3 text-sm font-semibold text-primary-foreground shadow-soft disabled:opacity-60"
+              >
+                {downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                কার্ড ডাউনলোড করুন
+              </button>
             </div>
           )}
+
 
           {notMember && (
             <div className="mt-4 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-amber-900">
