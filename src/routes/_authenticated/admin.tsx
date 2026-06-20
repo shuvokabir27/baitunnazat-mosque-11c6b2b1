@@ -629,9 +629,10 @@ function MembersTab() {
     const rows = members
       .map(
         (m, i) =>
-          `<tr><td>${i + 1}</td><td>${m.name}</td><td>${m.father_name}</td><td>${m.mobile}</td><td>${m.address}</td></tr>`,
+          `<tr><td>${i + 1}</td><td>${m.name}</td><td>${m.father_name}</td><td>${m.mobile}</td><td>${m.address}</td><td>${m.monthly_donation ?? 0}</td></tr>`,
       )
       .join("");
+    const total = members.reduce((s, m) => s + (Number(m.monthly_donation) || 0), 0);
     const html = `<!DOCTYPE html><html lang="bn"><head><meta charset="utf-8"><title>সদস্য তালিকা</title>
       <style>
         body{font-family:'Noto Sans Bengali','Segoe UI',sans-serif;padding:24px;color:#1a1a1a}
@@ -642,8 +643,8 @@ function MembersTab() {
         th{background:#0f6e4f;color:#fff}
       </style></head><body>
       <h1>${mosque.name}</h1>
-      <p>সদস্য তালিকা — মোট ${members.length} জন</p>
-      <table><thead><tr><th>ক্রমিক</th><th>নাম</th><th>পিতার নাম</th><th>মোবাইল</th><th>ঠিকানা</th></tr></thead>
+      <p>সদস্য তালিকা — মোট ${members.length} জন · মাসিক দান মোট ${total} টাকা</p>
+      <table><thead><tr><th>ক্রমিক</th><th>নাম</th><th>পিতার নাম</th><th>মোবাইল</th><th>ঠিকানা</th><th>মাসিক দান (টাকা)</th></tr></thead>
       <tbody>${rows}</tbody></table>
       <script>window.onload=function(){window.print()}<\/script>
       </body></html>`;
