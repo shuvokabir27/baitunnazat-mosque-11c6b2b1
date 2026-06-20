@@ -34,6 +34,7 @@ export type StaffMember = {
   expertise: string[];
   education: string[];
   image?: string;
+  whatsapp?: string;
 };
 
 export type CommitteeMember = StaffMember;
