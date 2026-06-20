@@ -19,6 +19,7 @@ const navColors: Record<string, { bg: string; text: string; activeBg: string; ac
   "/development": { bg: "bg-sky-100", text: "text-sky-700", activeBg: "bg-sky-600", activeText: "text-white", dot: "bg-sky-500" },
   "/ibadah": { bg: "bg-violet-100", text: "text-violet-700", activeBg: "bg-violet-600", activeText: "text-white", dot: "bg-violet-500" },
   "/members": { bg: "bg-teal-100", text: "text-teal-700", activeBg: "bg-teal-600", activeText: "text-white", dot: "bg-teal-500" },
+  "/masala": { bg: "bg-rose-100", text: "text-rose-700", activeBg: "bg-rose-600", activeText: "text-white", dot: "bg-rose-500" },
   more: { bg: "bg-slate-100", text: "text-slate-700", activeBg: "bg-slate-600", activeText: "text-white", dot: "bg-slate-500" },
 };
 
