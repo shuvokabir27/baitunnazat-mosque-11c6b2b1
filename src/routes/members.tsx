@@ -260,6 +260,10 @@ function Members() {
                   <dt className="text-muted-foreground">ঠিকানা</dt>
                   <dd className="font-semibold text-foreground">{checkResult.address}</dd>
                 </div>
+                <div className="mt-2 flex items-center justify-between gap-3 rounded-xl bg-primary/10 px-3 py-2">
+                  <dt className="font-semibold text-primary">মাসিক দান</dt>
+                  <dd className="text-lg font-extrabold text-primary">{checkResult.monthly_donation ?? 0} ৳</dd>
+                </div>
               </dl>
             </div>
           )}
