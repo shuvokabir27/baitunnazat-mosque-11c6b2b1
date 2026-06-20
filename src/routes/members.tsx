@@ -151,6 +151,26 @@ function Members() {
     return () => clearTimeout(t);
   }, [checkMobile, runVerify]);
 
+  useEffect(() => {
+    if (mobile.length !== 11) {
+      setMobileExists(false);
+      return;
+    }
+    let active = true;
+    const t = setTimeout(async () => {
+      const { data } = await supabase
+        .from("members")
+        .select("id")
+        .eq("mobile", mobile)
+        .limit(1);
+      if (active) setMobileExists(!!data && data.length > 0);
+    }, 300);
+    return () => {
+      active = false;
+      clearTimeout(t);
+    };
+  }, [mobile]);
+
 
   return (
     <Layout>
