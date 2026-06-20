@@ -38,6 +38,41 @@ function toBnNum(n: number): string {
   return n.toString().replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[parseInt(d, 10)]);
 }
 
+const banglaMonths = [
+  "বৈশাখ",
+  "জ্যৈষ্ঠ",
+  "আষাঢ়",
+  "শ্রাবণ",
+  "ভাদ্র",
+  "আশ্বিন",
+  "কার্তিক",
+  "অগ্রহায়ণ",
+  "পৌষ",
+  "মাঘ",
+  "ফাল্গুন",
+  "চৈত্র",
+];
+
+// বাংলাদেশের সংশোধিত (২০১৯) বঙ্গাব্দ ক্যালেন্ডার অনুযায়ী গণনা
+function toBanglaCalendar(date: Date): string {
+  const isLeap = (y: number) => (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const gYear = d.getFullYear();
+  const april14 = new Date(gYear, 3, 14);
+  const startYear = d < april14 ? gYear - 1 : gYear;
+  const start = new Date(startYear, 3, 14);
+  const banglaYear = startYear - 593;
+  const lengths = [31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 30, 30];
+  if (isLeap(startYear + 1)) lengths[10] = 31; // অধিবর্ষে ফাল্গুন ৩১ দিন
+  let offset = Math.floor((d.getTime() - start.getTime()) / 86400000);
+  let m = 0;
+  while (offset >= lengths[m]) {
+    offset -= lengths[m];
+    m++;
+  }
+  return `${toBnNum(offset + 1)} ${banglaMonths[m]} ${toBnNum(banglaYear)} বঙ্গাব্দ`;
+}
+
 function HeaderDateTime() {
   const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
@@ -69,6 +104,7 @@ function HeaderDateTime() {
     month: "long",
     year: "numeric",
   });
+  const bongabdo = toBanglaCalendar(now);
   // বাংলাদেশের চাঁদ দেখা উম-আল-কুরা ক্যালেন্ডারের চেয়ে সাধারণত ১ দিন পিছিয়ে থাকে
   const islamicDate = new Date(now);
   islamicDate.setDate(islamicDate.getDate() - 1);
@@ -107,6 +143,7 @@ function HeaderDateTime() {
         </div>
         <div className="flex flex-col items-center lg:items-start">
           <span className="text-sm font-bold text-primary">{bangla}</span>
+          <span className="text-xs font-medium text-muted-foreground">{bongabdo}</span>
         </div>
       </div>
     </div>
