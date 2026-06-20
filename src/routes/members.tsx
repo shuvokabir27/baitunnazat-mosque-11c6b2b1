@@ -61,8 +61,8 @@ function Members() {
       setError("নাম ও পিতার নাম দিন।");
       return;
     }
-    if (trimmedMobile.length < 6) {
-      setError("সঠিক মোবাইল নম্বর দিন।");
+    if (trimmedMobile.length !== 11) {
+      setError("মোবাইল নম্বর অবশ্যই ১১ ডিজিট হতে হবে।");
       return;
     }
     if (!address) {
@@ -266,15 +266,26 @@ function Members() {
                 required
                 className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
               />
-              <input
-                type="tel"
-                value={mobile}
-                onChange={(e) => setMobile(e.target.value)}
-                placeholder="মোবাইল নম্বর"
-                maxLength={20}
-                required
-                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary"
-              />
+              <div>
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  value={mobile}
+                  onChange={(e) => setMobile(e.target.value.replace(/\D/g, "").slice(0, 11))}
+                  placeholder="মোবাইল নম্বর (১১ ডিজিট)"
+                  required
+                  className={`w-full rounded-xl border bg-background px-4 py-3 text-sm outline-none ${
+                    mobile.length > 0 && mobile.length !== 11
+                      ? "border-destructive focus:border-destructive"
+                      : "border-border focus:border-primary"
+                  }`}
+                />
+                {mobile.length > 0 && mobile.length !== 11 && (
+                  <p className="mt-1 text-xs font-medium text-destructive">
+                    মোবাইল নম্বর অবশ্যই ১১ ডিজিট হতে হবে। (এখন {mobile.length} ডিজিট)
+                  </p>
+                )}
+              </div>
               <select
                 value={addressSel}
                 onChange={(e) => setAddressSel(e.target.value)}
