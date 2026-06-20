@@ -817,7 +817,7 @@ function MembersTab() {
       </style></head><body>
       <h1>${mosque.name}</h1>
       <p>সদস্য তালিকা — মোট ${filtered.length} জন · মাসিক দান মোট ${total} টাকা</p>
-      <table><thead><tr><th>ক্রমিক</th><th>নাম</th><th>পিতার নাম</th><th>মোবাইল</th><th>ঠিকানা</th><th>মাসিক দান (টাকা)</th></tr></thead>
+      <table><thead><tr><th>সদস্য নম্বর</th><th>নাম</th><th>পিতার নাম</th><th>মোবাইল</th><th>ঠিকানা</th><th>মাসিক দান (টাকা)</th></tr></thead>
       <tbody>${rows}</tbody></table>
       <script>window.onload=function(){window.print()}<\/script>
       </body></html>`;
