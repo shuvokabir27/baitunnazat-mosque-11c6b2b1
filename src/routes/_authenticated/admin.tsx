@@ -936,7 +936,7 @@ function MembersTab() {
               </tr>
             </thead>
             <tbody>
-              {members.map((m, i) => (
+              {filtered.map((m, i) => (
                 <tr key={m.id} className="border-b border-border/60">
                   <td className="p-2 text-muted-foreground">{i + 1}</td>
                   <td className="p-2 font-medium text-foreground">{m.name}</td>
