@@ -71,7 +71,7 @@ function Members() {
     const trimmedName = name.trim();
     const trimmedFather = fatherName.trim();
     const trimmedMobile = mobile.trim();
-    let address = addressSel === ADD_NEW ? customAddress.trim() : addressSel.trim();
+    const address = addressSel.trim();
 
     if (!trimmedName || !trimmedFather) {
       setError("নাম ও পিতার নাম দিন।");
@@ -82,17 +82,12 @@ function Members() {
       return;
     }
     if (!address) {
-      setError("ঠিকানা নির্বাচন করুন বা যুক্ত করুন।");
+      setError("ঠিকানা নির্বাচন করুন।");
       return;
     }
 
     setSaving(true);
     try {
-      // নতুন ঠিকানা হলে ড্রপডাউনে যোগ করি
-      if (addressSel === ADD_NEW && !addresses.some((a) => a.label === address)) {
-        await supabase.from("member_addresses").insert({ label: address });
-        await loadAddresses();
-      }
 
       const { error: insertError } = await supabase.from("members").insert({
         name: trimmedName,
