@@ -30,6 +30,7 @@ function Members() {
   const [saving, setSaving] = useState(false);
   const submittingRef = useRef(false);
   const [done, setDone] = useState(false);
+  const [newMember, setNewMember] = useState<MemberInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [mobileExists, setMobileExists] = useState(false);
 
