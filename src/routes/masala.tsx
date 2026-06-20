@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { Layout, PageHeader } from "@/components/Layout";
 import { useSiteContent } from "@/lib/use-site-content";
 import { staffImages } from "@/lib/site-content";
+import { supabase } from "@/integrations/supabase/client";
 import { MessageCircleQuestion, Send, BadgeCheck } from "lucide-react";
 
 export const Route = createFileRoute("/masala")({
