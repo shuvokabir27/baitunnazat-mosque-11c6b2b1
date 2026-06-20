@@ -485,6 +485,9 @@ function AddressesTab() {
   const [label, setLabel] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [editLabel, setEditLabel] = useState("");
+  const [editSaving, setEditSaving] = useState(false);
 
   const load = async () => {
     setLoading(true);
