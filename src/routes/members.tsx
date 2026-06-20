@@ -51,6 +51,7 @@ function Members() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submittingRef.current) return;
     setError(null);
 
     const trimmedName = name.trim();
