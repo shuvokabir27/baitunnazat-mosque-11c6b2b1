@@ -143,6 +143,7 @@ function HeaderDateTime() {
         </div>
         <div className="flex flex-col items-center lg:items-start">
           <span className="text-sm font-bold text-primary">{bangla}</span>
+          <span className="text-xs font-medium text-muted-foreground">{bongabdo}</span>
         </div>
       </div>
     </div>
