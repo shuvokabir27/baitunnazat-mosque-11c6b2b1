@@ -1,7 +1,7 @@
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Home, HeartHandshake, HardHat, BookOpen } from "lucide-react";
-import { navItems } from "@/lib/mosque-data";
+import { Home, HeartHandshake, HardHat, BookOpen, MoreHorizontal } from "lucide-react";
+import { navItems, moreNavItems } from "@/lib/mosque-data";
 import { useSiteContent } from "@/lib/use-site-content";
 
 const navIcons: Record<string, typeof Home> = {
