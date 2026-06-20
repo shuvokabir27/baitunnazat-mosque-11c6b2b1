@@ -612,8 +612,8 @@ function MembersTab() {
   };
 
   const downloadExcel = () => {
-    const header = ["ক্রমিক", "নাম", "পিতার নাম", "মোবাইল", "ঠিকানা"];
-    const rows = members.map((m, i) => [String(i + 1), m.name, m.father_name, m.mobile, m.address]);
+    const header = ["ক্রমিক", "নাম", "পিতার নাম", "মোবাইল", "ঠিকানা", "মাসিক দান (টাকা)"];
+    const rows = members.map((m, i) => [String(i + 1), m.name, m.father_name, m.mobile, m.address, String(m.monthly_donation ?? 0)]);
     const esc = (v: string) => `"${v.replace(/"/g, '""')}"`;
     const csv = [header, ...rows].map((r) => r.map(esc).join(",")).join("\r\n");
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
