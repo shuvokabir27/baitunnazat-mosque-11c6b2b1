@@ -4,6 +4,7 @@ import { Users, Plus, Loader2, CheckCircle2, Search, UserCheck, UserX, Download,
 import { toPng } from "html-to-image";
 import { Layout, PageHeader } from "@/components/Layout";
 import { mosque } from "@/lib/mosque-data";
+import { useSiteContent } from "@/lib/use-site-content";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/members")({
@@ -21,7 +22,10 @@ type AddressOption = { id: string; label: string };
 type MemberInfo = { member_no: number; name: string; father_name: string; address: string; monthly_donation: number };
 
 function Members() {
+  const siteContent = useSiteContent();
+  const siteIcon = siteContent.site.icon;
   const [addresses, setAddresses] = useState<AddressOption[]>([]);
+
 
   const [name, setName] = useState("");
   const [fatherName, setFatherName] = useState("");
@@ -280,8 +284,12 @@ function Members() {
 
                 {/* header */}
                 <div className="relative flex flex-col items-center gap-2 border-b border-white/20 px-5 py-4 text-center">
-                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/15">
-                    <Moon className="h-6 w-6 text-white" />
+                  <span className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-full bg-white/15">
+                    {siteIcon ? (
+                      <img src={siteIcon} alt="লোগো" className="h-full w-full object-cover" crossOrigin="anonymous" />
+                    ) : (
+                      <Moon className="h-6 w-6 text-white" />
+                    )}
                   </span>
                   <div className="min-w-0">
                     <h4 className="text-base font-extrabold leading-tight">{mosque.name}</h4>
