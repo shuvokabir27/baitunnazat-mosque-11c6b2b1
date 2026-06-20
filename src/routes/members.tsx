@@ -37,7 +37,6 @@ function Members() {
   const [fatherName, setFatherName] = useState("");
   const [mobile, setMobile] = useState("");
   const [addressSel, setAddressSel] = useState("");
-  const [customAddress, setCustomAddress] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -101,7 +100,6 @@ function Members() {
       setFatherName("");
       setMobile("");
       setAddressSel("");
-      setCustomAddress("");
       await loadMembers();
     } catch {
       setError("জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
