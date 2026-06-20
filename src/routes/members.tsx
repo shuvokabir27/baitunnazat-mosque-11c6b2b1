@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { Users, Plus, Loader2, CheckCircle2, Search, UserCheck, UserX } from "lucide-react";
 import { Layout, PageHeader } from "@/components/Layout";
 import { supabase } from "@/integrations/supabase/client";
