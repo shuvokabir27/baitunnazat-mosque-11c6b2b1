@@ -725,6 +725,7 @@ function AddressesTab() {
 
 type Member = {
   id: string;
+  member_no: number;
   name: string;
   father_name: string;
   mobile: string;
