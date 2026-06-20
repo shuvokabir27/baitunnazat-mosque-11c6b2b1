@@ -276,7 +276,7 @@ function BottomNav() {
           })}
         </div>
       )}
-      <div className="mx-auto grid max-w-screen-md grid-cols-3 px-2 pb-[env(safe-area-inset-bottom)] pt-2">
+      <div className="mx-auto grid max-w-screen-md grid-cols-4 px-2 pb-[env(safe-area-inset-bottom)] pt-2">
         {navItems.map((item) => {
           const Icon = navIcons[item.to] ?? Home;
           const c = navColors[item.to];
