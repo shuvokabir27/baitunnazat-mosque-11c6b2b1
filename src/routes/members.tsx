@@ -333,9 +333,7 @@ function Members() {
               </button>
             </div>
           )}
-              </dl>
-            </div>
-          )}
+
 
           {notMember && (
             <div className="mt-4 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-amber-900">
