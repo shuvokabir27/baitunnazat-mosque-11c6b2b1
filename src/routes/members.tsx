@@ -96,7 +96,13 @@ function Members() {
         address,
         monthly_donation: donation,
       });
-      if (insertError) throw insertError;
+      if (insertError) {
+        if (insertError.code === "23505") {
+          setError("এই মোবাইল নম্বরটি ইতিমধ্যে যুক্ত আছে।");
+          return;
+        }
+        throw insertError;
+      }
 
       setName("");
       setFatherName("");
