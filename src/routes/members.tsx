@@ -43,8 +43,17 @@ function Members() {
       .from("member_addresses")
       .select("id, label")
       .order("label", { ascending: true });
-    setAddresses(data ?? []);
+    const list = data ?? [];
+    const isMohipur = (a: AddressOption) => /\(মহিপুর\)\s*$/.test(a.label.trim());
+    const sorted = [...list].sort((x, y) => {
+      const mx = isMohipur(x);
+      const my = isMohipur(y);
+      if (mx !== my) return mx ? -1 : 1;
+      return x.label.localeCompare(y.label, "bn");
+    });
+    setAddresses(sorted);
   }, []);
+
 
   useEffect(() => {
     loadAddresses();
