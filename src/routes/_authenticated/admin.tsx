@@ -868,7 +868,7 @@ function MembersTab() {
                   <td className="p-2 text-foreground">{m.monthly_donation ?? 0} ৳</td>
                   <td className="p-2 text-right">
                     <button
-                      onClick={() => removeMember(m.id)}
+                      onClick={() => setConfirmTarget(m)}
                       className="rounded-lg bg-destructive/10 p-1.5 text-destructive hover:bg-destructive/20"
                       aria-label="মুছুন"
                     >
