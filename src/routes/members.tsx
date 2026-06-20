@@ -22,7 +22,10 @@ type AddressOption = { id: string; label: string };
 type MemberInfo = { member_no: number; name: string; father_name: string; address: string; monthly_donation: number };
 
 function Members() {
+  const siteContent = useSiteContent();
+  const siteIcon = siteContent.site.icon;
   const [addresses, setAddresses] = useState<AddressOption[]>([]);
+
 
   const [name, setName] = useState("");
   const [fatherName, setFatherName] = useState("");
