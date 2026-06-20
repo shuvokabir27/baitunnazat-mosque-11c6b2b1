@@ -28,6 +28,8 @@ import {
   UserPlus,
   FileSpreadsheet,
   FileDown,
+  Pencil,
+  Check,
 } from "lucide-react";
 import { mosque } from "@/lib/mosque-data";
 import { defaultContent, mergeContent, type SiteContent } from "@/lib/site-content";
