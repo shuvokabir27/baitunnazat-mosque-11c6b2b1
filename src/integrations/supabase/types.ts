@@ -201,6 +201,7 @@ export type Database = {
           address: string
           father_name: string
           member_no: number
+          monthly_donation: number
           name: string
         }[]
       }
