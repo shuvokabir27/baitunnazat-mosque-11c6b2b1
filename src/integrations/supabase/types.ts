@@ -62,6 +62,7 @@ export type Database = {
           created_at: string
           father_name: string
           id: string
+          member_no: number
           mobile: string
           monthly_donation: number
           name: string
@@ -71,6 +72,7 @@ export type Database = {
           created_at?: string
           father_name: string
           id?: string
+          member_no?: number
           mobile: string
           monthly_donation?: number
           name: string
@@ -80,6 +82,7 @@ export type Database = {
           created_at?: string
           father_name?: string
           id?: string
+          member_no?: number
           mobile?: string
           monthly_donation?: number
           name?: string
