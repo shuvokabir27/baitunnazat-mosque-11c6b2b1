@@ -68,12 +68,6 @@ function HeaderDateTime() {
     month: "long",
     year: "numeric",
   });
-  const english = now.toLocaleDateString("en-US", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
   // বাংলাদেশের চাঁদ দেখা উম-আল-কুরা ক্যালেন্ডারের চেয়ে সাধারণত ১ দিন পিছিয়ে থাকে
   const islamicDate = new Date(now);
   islamicDate.setDate(islamicDate.getDate() - 1);
