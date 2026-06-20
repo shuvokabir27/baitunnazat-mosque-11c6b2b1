@@ -30,6 +30,7 @@ import {
   FileDown,
   Pencil,
   Check,
+  MessageCircleQuestion,
 } from "lucide-react";
 import { mosque } from "@/lib/mosque-data";
 import { defaultContent, mergeContent, type SiteContent } from "@/lib/site-content";
