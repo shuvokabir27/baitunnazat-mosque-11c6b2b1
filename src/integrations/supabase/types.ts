@@ -264,6 +264,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_current_month_payment: {
+        Args: { _mobile: string }
+        Returns: {
+          amount: number
+          paid: boolean
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
