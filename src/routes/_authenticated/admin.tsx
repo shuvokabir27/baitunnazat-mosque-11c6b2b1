@@ -35,6 +35,7 @@ import {
 import { mosque } from "@/lib/mosque-data";
 import { defaultContent, mergeContent, type SiteContent } from "@/lib/site-content";
 import { ImageCropUpload } from "@/components/ImageCropUpload";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "অ্যাডমিন প্যানেল" }] }),
@@ -992,10 +993,11 @@ function MembersTab() {
   const [saving, setSaving] = useState(false);
   const [addressFilter, setAddressFilter] = useState("");
   const [donationFilter, setDonationFilter] = useState("");
+  const [addressList, setAddressList] = useState<string[]>([]);
 
-  const addressOptions = Array.from(new Set(members.map((m) => m.address).filter(Boolean))).sort((a, b) =>
-    a.localeCompare(b, "bn"),
-  );
+  const addressOptions = Array.from(
+    new Set([...addressList, ...members.map((m) => m.address).filter(Boolean)]),
+  ).sort((a, b) => a.localeCompare(b, "bn"));
 
   const donationOptions = Array.from(new Set(members.map((m) => Number(m.monthly_donation) || 0))).sort(
     (a, b) => a - b,
@@ -1009,11 +1011,15 @@ function MembersTab() {
 
   const load = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from("members")
-      .select("id, member_no, name, father_name, mobile, address, monthly_donation, created_at")
-      .order("member_no", { ascending: true });
+    const [{ data }, { data: addrs }] = await Promise.all([
+      supabase
+        .from("members")
+        .select("id, member_no, name, father_name, mobile, address, monthly_donation, created_at")
+        .order("member_no", { ascending: true }),
+      supabase.from("member_addresses").select("label").order("label", { ascending: true }),
+    ]);
     setMembers((data as Member[]) ?? []);
+    setAddressList(((addrs as { label: string }[]) ?? []).map((a) => a.label).filter(Boolean));
     setLoading(false);
   };
 
@@ -1027,11 +1033,12 @@ function MembersTab() {
     const { error } = await supabase.from("members").delete().eq("id", confirmTarget.id);
     setDeleting(false);
     if (error) {
-      alert("মুছে ফেলা যায়নি।");
+      toast.error("মুছে ফেলা যায়নি।");
       return;
     }
     setMembers((prev) => prev.filter((m) => m.id !== confirmTarget.id));
     setConfirmTarget(null);
+    toast.success("সদস্য মুছে ফেলা হয়েছে।");
   };
 
   const openEdit = (m: Member) => {
@@ -1058,11 +1065,12 @@ function MembersTab() {
     const { error } = await supabase.from("members").update(updates).eq("id", editTarget.id);
     setSaving(false);
     if (error) {
-      alert("সংরক্ষণ করা যায়নি।");
+      toast.error("সংরক্ষণ করা যায়নি।");
       return;
     }
     setMembers((prev) => prev.map((m) => (m.id === editTarget.id ? { ...m, ...updates } : m)));
     setEditTarget(null);
+    toast.success("পরিবর্তন সংরক্ষণ করা হয়েছে।");
   };
 
   const downloadExcel = () => {
@@ -1314,11 +1322,21 @@ function MembersTab() {
               </div>
               <div>
                 <label className="mb-1 block text-xs font-medium text-muted-foreground">ঠিকানা</label>
-                <input
+                <select
                   value={editForm.address}
                   onChange={(e) => setEditForm((f) => ({ ...f, address: e.target.value }))}
                   className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
-                />
+                >
+                  <option value="">ঠিকানা নির্বাচন করুন</option>
+                  {editForm.address && !addressOptions.includes(editForm.address) && (
+                    <option value={editForm.address}>{editForm.address}</option>
+                  )}
+                  {addressOptions.map((a) => (
+                    <option key={a} value={a}>
+                      {a}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="mb-1 block text-xs font-medium text-muted-foreground">মাসিক দান (টাকা)</label>

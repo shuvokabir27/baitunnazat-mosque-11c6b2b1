@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteContentProvider, siteContentQueryOptions } from "@/lib/use-site-content";
 import { WelcomePopup } from "@/components/WelcomePopup";
 import { ClientOnly } from "@tanstack/react-router";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -140,6 +141,7 @@ function RootComponent() {
           <Outlet />
           <ClientOnly fallback={null}>
             <WelcomePopup />
+            <Toaster />
           </ClientOnly>
         </SiteContentProvider>
       </Suspense>
