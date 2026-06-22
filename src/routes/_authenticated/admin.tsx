@@ -17,6 +17,7 @@ import {
   UsersRound,
   Home,
   ChevronDown,
+  ChevronUp,
   MessageSquare,
   HardHat,
   Settings,
