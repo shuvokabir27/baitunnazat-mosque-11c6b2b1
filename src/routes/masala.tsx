@@ -66,7 +66,7 @@ function Masala() {
   return (
     <Layout>
       <PageHeader
-        title="মাসয়ালা জানুন"
+        title="সরাসরি প্রশ্ন উত্তর"
         subtitle="ইমাম ও খতিবের কাছ থেকে শরয়ী মাসয়ালা জেনে নিন।"
       />
 
