@@ -2748,91 +2748,125 @@ function IbadahTab({ content, setContent }: TabProps) {
       ibadah: { ...c.ibadah, duas: c.ibadah.duas.filter((_, idx) => idx !== i) },
     }));
 
+  const [section, setSection] = useState<"steps" | "programs" | "duas">("steps");
+
+  const subTabs: { key: "steps" | "programs" | "duas"; label: string }[] = [
+    { key: "steps", label: "নামাজের ধাপ" },
+    { key: "programs", label: "কার্যক্রম" },
+    { key: "duas", label: "দোয়া" },
+  ];
+
   return (
     <div className="space-y-6">
       <Card>
         <Field label="পেজ সাবটাইটেল" value={ib.subtitle} onChange={(v) => setField("subtitle", v)} textarea />
       </Card>
 
-      {/* Steps section */}
-      <div className="space-y-3">
-        <Card>
-          <Field label="ধাপ সেকশনের শিরোনাম" value={ib.stepsTitle} onChange={(v) => setField("stepsTitle", v)} />
-        </Card>
-        {ib.steps.map((it, i) => (
-          <Card key={i}>
-            <div className="flex items-center justify-between">
-              <span className="rounded-full gradient-gold px-3 py-0.5 text-xs font-semibold text-gold-foreground">
-                ধাপ {i + 1}
-              </span>
-              <button
-                onClick={() => removeStep(i)}
-                className="grid h-8 w-8 place-items-center rounded-lg bg-destructive/10 text-destructive"
-                aria-label="মুছুন"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </div>
-            <Field label="ধাপ নম্বর (যেমন ১)" value={it.step} onChange={(v) => setStep(i, { step: v })} />
-            <Field label="শিরোনাম" value={it.title} onChange={(v) => setStep(i, { title: v })} />
-            <Field label="বিবরণ" value={it.detail} onChange={(v) => setStep(i, { detail: v })} textarea />
-          </Card>
-        ))}
-        <AddButton onClick={addStep} label="নতুন ধাপ যোগ করুন" />
+      {/* Sub-section selector */}
+      <div className="flex flex-wrap gap-2">
+        {subTabs.map((s) => {
+          const active = section === s.key;
+          return (
+            <button
+              key={s.key}
+              onClick={() => setSection(s.key)}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                active
+                  ? "gradient-gold text-gold-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-muted/70"
+              }`}
+            >
+              {s.label}
+            </button>
+          );
+        })}
       </div>
+
+      {/* Steps section */}
+      {section === "steps" && (
+        <div className="space-y-3">
+          <Card>
+            <Field label="ধাপ সেকশনের শিরোনাম" value={ib.stepsTitle} onChange={(v) => setField("stepsTitle", v)} />
+          </Card>
+          {ib.steps.map((it, i) => (
+            <Card key={i}>
+              <div className="flex items-center justify-between">
+                <span className="rounded-full gradient-gold px-3 py-0.5 text-xs font-semibold text-gold-foreground">
+                  ধাপ {i + 1}
+                </span>
+                <button
+                  onClick={() => removeStep(i)}
+                  className="grid h-8 w-8 place-items-center rounded-lg bg-destructive/10 text-destructive"
+                  aria-label="মুছুন"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+              <Field label="ধাপ নম্বর (যেমন ১)" value={it.step} onChange={(v) => setStep(i, { step: v })} />
+              <Field label="শিরোনাম" value={it.title} onChange={(v) => setStep(i, { title: v })} />
+              <Field label="বিবরণ" value={it.detail} onChange={(v) => setStep(i, { detail: v })} textarea />
+            </Card>
+          ))}
+          <AddButton onClick={addStep} label="নতুন ধাপ যোগ করুন" />
+        </div>
+      )}
 
       {/* Programs section */}
-      <div className="space-y-3">
-        <Card>
-          <Field label="কার্যক্রম সেকশনের শিরোনাম" value={ib.programsTitle} onChange={(v) => setField("programsTitle", v)} />
-        </Card>
-        {ib.programs.map((it, i) => (
-          <Card key={i}>
-            <div className="flex items-center justify-between">
-              <span className="rounded-full gradient-gold px-3 py-0.5 text-xs font-semibold text-gold-foreground">
-                কার্যক্রম {i + 1}
-              </span>
-              <button
-                onClick={() => removeProgram(i)}
-                className="grid h-8 w-8 place-items-center rounded-lg bg-destructive/10 text-destructive"
-                aria-label="মুছুন"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </div>
-            <Field label="শিরোনাম" value={it.title} onChange={(v) => setProgram(i, { title: v })} />
-            <Field label="বিবরণ" value={it.detail} onChange={(v) => setProgram(i, { detail: v })} textarea />
+      {section === "programs" && (
+        <div className="space-y-3">
+          <Card>
+            <Field label="কার্যক্রম সেকশনের শিরোনাম" value={ib.programsTitle} onChange={(v) => setField("programsTitle", v)} />
           </Card>
-        ))}
-        <AddButton onClick={addProgram} label="নতুন কার্যক্রম যোগ করুন" />
-      </div>
+          {ib.programs.map((it, i) => (
+            <Card key={i}>
+              <div className="flex items-center justify-between">
+                <span className="rounded-full gradient-gold px-3 py-0.5 text-xs font-semibold text-gold-foreground">
+                  কার্যক্রম {i + 1}
+                </span>
+                <button
+                  onClick={() => removeProgram(i)}
+                  className="grid h-8 w-8 place-items-center rounded-lg bg-destructive/10 text-destructive"
+                  aria-label="মুছুন"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+              <Field label="শিরোনাম" value={it.title} onChange={(v) => setProgram(i, { title: v })} />
+              <Field label="বিবরণ" value={it.detail} onChange={(v) => setProgram(i, { detail: v })} textarea />
+            </Card>
+          ))}
+          <AddButton onClick={addProgram} label="নতুন কার্যক্রম যোগ করুন" />
+        </div>
+      )}
 
       {/* Duas section */}
-      <div className="space-y-3">
-        <Card>
-          <Field label="দোয়া সেকশনের শিরোনাম" value={ib.duasTitle} onChange={(v) => setField("duasTitle", v)} />
-        </Card>
-        {ib.duas.map((it, i) => (
-          <Card key={i}>
-            <div className="flex items-center justify-between">
-              <span className="rounded-full gradient-gold px-3 py-0.5 text-xs font-semibold text-gold-foreground">
-                দোয়া {i + 1}
-              </span>
-              <button
-                onClick={() => removeDua(i)}
-                className="grid h-8 w-8 place-items-center rounded-lg bg-destructive/10 text-destructive"
-                aria-label="মুছুন"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </div>
-            <Field label="শিরোনাম" value={it.title} onChange={(v) => setDua(i, { title: v })} />
-            <Field label="আরবি / উচ্চারণ" value={it.arabic} onChange={(v) => setDua(i, { arabic: v })} textarea />
-            <Field label="অর্থ" value={it.meaning} onChange={(v) => setDua(i, { meaning: v })} textarea />
+      {section === "duas" && (
+        <div className="space-y-3">
+          <Card>
+            <Field label="দোয়া সেকশনের শিরোনাম" value={ib.duasTitle} onChange={(v) => setField("duasTitle", v)} />
           </Card>
-        ))}
-        <AddButton onClick={addDua} label="নতুন দোয়া যোগ করুন" />
-      </div>
+          {ib.duas.map((it, i) => (
+            <Card key={i}>
+              <div className="flex items-center justify-between">
+                <span className="rounded-full gradient-gold px-3 py-0.5 text-xs font-semibold text-gold-foreground">
+                  দোয়া {i + 1}
+                </span>
+                <button
+                  onClick={() => removeDua(i)}
+                  className="grid h-8 w-8 place-items-center rounded-lg bg-destructive/10 text-destructive"
+                  aria-label="মুছুন"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+              <Field label="শিরোনাম" value={it.title} onChange={(v) => setDua(i, { title: v })} />
+              <Field label="আরবি / উচ্চারণ" value={it.arabic} onChange={(v) => setDua(i, { arabic: v })} textarea />
+              <Field label="অর্থ" value={it.meaning} onChange={(v) => setDua(i, { meaning: v })} textarea />
+            </Card>
+          ))}
+          <AddButton onClick={addDua} label="নতুন দোয়া যোগ করুন" />
+        </div>
+      )}
     </div>
   );
 }
