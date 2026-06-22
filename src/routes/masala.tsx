@@ -153,7 +153,25 @@ function Masala() {
           </span>
         </button>
 
-
+        <section className="mb-6 rounded-2xl border border-primary/15 bg-secondary/40 p-4 text-center">
+          <span className="mx-auto mb-2 grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary">
+            <BadgeCheck className="h-5 w-5" />
+          </span>
+          <h3 className="text-sm font-bold text-foreground">
+            শরয়ী সমাধান, নির্ভরযোগ্য সূত্রে
+          </h3>
+          <p className="mx-auto mt-1 max-w-xs text-xs leading-relaxed text-muted-foreground">
+            আপনার দৈনন্দিন জীবনের যেকোনো মাসয়ালা অভিজ্ঞ ইমাম ও খতিবের কাছে জিজ্ঞাসা
+            করুন এবং কুরআন-সুন্নাহভিত্তিক সঠিক সমাধান জেনে নিন।
+          </p>
+          <button
+            type="button"
+            onClick={() => setFormOpen(true)}
+            className="mt-3 inline-flex items-center justify-center gap-2 rounded-full bg-gold px-5 py-2.5 text-sm font-bold text-primary shadow-sm transition-all hover:brightness-105 active:scale-[0.98]"
+          >
+            <MessageCircleQuestion className="h-4 w-4" /> এখনই প্রশ্ন করুন
+          </button>
+        </section>
 
 
 
