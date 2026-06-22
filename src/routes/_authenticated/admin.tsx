@@ -993,10 +993,11 @@ function MembersTab() {
   const [saving, setSaving] = useState(false);
   const [addressFilter, setAddressFilter] = useState("");
   const [donationFilter, setDonationFilter] = useState("");
+  const [addressList, setAddressList] = useState<string[]>([]);
 
-  const addressOptions = Array.from(new Set(members.map((m) => m.address).filter(Boolean))).sort((a, b) =>
-    a.localeCompare(b, "bn"),
-  );
+  const addressOptions = Array.from(
+    new Set([...addressList, ...members.map((m) => m.address).filter(Boolean)]),
+  ).sort((a, b) => a.localeCompare(b, "bn"));
 
   const donationOptions = Array.from(new Set(members.map((m) => Number(m.monthly_donation) || 0))).sort(
     (a, b) => a - b,
