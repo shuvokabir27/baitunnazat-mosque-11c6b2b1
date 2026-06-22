@@ -254,6 +254,7 @@ function AdminPage() {
                 {tab === "donate" && <DonateTab content={content} setContent={setContent} />}
                 {tab === "leads" && <LeadsTab />}
                 {tab === "masala" && <MasalaTab />}
+                {tab === "qa" && <QaTab />}
                 {tab === "addresses" && <AddressesTab />}
                 {tab === "members" && <MembersTab />}
                 {tab === "collections" && <CollectionsTab />}
@@ -266,7 +267,7 @@ function AdminPage() {
   );
 }
 
-type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "donate" | "footer" | "leads" | "masala" | "addresses" | "members" | "collections";
+type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "donate" | "footer" | "leads" | "masala" | "qa" | "addresses" | "members" | "collections";
 const TAB_LABELS: Record<Tab, string> = {
   site: "সাইট সেটিংস",
   mosque: "মসজিদ",
@@ -280,6 +281,7 @@ const TAB_LABELS: Record<Tab, string> = {
   footer: "ফুটার",
   leads: "যোগাযোগ তালিকা",
   masala: "মাসয়ালা আবেদন",
+  qa: "সরাসরি প্রশ্ন উত্তর",
   addresses: "ঠিকানা তালিকা",
   members: "সদস্য তালিকা",
   collections: "দান আদায়",
@@ -298,6 +300,7 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   footer: MessageSquare,
   leads: Phone,
   masala: MessageCircleQuestion,
+  qa: MessageCircleQuestion,
   addresses: MapPin,
   members: UserPlus,
   collections: HandCoins,
@@ -704,6 +707,246 @@ function MasalaTab() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-sm rounded-2xl bg-card p-5 shadow-xl">
             <p className="text-sm font-semibold text-foreground">এই আবেদনটি মুছে ফেলবেন?</p>
+            <p className="mt-1 text-xs text-muted-foreground">এই কাজটি ফিরিয়ে আনা যাবে না।</p>
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                onClick={() => setConfirmTarget(null)}
+                className="rounded-lg bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground"
+              >
+                বাতিল
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={deleting}
+                className="rounded-lg bg-destructive px-3 py-2 text-xs font-semibold text-white disabled:opacity-60"
+              >
+                {deleting ? "..." : "মুছে ফেলুন"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+type QaRow = { id: string; question: string; answer: string; sort_order: number; published: boolean };
+
+function QaTab() {
+  const [rows, setRows] = useState<QaRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [editing, setEditing] = useState<QaRow | null>(null);
+  const [question, setQuestion] = useState("");
+  const [answer, setAnswer] = useState("");
+  const [published, setPublished] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [confirmTarget, setConfirmTarget] = useState<QaRow | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const inputCls =
+    "w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary";
+
+  const load = async () => {
+    setLoading(true);
+    setError(null);
+    const { data, error: e } = await supabase
+      .from("qa_entries")
+      .select("id, question, answer, sort_order, published")
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: false });
+    if (e) setError("তালিকা লোড করা যায়নি।");
+    else setRows((data as QaRow[]) ?? []);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const resetForm = () => {
+    setEditing(null);
+    setQuestion("");
+    setAnswer("");
+    setPublished(true);
+  };
+
+  const startEdit = (r: QaRow) => {
+    setEditing(r);
+    setQuestion(r.question);
+    setAnswer(r.answer);
+    setPublished(r.published);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const save = async () => {
+    const q = question.trim();
+    const a = answer.trim();
+    if (!q || !a) {
+      toast.error("প্রশ্ন ও উত্তর দুটোই লিখুন।");
+      return;
+    }
+    setSaving(true);
+    if (editing) {
+      const { error: e } = await supabase
+        .from("qa_entries")
+        .update({ question: q, answer: a, published })
+        .eq("id", editing.id);
+      setSaving(false);
+      if (e) {
+        toast.error("সংরক্ষণ করা যায়নি।");
+        return;
+      }
+      toast.success("আপডেট হয়েছে।");
+    } else {
+      const nextOrder = rows.length ? Math.max(...rows.map((r) => r.sort_order)) + 1 : 0;
+      const { error: e } = await supabase
+        .from("qa_entries")
+        .insert({ question: q, answer: a, published, sort_order: nextOrder });
+      setSaving(false);
+      if (e) {
+        toast.error("সংরক্ষণ করা যায়নি।");
+        return;
+      }
+      toast.success("যুক্ত হয়েছে।");
+    }
+    resetForm();
+    load();
+  };
+
+  const togglePublished = async (r: QaRow) => {
+    const { error: e } = await supabase
+      .from("qa_entries")
+      .update({ published: !r.published })
+      .eq("id", r.id);
+    if (e) {
+      toast.error("পরিবর্তন করা যায়নি।");
+      return;
+    }
+    setRows((prev) => prev.map((x) => (x.id === r.id ? { ...x, published: !x.published } : x)));
+  };
+
+  const confirmDelete = async () => {
+    if (!confirmTarget) return;
+    setDeleting(true);
+    const { error: e } = await supabase.from("qa_entries").delete().eq("id", confirmTarget.id);
+    setDeleting(false);
+    if (e) {
+      toast.error("মুছে ফেলা যায়নি।");
+      return;
+    }
+    setRows((prev) => prev.filter((r) => r.id !== confirmTarget.id));
+    setConfirmTarget(null);
+  };
+
+  return (
+    <div>
+      <div className="mb-6 rounded-xl border border-border bg-background p-4">
+        <h3 className="mb-3 text-sm font-bold text-foreground">
+          {editing ? "প্রশ্ন-উত্তর সম্পাদনা" : "নতুন প্রশ্ন-উত্তর যুক্ত করুন"}
+        </h3>
+        <div className="space-y-3">
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-muted-foreground">প্রশ্ন</label>
+            <textarea
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              rows={2}
+              placeholder="প্রশ্নটি লিখুন"
+              className={inputCls}
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-muted-foreground">উত্তর</label>
+            <textarea
+              value={answer}
+              onChange={(e) => setAnswer(e.target.value)}
+              rows={5}
+              placeholder="উত্তরটি লিখুন"
+              className={inputCls}
+            />
+          </div>
+          <label className="flex items-center gap-2 text-sm text-foreground">
+            <input
+              type="checkbox"
+              checked={published}
+              onChange={(e) => setPublished(e.target.checked)}
+              className="h-4 w-4"
+            />
+            ওয়েবসাইটে প্রকাশ করুন
+          </label>
+          <div className="flex gap-2">
+            <button
+              onClick={save}
+              disabled={saving}
+              className="flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-60"
+            >
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              {editing ? "আপডেট করুন" : "যুক্ত করুন"}
+            </button>
+            {editing && (
+              <button
+                onClick={resetForm}
+                className="rounded-lg bg-muted px-4 py-2 text-sm font-semibold text-muted-foreground"
+              >
+                বাতিল
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-10">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        </div>
+      ) : error ? (
+        <p className="py-6 text-center text-sm text-destructive">{error}</p>
+      ) : rows.length === 0 ? (
+        <p className="py-6 text-center text-sm text-muted-foreground">এখনো কোনো প্রশ্ন-উত্তর যুক্ত করা হয়নি।</p>
+      ) : (
+        <div className="space-y-3">
+          {rows.map((r) => (
+            <div key={r.id} className="rounded-xl border border-border bg-card p-4">
+              <div className="flex items-start justify-between gap-3">
+                <p className="text-sm font-bold text-foreground">{r.question}</p>
+                <div className="flex shrink-0 gap-1">
+                  <button
+                    onClick={() => startEdit(r)}
+                    className="rounded-lg bg-muted p-1.5 text-muted-foreground hover:text-primary"
+                    title="সম্পাদনা"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => setConfirmTarget(r)}
+                    className="rounded-lg bg-muted p-1.5 text-muted-foreground hover:text-destructive"
+                    title="মুছুন"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+              <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">{r.answer}</p>
+              <button
+                onClick={() => togglePublished(r)}
+                className={`mt-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                  r.published ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
+                }`}
+              >
+                {r.published ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
+                {r.published ? "প্রকাশিত" : "অপ্রকাশিত"}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {confirmTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-sm rounded-2xl bg-card p-5 shadow-xl">
+            <p className="text-sm font-semibold text-foreground">এই প্রশ্ন-উত্তরটি মুছে ফেলবেন?</p>
             <p className="mt-1 text-xs text-muted-foreground">এই কাজটি ফিরিয়ে আনা যাবে না।</p>
             <div className="mt-4 flex justify-end gap-2">
               <button
