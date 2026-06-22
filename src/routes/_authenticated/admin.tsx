@@ -1065,7 +1065,7 @@ function MembersTab() {
     setEditTarget(null);
   };
 
-
+  const downloadExcel = () => {
     const header = ["সদস্য নম্বর", "নাম", "পিতার নাম", "মোবাইল", "ঠিকানা", "মাসিক দান (টাকা)"];
     const rows = filtered.map((m) => [String(m.member_no), m.name, m.father_name, m.mobile, m.address, String(m.monthly_donation ?? 0)]);
     const esc = (v: string) => `"${v.replace(/"/g, '""')}"`;
