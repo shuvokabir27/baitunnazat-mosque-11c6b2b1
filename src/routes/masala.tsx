@@ -6,6 +6,9 @@ import { staffImages } from "@/lib/site-content";
 import { supabase } from "@/integrations/supabase/client";
 import { MessageCircleQuestion, Send, BadgeCheck, ChevronDown, BookOpen } from "lucide-react";
 
+const toBengaliNum = (n: number) =>
+  String(n).replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)]);
+
 export const Route = createFileRoute("/masala")({
   head: () => ({
     meta: [
