@@ -265,7 +265,7 @@ function AdminPage() {
   );
 }
 
-type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "donate" | "footer" | "leads" | "masala" | "addresses" | "members";
+type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "donate" | "footer" | "leads" | "masala" | "addresses" | "members" | "collections";
 const TAB_LABELS: Record<Tab, string> = {
   site: "সাইট সেটিংস",
   mosque: "মসজিদ",
