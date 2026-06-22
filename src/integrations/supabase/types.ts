@@ -14,6 +14,59 @@ export type Database = {
   }
   public: {
     Tables: {
+      donation_collections: {
+        Row: {
+          amount: number
+          collected_at: string
+          created_at: string
+          id: string
+          member_id: string | null
+          member_name: string
+          member_no: number | null
+          mobile: string | null
+          month: number
+          note: string | null
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          amount?: number
+          collected_at?: string
+          created_at?: string
+          id?: string
+          member_id?: string | null
+          member_name: string
+          member_no?: number | null
+          mobile?: string | null
+          month: number
+          note?: string | null
+          updated_at?: string
+          year: number
+        }
+        Update: {
+          amount?: number
+          collected_at?: string
+          created_at?: string
+          id?: string
+          member_id?: string | null
+          member_name?: string
+          member_no?: number | null
+          mobile?: string | null
+          month?: number
+          note?: string | null
+          updated_at?: string
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "donation_collections_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       income_entries: {
         Row: {
           amount: number
