@@ -256,6 +256,7 @@ function AdminPage() {
                 {tab === "masala" && <MasalaTab />}
                 {tab === "addresses" && <AddressesTab />}
                 {tab === "members" && <MembersTab />}
+                {tab === "collections" && <CollectionsTab />}
               </div>
             </div>
           </div>
