@@ -266,7 +266,7 @@ function AdminPage() {
   );
 }
 
-type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "donate" | "footer" | "leads" | "masala" | "addresses" | "members" | "collections";
+type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "donate" | "footer" | "leads" | "masala" | "qa" | "addresses" | "members" | "collections";
 const TAB_LABELS: Record<Tab, string> = {
   site: "সাইট সেটিংস",
   mosque: "মসজিদ",
@@ -280,6 +280,7 @@ const TAB_LABELS: Record<Tab, string> = {
   footer: "ফুটার",
   leads: "যোগাযোগ তালিকা",
   masala: "মাসয়ালা আবেদন",
+  qa: "সরাসরি প্রশ্ন উত্তর",
   addresses: "ঠিকানা তালিকা",
   members: "সদস্য তালিকা",
   collections: "দান আদায়",
@@ -298,6 +299,7 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   footer: MessageSquare,
   leads: Phone,
   masala: MessageCircleQuestion,
+  qa: MessageCircleQuestion,
   addresses: MapPin,
   members: UserPlus,
   collections: HandCoins,
