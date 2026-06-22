@@ -299,6 +299,7 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   masala: MessageCircleQuestion,
   addresses: MapPin,
   members: UserPlus,
+  collections: HandCoins,
 };
 
 function Sidebar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
