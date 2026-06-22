@@ -34,6 +34,26 @@ function Masala() {
   const [selected, setSelected] = useState<string>("");
   const [error, setError] = useState("");
 
+  type QaItem = { id: string; question: string; answer: string };
+  const [qa, setQa] = useState<QaItem[]>([]);
+  const [openId, setOpenId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from("qa_entries")
+        .select("id, question, answer")
+        .eq("published", true)
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: false });
+      if (!cancelled) setQa((data as QaItem[]) ?? []);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const activeSlug = selected || scholars[0]?.slug || "";
 
   const handleSend = () => {
