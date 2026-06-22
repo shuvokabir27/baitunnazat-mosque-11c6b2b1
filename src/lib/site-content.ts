@@ -260,5 +260,21 @@ export function mergeContent(stored: Partial<SiteContent> | null | undefined): S
           ? stored.donate.methods
           : defaultContent.donate.methods,
     },
+    ibadah: {
+      ...defaultContent.ibadah,
+      ...(stored.ibadah ?? {}),
+      steps:
+        stored.ibadah?.steps && stored.ibadah.steps.length
+          ? stored.ibadah.steps
+          : defaultContent.ibadah.steps,
+      programs:
+        stored.ibadah?.programs && stored.ibadah.programs.length
+          ? stored.ibadah.programs
+          : defaultContent.ibadah.programs,
+      duas:
+        stored.ibadah?.duas && stored.ibadah.duas.length
+          ? stored.ibadah.duas
+          : defaultContent.ibadah.duas,
+    },
   };
 }
