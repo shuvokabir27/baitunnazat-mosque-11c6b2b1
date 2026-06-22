@@ -256,6 +256,7 @@ function AdminPage() {
                 {tab === "masala" && <MasalaTab />}
                 {tab === "addresses" && <AddressesTab />}
                 {tab === "members" && <MembersTab />}
+                {tab === "collections" && <CollectionsTab />}
               </div>
             </div>
           </div>
@@ -265,7 +266,7 @@ function AdminPage() {
   );
 }
 
-type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "donate" | "footer" | "leads" | "masala" | "addresses" | "members";
+type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "development" | "donate" | "footer" | "leads" | "masala" | "addresses" | "members" | "collections";
 const TAB_LABELS: Record<Tab, string> = {
   site: "সাইট সেটিংস",
   mosque: "মসজিদ",
@@ -281,6 +282,7 @@ const TAB_LABELS: Record<Tab, string> = {
   masala: "মাসয়ালা আবেদন",
   addresses: "ঠিকানা তালিকা",
   members: "সদস্য তালিকা",
+  collections: "দান আদায়",
 };
 
 const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
@@ -298,6 +300,7 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   masala: MessageCircleQuestion,
   addresses: MapPin,
   members: UserPlus,
+  collections: HandCoins,
 };
 
 function Sidebar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
@@ -1379,6 +1382,383 @@ function MembersTab() {
   );
 }
 
+
+const BN_MONTHS = [
+  "জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন",
+  "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর",
+];
+
+type Collection = {
+  id: string;
+  member_id: string | null;
+  member_no: number | null;
+  member_name: string;
+  mobile: string | null;
+  amount: number;
+  year: number;
+  month: number;
+  note: string | null;
+  collected_at: string;
+};
+
+function CollectionsTab() {
+  const now = new Date();
+  const [year, setYear] = useState(now.getFullYear());
+  const [month, setMonth] = useState(now.getMonth() + 1);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("");
+  const [selected, setSelected] = useState<Member | null>(null);
+  const [amount, setAmount] = useState("");
+  const [note, setNote] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Collection | null>(null);
+
+  const load = async () => {
+    setLoading(true);
+    const [{ data: mem }, { data: col }] = await Promise.all([
+      supabase
+        .from("members")
+        .select("id, member_no, name, father_name, mobile, address, monthly_donation, created_at")
+        .order("member_no", { ascending: true }),
+      supabase
+        .from("donation_collections")
+        .select("*")
+        .eq("year", year)
+        .eq("month", month)
+        .order("collected_at", { ascending: false }),
+    ]);
+    setMembers((mem as Member[]) ?? []);
+    setCollections((col as Collection[]) ?? []);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [year, month]);
+
+  const q = query.trim().toLowerCase();
+  const matches = q
+    ? members
+        .filter(
+          (m) =>
+            String(m.member_no).includes(q) ||
+            (m.mobile ?? "").toLowerCase().includes(q) ||
+            (m.name ?? "").toLowerCase().includes(q),
+        )
+        .slice(0, 8)
+    : [];
+
+  const paidIds = new Set(collections.map((c) => c.member_id).filter(Boolean) as string[]);
+
+  const pickMember = (m: Member) => {
+    setSelected(m);
+    setQuery("");
+    setAmount(String(m.monthly_donation ?? 0));
+    setNote("");
+  };
+
+  const save = async () => {
+    if (!selected) return;
+    const amt = Number(amount) || 0;
+    if (amt <= 0) {
+      toast.error("সঠিক টাকার পরিমাণ দিন।");
+      return;
+    }
+    setSaving(true);
+    const row = {
+      member_id: selected.id,
+      member_no: selected.member_no,
+      member_name: selected.name,
+      mobile: selected.mobile,
+      amount: amt,
+      year,
+      month,
+      note: note.trim() || null,
+    };
+    const { data, error } = await supabase
+      .from("donation_collections")
+      .insert(row)
+      .select("*")
+      .single();
+    setSaving(false);
+    if (error) {
+      toast.error("আদায় সংরক্ষণ করা যায়নি।");
+      return;
+    }
+    setCollections((prev) => [data as Collection, ...prev]);
+    setSelected(null);
+    setAmount("");
+    setNote("");
+    toast.success("দান আদায় সংরক্ষণ করা হয়েছে।");
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    const { error } = await supabase.from("donation_collections").delete().eq("id", deleteTarget.id);
+    if (error) {
+      toast.error("মুছে ফেলা যায়নি।");
+      return;
+    }
+    setCollections((prev) => prev.filter((c) => c.id !== deleteTarget.id));
+    setDeleteTarget(null);
+    toast.success("রেকর্ড মুছে ফেলা হয়েছে।");
+  };
+
+  const total = collections.reduce((s, c) => s + (Number(c.amount) || 0), 0);
+  const periodLabel = `${BN_MONTHS[month - 1]} ${year}`;
+
+  const downloadExcel = () => {
+    const header = ["সদস্য নম্বর", "নাম", "মোবাইল", "টাকার পরিমাণ", "নোট", "তারিখ"];
+    const rows = collections.map((c) => [
+      String(c.member_no ?? ""),
+      c.member_name,
+      c.mobile ?? "",
+      String(c.amount),
+      c.note ?? "",
+      new Date(c.collected_at).toLocaleDateString("bn-BD"),
+    ]);
+    const esc = (v: string) => `"${v.replace(/"/g, '""')}"`;
+    const csv = [header, ...rows, ["", "", "মোট", String(total), "", ""]]
+      .map((r) => r.map(esc).join(","))
+      .join("\r\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `দান-আদায়-${periodLabel}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadPdf = () => {
+    const rows = collections
+      .map(
+        (c) =>
+          `<tr><td>${c.member_no ?? ""}</td><td>${c.member_name}</td><td>${c.mobile ?? ""}</td><td>${c.amount}</td><td>${c.note ?? ""}</td><td>${new Date(c.collected_at).toLocaleDateString("bn-BD")}</td></tr>`,
+      )
+      .join("");
+    const html = `<!DOCTYPE html><html lang="bn"><head><meta charset="utf-8"><title>দান আদায়</title>
+      <style>
+        body{font-family:'Noto Sans Bengali','Segoe UI',sans-serif;padding:24px;color:#1a1a1a}
+        h1{font-size:18px;text-align:center;margin:0 0 4px}
+        p{text-align:center;margin:0 0 16px;color:#555;font-size:12px}
+        table{width:100%;border-collapse:collapse;font-size:12px}
+        th,td{border:1px solid #999;padding:6px 8px;text-align:left}
+        th{background:#0f6e4f;color:#fff}
+        tfoot td{font-weight:bold}
+      </style></head><body>
+      <h1>${mosque.name}</h1>
+      <p>মাসিক দান আদায় তালিকা — ${periodLabel} · মোট ${collections.length} জন · সর্বমোট ${total} টাকা</p>
+      <table><thead><tr><th>সদস্য নম্বর</th><th>নাম</th><th>মোবাইল</th><th>টাকার পরিমাণ</th><th>নোট</th><th>তারিখ</th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr><td colspan="3">মোট</td><td>${total}</td><td></td><td></td></tr></tfoot></table>
+      <script>window.onload=function(){window.print()}<\/script>
+      </body></html>`;
+    const w = window.open("", "_blank");
+    if (w) {
+      w.document.write(html);
+      w.document.close();
+    }
+  };
+
+  const years = Array.from({ length: 6 }, (_, i) => now.getFullYear() - i);
+
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-end gap-3">
+        <div>
+          <label className="mb-1 block text-xs font-semibold text-foreground">মাস</label>
+          <select
+            value={month}
+            onChange={(e) => setMonth(Number(e.target.value))}
+            className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+          >
+            {BN_MONTHS.map((m, i) => (
+              <option key={i} value={i + 1}>{m}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-semibold text-foreground">বছর</label>
+          <select
+            value={year}
+            onChange={(e) => setYear(Number(e.target.value))}
+            className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+          >
+            {years.map((y) => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+        </div>
+        <div className="ml-auto flex gap-2">
+          <button
+            onClick={downloadExcel}
+            disabled={collections.length === 0}
+            className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-3 py-2 text-sm font-semibold text-foreground disabled:opacity-50"
+          >
+            <FileSpreadsheet className="h-4 w-4" /> এক্সেল
+          </button>
+          <button
+            onClick={downloadPdf}
+            disabled={collections.length === 0}
+            className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-3 py-2 text-sm font-semibold text-foreground disabled:opacity-50"
+          >
+            <FileDown className="h-4 w-4" /> পিডিএফ
+          </button>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-border bg-card p-4">
+        <p className="mb-2 text-sm font-semibold text-foreground">
+          দান আদায় করুন ({periodLabel})
+        </p>
+        {selected ? (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between rounded-lg bg-secondary px-3 py-2">
+              <div className="text-sm">
+                <span className="font-semibold text-foreground">#{selected.member_no} · {selected.name}</span>
+                <span className="ml-2 text-muted-foreground">{selected.mobile}</span>
+              </div>
+              <button onClick={() => setSelected(null)} aria-label="বাতিল">
+                <X className="h-4 w-4 text-muted-foreground" />
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <div className="flex-1 min-w-[140px]">
+                <label className="mb-1 block text-xs font-semibold text-foreground">টাকার পরিমাণ</label>
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                />
+              </div>
+              <div className="flex-[2] min-w-[180px]">
+                <label className="mb-1 block text-xs font-semibold text-foreground">নোট (ঐচ্ছিক)</label>
+                <input
+                  type="text"
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                />
+              </div>
+            </div>
+            {paidIds.has(selected.id) && (
+              <p className="text-xs text-amber-600">এই সদস্যের জন্য এই মাসে ইতিমধ্যে আদায় রেকর্ড আছে।</p>
+            )}
+            <button
+              onClick={save}
+              disabled={saving}
+              className="inline-flex items-center gap-2 rounded-md gradient-emerald px-4 py-2 text-sm font-bold text-primary-foreground disabled:opacity-60"
+            >
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+              আদায় সংরক্ষণ
+            </button>
+          </div>
+        ) : (
+          <div className="relative">
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="মোবাইল নম্বর, নাম বা সদস্য নম্বর দিয়ে খুঁজুন"
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
+            {matches.length > 0 && (
+              <div className="absolute z-10 mt-1 w-full rounded-md border border-border bg-card shadow-lg">
+                {matches.map((m) => (
+                  <button
+                    key={m.id}
+                    onClick={() => pickMember(m)}
+                    className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-secondary"
+                  >
+                    <span className="text-foreground">#{m.member_no} · {m.name}</span>
+                    <span className="text-muted-foreground">{m.mobile}{paidIds.has(m.id) ? " ✓" : ""}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          {periodLabel} — মোট {collections.length} জন আদায় করেছেন।
+        </p>
+        <p className="text-base font-bold text-emerald-700">
+          সর্বমোট {total.toLocaleString("bn-BD")} ৳
+        </p>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-10">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        </div>
+      ) : collections.length === 0 ? (
+        <p className="py-8 text-center text-sm text-muted-foreground">এই মাসে কোনো আদায় রেকর্ড নেই।</p>
+      ) : (
+        <div className="overflow-x-auto rounded-xl border border-border">
+          <table className="w-full text-sm">
+            <thead className="bg-secondary text-foreground">
+              <tr>
+                <th className="p-2 text-left">সদস্য নম্বর</th>
+                <th className="p-2 text-left">নাম</th>
+                <th className="p-2 text-left">মোবাইল</th>
+                <th className="p-2 text-left">টাকা</th>
+                <th className="p-2 text-left">তারিখ</th>
+                <th className="p-2"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {collections.map((c) => (
+                <tr key={c.id} className="border-t border-border">
+                  <td className="p-2 text-foreground">{c.member_no ?? "-"}</td>
+                  <td className="p-2 text-foreground">{c.member_name}</td>
+                  <td className="p-2 text-muted-foreground">{c.mobile}</td>
+                  <td className="p-2 font-semibold text-emerald-700">{c.amount} ৳</td>
+                  <td className="p-2 text-muted-foreground">{new Date(c.collected_at).toLocaleDateString("bn-BD")}</td>
+                  <td className="p-2 text-right">
+                    <button onClick={() => setDeleteTarget(c)} aria-label="মুছুন" className="text-destructive">
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-sm rounded-2xl bg-card p-6 shadow-2xl">
+            <p className="text-sm text-foreground">
+              <span className="font-semibold">{deleteTarget.member_name}</span> এর আদায় রেকর্ডটি মুছে ফেলবেন?
+            </p>
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                onClick={() => setDeleteTarget(null)}
+                className="rounded-md bg-secondary px-4 py-2 text-sm font-semibold text-foreground"
+              >
+                বাতিল
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="rounded-md bg-destructive px-4 py-2 text-sm font-semibold text-destructive-foreground"
+              >
+                মুছে ফেলুন
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 type TabProps = {
   content: SiteContent;
