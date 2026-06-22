@@ -1132,10 +1132,17 @@ function MembersTab() {
 
   return (
     <div className="space-y-4">
+      <div className="rounded-xl border border-emerald-600/30 bg-emerald-600/10 p-4 text-center">
+        <p className="text-xs font-medium text-muted-foreground">মোট মাসিক দানের পরিমাণ</p>
+        <p className="mt-1 text-2xl font-extrabold text-emerald-700">
+          {filtered.reduce((s, m) => s + (Number(m.monthly_donation) || 0), 0).toLocaleString("bn-BD")} ৳
+        </p>
+      </div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">
           মোট {filtered.length} জন সদস্য{filtered.length !== members.length ? ` (সর্বমোট ${members.length})` : ""}।
         </p>
+
         <div className="flex gap-2">
           <button
             onClick={downloadExcel}
