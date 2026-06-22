@@ -987,6 +987,9 @@ function MembersTab() {
   const [loading, setLoading] = useState(true);
   const [confirmTarget, setConfirmTarget] = useState<Member | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [editTarget, setEditTarget] = useState<Member | null>(null);
+  const [editForm, setEditForm] = useState({ name: "", father_name: "", mobile: "", address: "", monthly_donation: "" });
+  const [saving, setSaving] = useState(false);
   const [addressFilter, setAddressFilter] = useState("");
   const [donationFilter, setDonationFilter] = useState("");
 
@@ -1031,6 +1034,36 @@ function MembersTab() {
     setConfirmTarget(null);
   };
 
+  const openEdit = (m: Member) => {
+    setEditTarget(m);
+    setEditForm({
+      name: m.name ?? "",
+      father_name: m.father_name ?? "",
+      mobile: m.mobile ?? "",
+      address: m.address ?? "",
+      monthly_donation: String(m.monthly_donation ?? 0),
+    });
+  };
+
+  const saveEdit = async () => {
+    if (!editTarget) return;
+    setSaving(true);
+    const updates = {
+      name: editForm.name.trim(),
+      father_name: editForm.father_name.trim(),
+      mobile: editForm.mobile.trim(),
+      address: editForm.address.trim(),
+      monthly_donation: Number(editForm.monthly_donation) || 0,
+    };
+    const { error } = await supabase.from("members").update(updates).eq("id", editTarget.id);
+    setSaving(false);
+    if (error) {
+      alert("সংরক্ষণ করা যায়নি।");
+      return;
+    }
+    setMembers((prev) => prev.map((m) => (m.id === editTarget.id ? { ...m, ...updates } : m)));
+    setEditTarget(null);
+  };
 
   const downloadExcel = () => {
     const header = ["সদস্য নম্বর", "নাম", "পিতার নাম", "মোবাইল", "ঠিকানা", "মাসিক দান (টাকা)"];
@@ -1186,13 +1219,22 @@ function MembersTab() {
                   <td className="p-2 text-muted-foreground">{m.address}</td>
                   <td className="p-2 text-foreground">{m.monthly_donation ?? 0} ৳</td>
                   <td className="p-2 text-right">
-                    <button
-                      onClick={() => setConfirmTarget(m)}
-                      className="rounded-lg bg-destructive/10 p-1.5 text-destructive hover:bg-destructive/20"
-                      aria-label="মুছুন"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                    <div className="flex justify-end gap-1.5">
+                      <button
+                        onClick={() => openEdit(m)}
+                        className="rounded-lg bg-primary/10 p-1.5 text-primary hover:bg-primary/20"
+                        aria-label="সম্পাদনা"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => setConfirmTarget(m)}
+                        className="rounded-lg bg-destructive/10 p-1.5 text-destructive hover:bg-destructive/20"
+                        aria-label="মুছুন"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -1229,6 +1271,79 @@ function MembersTab() {
                 >
                   {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                   মুছে ফেলুন
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {editTarget && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-sm overflow-hidden rounded-2xl bg-card shadow-2xl">
+            <div className="flex items-center gap-3 bg-primary px-5 py-4 text-primary-foreground">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/20">
+                <Pencil className="h-5 w-5" />
+              </span>
+              <h3 className="text-base font-bold">সদস্য সম্পাদনা</h3>
+            </div>
+            <div className="space-y-3 px-5 py-4">
+              <div>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">নাম</label>
+                <input
+                  value={editForm.name}
+                  onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">পিতার নাম</label>
+                <input
+                  value={editForm.father_name}
+                  onChange={(e) => setEditForm((f) => ({ ...f, father_name: e.target.value }))}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">মোবাইল</label>
+                <input
+                  value={editForm.mobile}
+                  onChange={(e) => setEditForm((f) => ({ ...f, mobile: e.target.value }))}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">ঠিকানা</label>
+                <input
+                  value={editForm.address}
+                  onChange={(e) => setEditForm((f) => ({ ...f, address: e.target.value }))}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">মাসিক দান (টাকা)</label>
+                <input
+                  type="number"
+                  value={editForm.monthly_donation}
+                  onChange={(e) => setEditForm((f) => ({ ...f, monthly_donation: e.target.value }))}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                />
+              </div>
+              <div className="mt-2 flex justify-end gap-2">
+                <button
+                  onClick={() => setEditTarget(null)}
+                  disabled={saving}
+                  className="rounded-lg border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted disabled:opacity-60"
+                >
+                  বাতিল
+                </button>
+                <button
+                  onClick={saveEdit}
+                  disabled={saving}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-60"
+                >
+                  {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                  সংরক্ষণ
                 </button>
               </div>
             </div>
