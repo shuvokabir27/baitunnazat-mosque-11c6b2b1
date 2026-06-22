@@ -152,6 +152,7 @@ function Members() {
     setChecking(true);
     setCheckResult(null);
     setNotMember(false);
+    setPayStatus(null);
     try {
       const { data, error: rpcError } = await supabase.rpc("verify_member_by_mobile", {
         _mobile: m,
@@ -160,6 +161,11 @@ function Members() {
       const row = (data ?? [])[0] as MemberInfo | undefined;
       if (row) {
         setCheckResult(row);
+        const { data: pay } = await supabase.rpc("check_current_month_payment", {
+          _mobile: m,
+        });
+        const p = (pay ?? [])[0] as { paid: boolean; amount: number } | undefined;
+        setPayStatus(p ? { paid: !!p.paid, amount: Number(p.amount) || 0 } : { paid: false, amount: 0 });
       } else {
         setNotMember(true);
       }
