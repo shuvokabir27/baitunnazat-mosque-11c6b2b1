@@ -118,6 +118,8 @@ function Masala() {
     });
 
     window.open(url, "_blank", "noopener,noreferrer");
+    setFormOpen(false);
+    setQuestion("");
   };
 
   return (
