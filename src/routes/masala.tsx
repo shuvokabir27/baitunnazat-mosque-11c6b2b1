@@ -133,23 +133,24 @@ function Masala() {
         <button
           type="button"
           onClick={() => setFormOpen(true)}
-          className="group mb-6 flex w-full items-center gap-4 overflow-hidden rounded-2xl border border-primary/20 bg-card p-4 text-left shadow-soft transition-all hover:border-primary/40 hover:shadow-md active:scale-[0.99]"
+          className="group mb-5 flex w-full items-center gap-3 overflow-hidden rounded-xl border border-primary/20 bg-card px-3 py-2.5 text-left shadow-soft transition-all hover:border-primary/40 hover:shadow-md active:scale-[0.99]"
         >
-          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl gradient-emerald text-primary-foreground shadow-sm transition-transform group-hover:scale-105">
-            <MessageCircleQuestion className="h-6 w-6" />
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg gradient-emerald text-primary-foreground shadow-sm transition-transform group-hover:scale-105">
+            <MessageCircleQuestion className="h-5 w-5" />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-[15px] font-bold text-foreground">
+            <span className="block text-sm font-bold text-foreground">
               সরাসরি প্রশ্ন করুন
             </span>
-            <span className="block text-xs text-muted-foreground">
-              ইমাম ও খতিবের কাছে আপনার মাসয়ালা জিজ্ঞাসা করুন
+            <span className="block text-[11px] leading-tight text-muted-foreground">
+              ইমাম ও খতিবের কাছে মাসয়ালা জিজ্ঞাসা করুন
             </span>
           </span>
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary/10 text-primary transition-all group-hover:bg-primary group-hover:text-primary-foreground">
-            <Send className="h-4 w-4" />
+          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-primary/10 text-primary transition-all group-hover:bg-primary group-hover:text-primary-foreground">
+            <Send className="h-3.5 w-3.5" />
           </span>
         </button>
+
 
 
         {qa.length > 0 && (
