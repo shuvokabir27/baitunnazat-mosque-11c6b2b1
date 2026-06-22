@@ -1760,7 +1760,7 @@ function CollectionsTab() {
   );
 }
 
-
+type TabProps = {
   content: SiteContent;
   setContent: React.Dispatch<React.SetStateAction<SiteContent>>;
 };
