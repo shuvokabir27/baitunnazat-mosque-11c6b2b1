@@ -8,9 +8,13 @@ const SiteContentContext = createContext<SiteContent>(defaultContent);
 export const siteContentQueryOptions = {
   queryKey: ["site-content"] as const,
   queryFn: () => getSiteContent(),
-  staleTime: 0,
-  refetchOnMount: true,
-  refetchOnWindowFocus: true,
+  // Site content rarely changes and admin saves call invalidateQueries(["site-content"]).
+  // Long cache + no focus/mount refetch avoids hammering the server worker on every
+  // navigation or tab focus, which was causing Cloudflare "Worker exceeded resource limits".
+  staleTime: 10 * 60_000,
+  gcTime: 30 * 60_000,
+  refetchOnMount: false,
+  refetchOnWindowFocus: false,
 };
 
 function applySiteSettings(site: SiteContent["site"]) {
