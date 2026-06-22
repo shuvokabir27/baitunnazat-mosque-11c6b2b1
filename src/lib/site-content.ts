@@ -86,6 +86,20 @@ export type DonateContent = {
   footerNote: string;
 };
 
+export type IbadahStep = { step: string; title: string; detail: string };
+export type IbadahProgram = { title: string; detail: string };
+export type IbadahDua = { title: string; arabic: string; meaning: string };
+
+export type IbadahContent = {
+  subtitle: string;
+  stepsTitle: string;
+  steps: IbadahStep[];
+  programsTitle: string;
+  programs: IbadahProgram[];
+  duasTitle: string;
+  duas: IbadahDua[];
+};
+
 export type SiteContent = {
   site: SiteSettings;
   mosque: MosqueInfo;
@@ -97,6 +111,7 @@ export type SiteContent = {
   sections: SiteSections;
   development: DevelopmentContent;
   donate: DonateContent;
+  ibadah: IbadahContent;
 };
 
 
