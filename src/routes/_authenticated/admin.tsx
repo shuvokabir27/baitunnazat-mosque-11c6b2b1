@@ -960,10 +960,8 @@ function QaTab() {
     load();
   };
 
-  const catName_ = (id: string | null) =>
-    id ? (cats.find((c) => c.id === id)?.name ?? "অন্যান্য") : "ক্যাটাগরিবিহীন";
-
   // Group questions by category (in category sort order), each group ordered by its own sort_order
+
   const groupedRows: { id: string; name: string; items: QaRow[] }[] = (() => {
     const groups: { id: string; name: string; items: QaRow[] }[] = [];
     for (const c of cats) {
