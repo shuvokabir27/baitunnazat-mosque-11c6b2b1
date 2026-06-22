@@ -971,6 +971,7 @@ function QaTab() {
 }
 
 
+type AddressRow = { id: string; label: string };
 
 function AddressesTab() {
   const [addresses, setAddresses] = useState<AddressRow[]>([]);
