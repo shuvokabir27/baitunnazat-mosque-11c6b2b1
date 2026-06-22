@@ -1322,11 +1322,21 @@ function MembersTab() {
               </div>
               <div>
                 <label className="mb-1 block text-xs font-medium text-muted-foreground">ঠিকানা</label>
-                <input
+                <select
                   value={editForm.address}
                   onChange={(e) => setEditForm((f) => ({ ...f, address: e.target.value }))}
                   className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
-                />
+                >
+                  <option value="">ঠিকানা নির্বাচন করুন</option>
+                  {editForm.address && !addressOptions.includes(editForm.address) && (
+                    <option value={editForm.address}>{editForm.address}</option>
+                  )}
+                  {addressOptions.map((a) => (
+                    <option key={a} value={a}>
+                      {a}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="mb-1 block text-xs font-medium text-muted-foreground">মাসিক দান (টাকা)</label>
