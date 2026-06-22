@@ -34,25 +34,52 @@ function Masala() {
   const [selected, setSelected] = useState<string>("");
   const [error, setError] = useState("");
 
-  type QaItem = { id: string; question: string; answer: string };
+  type QaItem = { id: string; question: string; answer: string; category_id: string | null };
+  type Cat = { id: string; name: string };
   const [qa, setQa] = useState<QaItem[]>([]);
+  const [cats, setCats] = useState<Cat[]>([]);
   const [openId, setOpenId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const { data } = await supabase
-        .from("qa_entries")
-        .select("id, question, answer")
-        .eq("published", true)
-        .order("sort_order", { ascending: true })
-        .order("created_at", { ascending: false });
-      if (!cancelled) setQa((data as QaItem[]) ?? []);
+      const [qaRes, catRes] = await Promise.all([
+        supabase
+          .from("qa_entries")
+          .select("id, question, answer, category_id")
+          .eq("published", true)
+          .order("sort_order", { ascending: true })
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("qa_categories")
+          .select("id, name")
+          .eq("published", true)
+          .order("sort_order", { ascending: true }),
+      ]);
+      if (!cancelled) {
+        setQa((qaRes.data as QaItem[]) ?? []);
+        setCats((catRes.data as Cat[]) ?? []);
+      }
     })();
     return () => {
       cancelled = true;
     };
   }, []);
+
+  const groupedQa = useMemo(() => {
+    const groups: { id: string; name: string; items: QaItem[] }[] = [];
+    for (const c of cats) {
+      const items = qa.filter((q) => q.category_id === c.id);
+      if (items.length) groups.push({ id: c.id, name: c.name, items });
+    }
+    const uncategorized = qa.filter(
+      (q) => !q.category_id || !cats.some((c) => c.id === q.category_id),
+    );
+    if (uncategorized.length)
+      groups.push({ id: "__none__", name: "অন্যান্য", items: uncategorized });
+    return groups;
+  }, [qa, cats]);
+
 
   const activeSlug = selected || scholars[0]?.slug || "";
 
