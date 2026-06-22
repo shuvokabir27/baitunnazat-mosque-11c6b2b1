@@ -34,25 +34,52 @@ function Masala() {
   const [selected, setSelected] = useState<string>("");
   const [error, setError] = useState("");
 
-  type QaItem = { id: string; question: string; answer: string };
+  type QaItem = { id: string; question: string; answer: string; category_id: string | null };
+  type Cat = { id: string; name: string };
   const [qa, setQa] = useState<QaItem[]>([]);
+  const [cats, setCats] = useState<Cat[]>([]);
   const [openId, setOpenId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const { data } = await supabase
-        .from("qa_entries")
-        .select("id, question, answer")
-        .eq("published", true)
-        .order("sort_order", { ascending: true })
-        .order("created_at", { ascending: false });
-      if (!cancelled) setQa((data as QaItem[]) ?? []);
+      const [qaRes, catRes] = await Promise.all([
+        supabase
+          .from("qa_entries")
+          .select("id, question, answer, category_id")
+          .eq("published", true)
+          .order("sort_order", { ascending: true })
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("qa_categories")
+          .select("id, name")
+          .eq("published", true)
+          .order("sort_order", { ascending: true }),
+      ]);
+      if (!cancelled) {
+        setQa((qaRes.data as QaItem[]) ?? []);
+        setCats((catRes.data as Cat[]) ?? []);
+      }
     })();
     return () => {
       cancelled = true;
     };
   }, []);
+
+  const groupedQa = useMemo(() => {
+    const groups: { id: string; name: string; items: QaItem[] }[] = [];
+    for (const c of cats) {
+      const items = qa.filter((q) => q.category_id === c.id);
+      if (items.length) groups.push({ id: c.id, name: c.name, items });
+    }
+    const uncategorized = qa.filter(
+      (q) => !q.category_id || !cats.some((c) => c.id === q.category_id),
+    );
+    if (uncategorized.length)
+      groups.push({ id: "__none__", name: "অন্যান্য", items: uncategorized });
+    return groups;
+  }, [qa, cats]);
+
 
   const activeSlug = selected || scholars[0]?.slug || "";
 
@@ -92,46 +119,51 @@ function Masala() {
 
       <div className="px-4 pb-10">
         {qa.length > 0 && (
-          <div className="mb-5">
-            <div className="mb-3 flex items-center gap-2">
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl gradient-emerald text-primary-foreground">
-                <BookOpen className="h-4 w-4" />
-              </span>
-              <h2 className="text-base font-bold text-primary">প্রশ্ন ও উত্তর</h2>
-            </div>
-            <div className="space-y-2.5">
-              {qa.map((item) => {
-                const open = openId === item.id;
-                return (
-                  <div
-                    key={item.id}
-                    className="overflow-hidden rounded-2xl border border-border bg-card shadow-soft"
-                  >
-                    <button
-                      type="button"
-                      onClick={() => setOpenId(open ? null : item.id)}
-                      className="flex w-full items-start justify-between gap-3 px-4 py-3.5 text-left"
-                    >
-                      <span className="text-sm font-bold text-foreground">{item.question}</span>
-                      <ChevronDown
-                        className={`mt-0.5 h-4 w-4 shrink-0 text-muted-foreground transition-transform ${
-                          open ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
-                    {open && (
-                      <div className="border-t border-border px-4 py-3.5">
-                        <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
-                          {item.answer}
-                        </p>
+          <div className="mb-5 space-y-5">
+            {groupedQa.map((group) => (
+              <div key={group.id}>
+                <div className="mb-3 flex items-center gap-2">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl gradient-emerald text-primary-foreground">
+                    <BookOpen className="h-4 w-4" />
+                  </span>
+                  <h2 className="text-base font-bold text-primary">{group.name}</h2>
+                </div>
+                <div className="space-y-2.5">
+                  {group.items.map((item) => {
+                    const open = openId === item.id;
+                    return (
+                      <div
+                        key={item.id}
+                        className="overflow-hidden rounded-2xl border border-border bg-card shadow-soft"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setOpenId(open ? null : item.id)}
+                          className="flex w-full items-start justify-between gap-3 px-4 py-3.5 text-left"
+                        >
+                          <span className="text-sm font-bold text-foreground">{item.question}</span>
+                          <ChevronDown
+                            className={`mt-0.5 h-4 w-4 shrink-0 text-muted-foreground transition-transform ${
+                              open ? "rotate-180" : ""
+                            }`}
+                          />
+                        </button>
+                        {open && (
+                          <div className="border-t border-border px-4 py-3.5">
+                            <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
+                              {item.answer}
+                            </p>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
         )}
+
 
         <div className="mb-5 rounded-3xl border border-border bg-card p-5 shadow-soft">
           <div className="flex items-start gap-3">
