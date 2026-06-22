@@ -130,6 +130,14 @@ function Masala() {
       />
 
       <div className="px-4 pb-10">
+        <button
+          type="button"
+          onClick={() => setFormOpen(true)}
+          className="mb-5 flex w-full items-center justify-center gap-2 rounded-xl gradient-emerald px-4 py-3.5 text-sm font-bold text-primary-foreground shadow-soft transition-all active:scale-[0.98]"
+        >
+          <MessageCircleQuestion className="h-5 w-5" /> সরাসরি প্রশ্ন করুন
+        </button>
+
         {qa.length > 0 && (
           <div className="mb-5 space-y-5">
             {groupedQa.map((group) => (
