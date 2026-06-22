@@ -79,8 +79,15 @@ export function WelcomePopup() {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-md">
-      <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-primary/20 bg-card shadow-2xl animate-in fade-in zoom-in-95 duration-300">
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-md"
+      onMouseDown={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div
+        className="relative w-full max-w-md overflow-hidden rounded-3xl border border-primary/20 bg-card shadow-2xl animate-in fade-in zoom-in-95 duration-300"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Decorative gradient header */}
         <div className="relative gradient-emerald px-6 pb-10 pt-8 text-center">
           <div className="pointer-events-none absolute inset-0 opacity-20 [background-image:radial-gradient(circle_at_20%_20%,white_1px,transparent_1px)] [background-size:18px_18px]" />
