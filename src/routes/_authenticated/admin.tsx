@@ -1065,11 +1065,12 @@ function MembersTab() {
     const { error } = await supabase.from("members").update(updates).eq("id", editTarget.id);
     setSaving(false);
     if (error) {
-      alert("সংরক্ষণ করা যায়নি।");
+      toast.error("সংরক্ষণ করা যায়নি।");
       return;
     }
     setMembers((prev) => prev.map((m) => (m.id === editTarget.id ? { ...m, ...updates } : m)));
     setEditTarget(null);
+    toast.success("পরিবর্তন সংরক্ষণ করা হয়েছে।");
   };
 
   const downloadExcel = () => {
