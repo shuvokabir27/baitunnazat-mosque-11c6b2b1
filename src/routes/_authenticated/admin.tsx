@@ -280,6 +280,7 @@ const TAB_LABELS: Record<Tab, string> = {
   prayer: "নামাজ",
   staff: "দায়িত্বপ্রাপ্ত",
   committee: "কমিটি",
+  ibadah: "ইবাদত পেজ",
   development: "উন্নয়ন কাজ",
   donate: "দান",
   footer: "ফুটার",
