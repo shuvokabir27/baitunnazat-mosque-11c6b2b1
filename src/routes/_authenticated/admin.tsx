@@ -865,7 +865,24 @@ function QaTab() {
     setConfirmTarget(null);
   };
 
-  // ---- Category actions ----
+  // Reorder a question within its category group (swap sort_order with neighbour)
+  const moveRow = async (groupItems: QaRow[], index: number, dir: -1 | 1) => {
+    const target = index + dir;
+    if (target < 0 || target >= groupItems.length) return;
+    const a = groupItems[index];
+    const b = groupItems[target];
+    setRows((prev) =>
+      prev.map((r) =>
+        r.id === a.id ? { ...r, sort_order: b.sort_order } : r.id === b.id ? { ...r, sort_order: a.sort_order } : r,
+      ),
+    );
+    await Promise.all([
+      supabase.from("qa_entries").update({ sort_order: b.sort_order }).eq("id", a.id),
+      supabase.from("qa_entries").update({ sort_order: a.sort_order }).eq("id", b.id),
+    ]);
+    load();
+  };
+
   const addCategory = async () => {
     const n = catName.trim();
     if (!n) {
