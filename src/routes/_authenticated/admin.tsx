@@ -987,6 +987,9 @@ function MembersTab() {
   const [loading, setLoading] = useState(true);
   const [confirmTarget, setConfirmTarget] = useState<Member | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [editTarget, setEditTarget] = useState<Member | null>(null);
+  const [editForm, setEditForm] = useState({ name: "", father_name: "", mobile: "", address: "", monthly_donation: "" });
+  const [saving, setSaving] = useState(false);
   const [addressFilter, setAddressFilter] = useState("");
   const [donationFilter, setDonationFilter] = useState("");
 
