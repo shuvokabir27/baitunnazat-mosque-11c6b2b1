@@ -130,30 +130,8 @@ function Masala() {
       />
 
       <div className="px-4 pb-10">
-        <button
-          type="button"
-          onClick={() => setFormOpen(true)}
-          className="group relative mb-5 flex w-full items-center gap-3 overflow-hidden rounded-2xl gradient-emerald px-4 py-3.5 text-left shadow-md ring-1 ring-gold/40 transition-all hover:shadow-lg active:scale-[0.99]"
-        >
-          <span className="pointer-events-none absolute -right-6 -top-8 h-24 w-24 rounded-full bg-gold/20 blur-xl" />
-          <span className="pointer-events-none absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-          <span className="relative grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white/15 text-primary-foreground ring-1 ring-white/25 transition-transform group-hover:scale-105">
-            <MessageCircleQuestion className="h-6 w-6" />
-          </span>
-          <span className="relative min-w-0 flex-1">
-            <span className="block text-[15px] font-extrabold text-primary-foreground">
-              সরাসরি প্রশ্ন করুন
-            </span>
-            <span className="block text-xs leading-tight text-primary-foreground/80">
-              ইমাম ও খতিবের কাছে মাসয়ালা জিজ্ঞাসা করুন
-            </span>
-          </span>
-          <span className="relative grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gold text-primary shadow-sm transition-transform group-hover:translate-x-0.5">
-            <Send className="h-4 w-4" />
-          </span>
-        </button>
-
         <section className="mb-6 rounded-2xl border border-primary/15 bg-secondary/40 p-4 text-center">
+
           <span className="mx-auto mb-2 grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary">
             <BadgeCheck className="h-5 w-5" />
           </span>
