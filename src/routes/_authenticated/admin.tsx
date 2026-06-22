@@ -1161,47 +1161,72 @@ function QaTab() {
       ) : rows.length === 0 ? (
         <p className="py-6 text-center text-sm text-muted-foreground">এখনো কোনো প্রশ্ন-উত্তর যুক্ত করা হয়নি।</p>
       ) : (
-        <div className="space-y-3">
-          {rows.map((r) => (
-            <div key={r.id} className="rounded-xl border border-border bg-card p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <span className="mb-1 inline-block rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-foreground">
-                    {catName_(r.category_id)}
-                  </span>
-                  <p className="text-sm font-bold text-foreground">{r.question}</p>
-                </div>
-                <div className="flex shrink-0 gap-1">
-                  <button
-                    onClick={() => startEdit(r)}
-                    className="rounded-lg bg-muted p-1.5 text-muted-foreground hover:text-primary"
-                    title="সম্পাদনা"
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => setConfirmTarget(r)}
-                    className="rounded-lg bg-muted p-1.5 text-muted-foreground hover:text-destructive"
-                    title="মুছুন"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
+        <div className="space-y-6">
+          {groupedRows.map((group) => (
+            <div key={group.id}>
+              <h4 className="mb-2 text-sm font-bold text-primary">{group.name}</h4>
+              <div className="space-y-3">
+                {group.items.map((r, i) => (
+                  <div key={r.id} className="rounded-xl border border-border bg-card p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex min-w-0 items-start gap-2">
+                        <div className="flex flex-col">
+                          <button
+                            onClick={() => moveRow(group.items, i, -1)}
+                            disabled={i === 0}
+                            className="rounded p-0.5 text-muted-foreground hover:text-primary disabled:opacity-30"
+                            title="উপরে"
+                          >
+                            <ChevronUp className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => moveRow(group.items, i, 1)}
+                            disabled={i === group.items.length - 1}
+                            className="rounded p-0.5 text-muted-foreground hover:text-primary disabled:opacity-30"
+                            title="নিচে"
+                          >
+                            <ChevronDown className="h-4 w-4" />
+                          </button>
+                        </div>
+                        <p className="text-sm font-bold text-foreground">
+                          {toBengaliNum(i + 1)}। {r.question}
+                        </p>
+                      </div>
+                      <div className="flex shrink-0 gap-1">
+                        <button
+                          onClick={() => startEdit(r)}
+                          className="rounded-lg bg-muted p-1.5 text-muted-foreground hover:text-primary"
+                          title="সম্পাদনা"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => setConfirmTarget(r)}
+                          className="rounded-lg bg-muted p-1.5 text-muted-foreground hover:text-destructive"
+                          title="মুছুন"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                    <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">{r.answer}</p>
+                    <button
+                      onClick={() => togglePublished(r)}
+                      className={`mt-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                        r.published ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {r.published ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
+                      {r.published ? "প্রকাশিত" : "অপ্রকাশিত"}
+                    </button>
+                  </div>
+                ))}
               </div>
-              <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">{r.answer}</p>
-              <button
-                onClick={() => togglePublished(r)}
-                className={`mt-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
-                  r.published ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
-                }`}
-              >
-                {r.published ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
-                {r.published ? "প্রকাশিত" : "অপ্রকাশিত"}
-              </button>
             </div>
           ))}
         </div>
       )}
+
 
       {confirmTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
