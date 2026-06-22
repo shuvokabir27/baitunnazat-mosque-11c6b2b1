@@ -42,6 +42,7 @@ function Masala() {
   const [question, setQuestion] = useState("");
   const [selected, setSelected] = useState<string>("");
   const [error, setError] = useState("");
+  const [formOpen, setFormOpen] = useState(false);
 
   type QaItem = { id: string; question: string; answer: string; category_id: string | null };
   type Cat = { id: string; name: string };
