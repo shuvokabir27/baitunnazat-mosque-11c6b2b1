@@ -731,19 +731,29 @@ function MasalaTab() {
 }
 
 
-type QaRow = { id: string; question: string; answer: string; sort_order: number; published: boolean };
+type QaCategory = { id: string; name: string; sort_order: number; published: boolean };
+type QaRow = { id: string; question: string; answer: string; sort_order: number; published: boolean; category_id: string | null };
 
 function QaTab() {
   const [rows, setRows] = useState<QaRow[]>([]);
+  const [cats, setCats] = useState<QaCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState<QaRow | null>(null);
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
+  const [categoryId, setCategoryId] = useState<string>("");
   const [published, setPublished] = useState(true);
   const [saving, setSaving] = useState(false);
   const [confirmTarget, setConfirmTarget] = useState<QaRow | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  // Category management
+  const [catName, setCatName] = useState("");
+  const [catSaving, setCatSaving] = useState(false);
+  const [editCat, setEditCat] = useState<QaCategory | null>(null);
+  const [editCatName, setEditCatName] = useState("");
+  const [confirmCat, setConfirmCat] = useState<QaCategory | null>(null);
 
   const inputCls =
     "w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary";
@@ -751,13 +761,22 @@ function QaTab() {
   const load = async () => {
     setLoading(true);
     setError(null);
-    const { data, error: e } = await supabase
-      .from("qa_entries")
-      .select("id, question, answer, sort_order, published")
-      .order("sort_order", { ascending: true })
-      .order("created_at", { ascending: false });
-    if (e) setError("তালিকা লোড করা যায়নি।");
-    else setRows((data as QaRow[]) ?? []);
+    const [catRes, qaRes] = await Promise.all([
+      supabase
+        .from("qa_categories")
+        .select("id, name, sort_order, published")
+        .order("sort_order", { ascending: true }),
+      supabase
+        .from("qa_entries")
+        .select("id, question, answer, sort_order, published, category_id")
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: false }),
+    ]);
+    if (catRes.error || qaRes.error) setError("তালিকা লোড করা যায়নি।");
+    else {
+      setCats((catRes.data as QaCategory[]) ?? []);
+      setRows((qaRes.data as QaRow[]) ?? []);
+    }
     setLoading(false);
   };
 
@@ -769,6 +788,7 @@ function QaTab() {
     setEditing(null);
     setQuestion("");
     setAnswer("");
+    setCategoryId("");
     setPublished(true);
   };
 
@@ -776,6 +796,7 @@ function QaTab() {
     setEditing(r);
     setQuestion(r.question);
     setAnswer(r.answer);
+    setCategoryId(r.category_id ?? "");
     setPublished(r.published);
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -791,7 +812,7 @@ function QaTab() {
     if (editing) {
       const { error: e } = await supabase
         .from("qa_entries")
-        .update({ question: q, answer: a, published })
+        .update({ question: q, answer: a, published, category_id: categoryId || null })
         .eq("id", editing.id);
       setSaving(false);
       if (e) {
@@ -803,7 +824,7 @@ function QaTab() {
       const nextOrder = rows.length ? Math.max(...rows.map((r) => r.sort_order)) + 1 : 0;
       const { error: e } = await supabase
         .from("qa_entries")
-        .insert({ question: q, answer: a, published, sort_order: nextOrder });
+        .insert({ question: q, answer: a, published, sort_order: nextOrder, category_id: categoryId || null });
       setSaving(false);
       if (e) {
         toast.error("সংরক্ষণ করা যায়নি।");
@@ -840,13 +861,211 @@ function QaTab() {
     setConfirmTarget(null);
   };
 
+  // ---- Category actions ----
+  const addCategory = async () => {
+    const n = catName.trim();
+    if (!n) {
+      toast.error("ক্যাটাগরির নাম লিখুন।");
+      return;
+    }
+    setCatSaving(true);
+    const nextOrder = cats.length ? Math.max(...cats.map((c) => c.sort_order)) + 1 : 0;
+    const { error: e } = await supabase
+      .from("qa_categories")
+      .insert({ name: n, sort_order: nextOrder });
+    setCatSaving(false);
+    if (e) {
+      toast.error("ক্যাটাগরি যুক্ত করা যায়নি।");
+      return;
+    }
+    setCatName("");
+    load();
+  };
+
+  const saveCatEdit = async () => {
+    if (!editCat) return;
+    const n = editCatName.trim();
+    if (!n) return;
+    const { error: e } = await supabase
+      .from("qa_categories")
+      .update({ name: n })
+      .eq("id", editCat.id);
+    if (e) {
+      toast.error("সংরক্ষণ করা যায়নি।");
+      return;
+    }
+    setEditCat(null);
+    load();
+  };
+
+  const toggleCatPublished = async (c: QaCategory) => {
+    const { error: e } = await supabase
+      .from("qa_categories")
+      .update({ published: !c.published })
+      .eq("id", c.id);
+    if (e) {
+      toast.error("পরিবর্তন করা যায়নি।");
+      return;
+    }
+    setCats((prev) => prev.map((x) => (x.id === c.id ? { ...x, published: !x.published } : x)));
+  };
+
+  const moveCat = async (index: number, dir: -1 | 1) => {
+    const target = index + dir;
+    if (target < 0 || target >= cats.length) return;
+    const a = cats[index];
+    const b = cats[target];
+    setCats((prev) => {
+      const next = [...prev];
+      next[index] = { ...b };
+      next[target] = { ...a };
+      return next;
+    });
+    await Promise.all([
+      supabase.from("qa_categories").update({ sort_order: b.sort_order }).eq("id", a.id),
+      supabase.from("qa_categories").update({ sort_order: a.sort_order }).eq("id", b.id),
+    ]);
+    load();
+  };
+
+  const deleteCat = async () => {
+    if (!confirmCat) return;
+    const { error: e } = await supabase.from("qa_categories").delete().eq("id", confirmCat.id);
+    if (e) {
+      toast.error("মুছে ফেলা যায়নি।");
+      return;
+    }
+    setConfirmCat(null);
+    load();
+  };
+
+  const catName_ = (id: string | null) =>
+    id ? (cats.find((c) => c.id === id)?.name ?? "অন্যান্য") : "ক্যাটাগরিবিহীন";
+
   return (
     <div>
+      {/* Category management */}
+      <div className="mb-6 rounded-xl border border-border bg-background p-4">
+        <h3 className="mb-3 text-sm font-bold text-foreground">ক্যাটাগরি ব্যবস্থাপনা</h3>
+        <div className="flex gap-2">
+          <input
+            value={catName}
+            onChange={(e) => setCatName(e.target.value)}
+            placeholder="নতুন ক্যাটাগরির নাম"
+            className={inputCls}
+          />
+          <button
+            onClick={addCategory}
+            disabled={catSaving}
+            className="flex shrink-0 items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-60"
+          >
+            {catSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            যুক্ত
+          </button>
+        </div>
+        {cats.length > 0 && (
+          <div className="mt-3 space-y-2">
+            {cats.map((c, i) => (
+              <div key={c.id} className="flex items-center gap-2 rounded-lg border border-border bg-card p-2">
+                <div className="flex flex-col">
+                  <button
+                    onClick={() => moveCat(i, -1)}
+                    disabled={i === 0}
+                    className="rounded p-0.5 text-muted-foreground hover:text-primary disabled:opacity-30"
+                    title="উপরে"
+                  >
+                    <ChevronUp className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => moveCat(i, 1)}
+                    disabled={i === cats.length - 1}
+                    className="rounded p-0.5 text-muted-foreground hover:text-primary disabled:opacity-30"
+                    title="নিচে"
+                  >
+                    <ChevronDown className="h-4 w-4" />
+                  </button>
+                </div>
+                {editCat?.id === c.id ? (
+                  <input
+                    value={editCatName}
+                    onChange={(e) => setEditCatName(e.target.value)}
+                    className={inputCls}
+                  />
+                ) : (
+                  <span className="flex-1 text-sm font-semibold text-foreground">{c.name}</span>
+                )}
+                <button
+                  onClick={() => toggleCatPublished(c)}
+                  className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${
+                    c.published ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
+                  }`}
+                >
+                  {c.published ? "প্রকাশিত" : "অপ্রকাশিত"}
+                </button>
+                {editCat?.id === c.id ? (
+                  <>
+                    <button
+                      onClick={saveCatEdit}
+                      className="shrink-0 rounded-lg bg-primary p-1.5 text-primary-foreground"
+                      title="সংরক্ষণ"
+                    >
+                      <Check className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => setEditCat(null)}
+                      className="shrink-0 rounded-lg bg-muted p-1.5 text-muted-foreground"
+                      title="বাতিল"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => {
+                        setEditCat(c);
+                        setEditCatName(c.name);
+                      }}
+                      className="shrink-0 rounded-lg bg-muted p-1.5 text-muted-foreground hover:text-primary"
+                      title="সম্পাদনা"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => setConfirmCat(c)}
+                      className="shrink-0 rounded-lg bg-muted p-1.5 text-muted-foreground hover:text-destructive"
+                      title="মুছুন"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       <div className="mb-6 rounded-xl border border-border bg-background p-4">
         <h3 className="mb-3 text-sm font-bold text-foreground">
           {editing ? "প্রশ্ন-উত্তর সম্পাদনা" : "নতুন প্রশ্ন-উত্তর যুক্ত করুন"}
         </h3>
         <div className="space-y-3">
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-muted-foreground">ক্যাটাগরি</label>
+            <select
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              className={inputCls}
+            >
+              <option value="">ক্যাটাগরিবিহীন</option>
+              {cats.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
           <div>
             <label className="mb-1 block text-xs font-semibold text-muted-foreground">প্রশ্ন</label>
             <textarea
@@ -910,7 +1129,12 @@ function QaTab() {
           {rows.map((r) => (
             <div key={r.id} className="rounded-xl border border-border bg-card p-4">
               <div className="flex items-start justify-between gap-3">
-                <p className="text-sm font-bold text-foreground">{r.question}</p>
+                <div className="min-w-0">
+                  <span className="mb-1 inline-block rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-foreground">
+                    {catName_(r.category_id)}
+                  </span>
+                  <p className="text-sm font-bold text-foreground">{r.question}</p>
+                </div>
                 <div className="flex shrink-0 gap-1">
                   <button
                     onClick={() => startEdit(r)}
@@ -966,9 +1190,35 @@ function QaTab() {
           </div>
         </div>
       )}
+
+      {confirmCat && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-sm rounded-2xl bg-card p-5 shadow-xl">
+            <p className="text-sm font-semibold text-foreground">এই ক্যাটাগরিটি মুছে ফেলবেন?</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              এর প্রশ্ন-উত্তরগুলো ক্যাটাগরিবিহীন হয়ে যাবে।
+            </p>
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                onClick={() => setConfirmCat(null)}
+                className="rounded-lg bg-muted px-3 py-2 text-xs font-semibold text-muted-foreground"
+              >
+                বাতিল
+              </button>
+              <button
+                onClick={deleteCat}
+                className="rounded-lg bg-destructive px-3 py-2 text-xs font-semibold text-white"
+              >
+                মুছে ফেলুন
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
 
 
 type AddressRow = { id: string; label: string };
