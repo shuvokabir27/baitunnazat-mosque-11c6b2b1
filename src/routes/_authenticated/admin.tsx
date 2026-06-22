@@ -312,22 +312,45 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   collections: HandCoins,
 };
 
-const TAB_GROUPS: { label: string; tabs: Tab[] }[] = [
+const TAB_GROUPS: {
+  label: string;
+  tabs: Tab[];
+  labelColor: string;
+  activeBg: string;
+  hoverText: string;
+  accentBar: string;
+}[] = [
   {
     label: "ওয়েবসাইট কন্টেন্ট",
     tabs: ["site", "mosque", "slider", "sections", "prayer", "ibadah", "footer"],
+    labelColor: "text-[#72aee6]",
+    activeBg: "bg-[#2271b1]",
+    hoverText: "hover:text-[#72aee6]",
+    accentBar: "bg-[#2271b1]",
   },
   {
     label: "মানুষ ও কমিটি",
     tabs: ["staff", "committee", "members"],
+    labelColor: "text-[#a78bdb]",
+    activeBg: "bg-[#7c5cbf]",
+    hoverText: "hover:text-[#c6b3ec]",
+    accentBar: "bg-[#7c5cbf]",
   },
   {
     label: "দান ও উন্নয়ন",
     tabs: ["donate", "development", "collections"],
+    labelColor: "text-[#4ab89a]",
+    activeBg: "bg-[#1f9d78]",
+    hoverText: "hover:text-[#7ad6bd]",
+    accentBar: "bg-[#1f9d78]",
   },
   {
     label: "আবেদন ও যোগাযোগ",
     tabs: ["leads", "masala", "qa", "addresses"],
+    labelColor: "text-[#e0a458]",
+    activeBg: "bg-[#cc7a22]",
+    hoverText: "hover:text-[#f0c184]",
+    accentBar: "bg-[#cc7a22]",
   },
 ];
 
@@ -336,7 +359,8 @@ function Sidebar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
     <nav className="flex shrink-0 gap-3 overflow-x-auto bg-[#1d2327] p-1.5 text-[#f0f0f1] md:w-52 md:flex-col md:gap-0 md:overflow-visible md:p-0 md:py-2 md:min-h-[calc(100vh-3rem)]">
       {TAB_GROUPS.map((group) => (
         <div key={group.label} className="flex shrink-0 gap-1 md:flex-col md:gap-0">
-          <span className="hidden px-3 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-[#8c8f94] md:block">
+          <span className={`hidden items-center gap-2 px-3 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider md:flex ${group.labelColor}`}>
+            <span className={`h-3 w-1 rounded-full ${group.accentBar}`} />
             {group.label}
           </span>
           {group.tabs.map((t) => {
@@ -348,8 +372,8 @@ function Sidebar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
                 onClick={() => setTab(t)}
                 className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded px-3 py-2 text-left text-sm transition-colors md:w-full md:rounded-none md:py-2.5 ${
                   active
-                    ? "bg-[#2271b1] font-semibold text-white"
-                    : "text-[#c3c4c7] hover:bg-[#2c3338] hover:text-[#72aee6]"
+                    ? `${group.activeBg} font-semibold text-white`
+                    : `text-[#c3c4c7] hover:bg-[#2c3338] ${group.hoverText}`
                 }`}
               >
                 <Icon className="h-4 w-4 shrink-0" />
@@ -362,6 +386,7 @@ function Sidebar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
     </nav>
   );
 }
+
 
 type Lead = { id: string; name: string | null; phone: string; created_at: string; called: boolean };
 
