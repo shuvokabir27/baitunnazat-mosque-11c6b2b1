@@ -312,27 +312,53 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   collections: HandCoins,
 };
 
+const TAB_GROUPS: { label: string; tabs: Tab[] }[] = [
+  {
+    label: "ওয়েবসাইট কন্টেন্ট",
+    tabs: ["site", "mosque", "slider", "sections", "prayer", "ibadah", "footer"],
+  },
+  {
+    label: "মানুষ ও কমিটি",
+    tabs: ["staff", "committee", "members"],
+  },
+  {
+    label: "দান ও উন্নয়ন",
+    tabs: ["donate", "development", "collections"],
+  },
+  {
+    label: "আবেদন ও যোগাযোগ",
+    tabs: ["leads", "masala", "qa", "addresses"],
+  },
+];
+
 function Sidebar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
   return (
-    <nav className="flex shrink-0 gap-1 overflow-x-auto bg-[#1d2327] p-1.5 text-[#f0f0f1] md:w-44 md:flex-col md:gap-0 md:overflow-visible md:p-0 md:py-2 md:min-h-[calc(100vh-3rem)]">
-      {(Object.keys(TAB_LABELS) as Tab[]).map((t) => {
-        const Icon = TAB_ICONS[t];
-        const active = tab === t;
-        return (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded px-3 py-2 text-left text-sm transition-colors md:w-full md:rounded-none md:py-2.5 ${
-              active
-                ? "bg-[#2271b1] font-semibold text-white"
-                : "text-[#c3c4c7] hover:bg-[#2c3338] hover:text-[#72aee6]"
-            }`}
-          >
-            <Icon className="h-4 w-4 shrink-0" />
-            {TAB_LABELS[t]}
-          </button>
-        );
-      })}
+    <nav className="flex shrink-0 gap-3 overflow-x-auto bg-[#1d2327] p-1.5 text-[#f0f0f1] md:w-52 md:flex-col md:gap-0 md:overflow-visible md:p-0 md:py-2 md:min-h-[calc(100vh-3rem)]">
+      {TAB_GROUPS.map((group) => (
+        <div key={group.label} className="flex shrink-0 gap-1 md:flex-col md:gap-0">
+          <span className="hidden px-3 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-[#8c8f94] md:block">
+            {group.label}
+          </span>
+          {group.tabs.map((t) => {
+            const Icon = TAB_ICONS[t];
+            const active = tab === t;
+            return (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded px-3 py-2 text-left text-sm transition-colors md:w-full md:rounded-none md:py-2.5 ${
+                  active
+                    ? "bg-[#2271b1] font-semibold text-white"
+                    : "text-[#c3c4c7] hover:bg-[#2c3338] hover:text-[#72aee6]"
+                }`}
+              >
+                <Icon className="h-4 w-4 shrink-0" />
+                {TAB_LABELS[t]}
+              </button>
+            );
+          })}
+        </div>
+      ))}
     </nav>
   );
 }
