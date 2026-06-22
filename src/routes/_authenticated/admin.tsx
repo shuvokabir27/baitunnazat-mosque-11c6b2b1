@@ -1034,8 +1034,38 @@ function MembersTab() {
     setConfirmTarget(null);
   };
 
+  const openEdit = (m: Member) => {
+    setEditTarget(m);
+    setEditForm({
+      name: m.name ?? "",
+      father_name: m.father_name ?? "",
+      mobile: m.mobile ?? "",
+      address: m.address ?? "",
+      monthly_donation: String(m.monthly_donation ?? 0),
+    });
+  };
 
-  const downloadExcel = () => {
+  const saveEdit = async () => {
+    if (!editTarget) return;
+    setSaving(true);
+    const updates = {
+      name: editForm.name.trim(),
+      father_name: editForm.father_name.trim(),
+      mobile: editForm.mobile.trim(),
+      address: editForm.address.trim(),
+      monthly_donation: Number(editForm.monthly_donation) || 0,
+    };
+    const { error } = await supabase.from("members").update(updates).eq("id", editTarget.id);
+    setSaving(false);
+    if (error) {
+      alert("সংরক্ষণ করা যায়নি।");
+      return;
+    }
+    setMembers((prev) => prev.map((m) => (m.id === editTarget.id ? { ...m, ...updates } : m)));
+    setEditTarget(null);
+  };
+
+
     const header = ["সদস্য নম্বর", "নাম", "পিতার নাম", "মোবাইল", "ঠিকানা", "মাসিক দান (টাকা)"];
     const rows = filtered.map((m) => [String(m.member_no), m.name, m.father_name, m.mobile, m.address, String(m.monthly_donation ?? 0)]);
     const esc = (v: string) => `"${v.replace(/"/g, '""')}"`;
