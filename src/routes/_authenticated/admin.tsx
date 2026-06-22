@@ -1033,11 +1033,12 @@ function MembersTab() {
     const { error } = await supabase.from("members").delete().eq("id", confirmTarget.id);
     setDeleting(false);
     if (error) {
-      alert("মুছে ফেলা যায়নি।");
+      toast.error("মুছে ফেলা যায়নি।");
       return;
     }
     setMembers((prev) => prev.filter((m) => m.id !== confirmTarget.id));
     setConfirmTarget(null);
+    toast.success("সদস্য মুছে ফেলা হয়েছে।");
   };
 
   const openEdit = (m: Member) => {
