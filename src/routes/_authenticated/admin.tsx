@@ -996,7 +996,9 @@ function QaTab() {
                     className={inputCls}
                   />
                 ) : (
-                  <span className="flex-1 text-sm font-semibold text-foreground">{c.name}</span>
+                  <span className="flex-1 text-sm font-semibold text-foreground">
+                    {toBengaliNum(i + 1)}। {c.name}
+                  </span>
                 )}
                 <button
                   onClick={() => toggleCatPublished(c)}
