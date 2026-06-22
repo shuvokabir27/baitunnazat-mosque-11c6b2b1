@@ -133,23 +133,26 @@ function Masala() {
         <button
           type="button"
           onClick={() => setFormOpen(true)}
-          className="group mb-5 flex w-full items-center gap-3 overflow-hidden rounded-xl border border-primary/20 bg-card px-3 py-2.5 text-left shadow-soft transition-all hover:border-primary/40 hover:shadow-md active:scale-[0.99]"
+          className="group relative mb-5 flex w-full items-center gap-3 overflow-hidden rounded-2xl gradient-emerald px-4 py-3.5 text-left shadow-md ring-1 ring-gold/40 transition-all hover:shadow-lg active:scale-[0.99]"
         >
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg gradient-emerald text-primary-foreground shadow-sm transition-transform group-hover:scale-105">
-            <MessageCircleQuestion className="h-5 w-5" />
+          <span className="pointer-events-none absolute -right-6 -top-8 h-24 w-24 rounded-full bg-gold/20 blur-xl" />
+          <span className="pointer-events-none absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+          <span className="relative grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white/15 text-primary-foreground ring-1 ring-white/25 transition-transform group-hover:scale-105">
+            <MessageCircleQuestion className="h-6 w-6" />
           </span>
-          <span className="min-w-0 flex-1">
-            <span className="block text-sm font-bold text-foreground">
+          <span className="relative min-w-0 flex-1">
+            <span className="block text-[15px] font-extrabold text-primary-foreground">
               সরাসরি প্রশ্ন করুন
             </span>
-            <span className="block text-[11px] leading-tight text-muted-foreground">
+            <span className="block text-xs leading-tight text-primary-foreground/80">
               ইমাম ও খতিবের কাছে মাসয়ালা জিজ্ঞাসা করুন
             </span>
           </span>
-          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-primary/10 text-primary transition-all group-hover:bg-primary group-hover:text-primary-foreground">
-            <Send className="h-3.5 w-3.5" />
+          <span className="relative grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gold text-primary shadow-sm transition-transform group-hover:translate-x-0.5">
+            <Send className="h-4 w-4" />
           </span>
         </button>
+
 
 
 
