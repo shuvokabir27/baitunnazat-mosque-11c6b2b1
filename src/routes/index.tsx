@@ -229,7 +229,12 @@ function HeroSlider() {
         >
           <Heart className="h-5 w-5" /> {sections.donateLabel}
         </Link>
-        <VolunteerJoinForm />
+        <Link
+          to="/masala"
+          className="mt-4 inline-flex items-center gap-2 rounded-full gradient-emerald px-6 py-3 text-base font-semibold text-primary-foreground shadow-soft transition-transform active:scale-[0.98]"
+        >
+          <MessageCircleQuestion className="h-5 w-5" /> মাসয়ালা জানুন
+        </Link>
       </div>
 
       {/* Zoom lightbox */}
