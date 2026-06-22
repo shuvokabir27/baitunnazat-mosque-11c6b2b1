@@ -32,6 +32,8 @@ import {
   Pencil,
   Check,
   MessageCircleQuestion,
+  BookOpen,
+
 } from "lucide-react";
 import { mosque } from "@/lib/mosque-data";
 import { defaultContent, mergeContent, type SiteContent } from "@/lib/site-content";
