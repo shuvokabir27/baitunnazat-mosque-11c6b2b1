@@ -300,6 +300,7 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   prayer: Clock,
   staff: Users,
   committee: UsersRound,
+  ibadah: BookOpen,
   development: HardHat,
   donate: HandCoins,
   footer: MessageSquare,
