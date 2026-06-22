@@ -4,6 +4,12 @@ import { Layout, PageHeader } from "@/components/Layout";
 import { useSiteContent } from "@/lib/use-site-content";
 import { staffImages } from "@/lib/site-content";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { MessageCircleQuestion, Send, BadgeCheck, ChevronDown, BookOpen } from "lucide-react";
 
 const toBengaliNum = (n: number) =>
