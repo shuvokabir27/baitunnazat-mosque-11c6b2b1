@@ -281,6 +281,7 @@ const TAB_LABELS: Record<Tab, string> = {
   masala: "মাসয়ালা আবেদন",
   addresses: "ঠিকানা তালিকা",
   members: "সদস্য তালিকা",
+  collections: "দান আদায়",
 };
 
 const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
