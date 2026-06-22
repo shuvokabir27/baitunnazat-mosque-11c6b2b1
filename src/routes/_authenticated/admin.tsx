@@ -732,6 +732,9 @@ function MasalaTab() {
 }
 
 
+const toBengaliNum = (n: number) =>
+  String(n).replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)]);
+
 type QaCategory = { id: string; name: string; sort_order: number; published: boolean };
 type QaRow = { id: string; question: string; answer: string; sort_order: number; published: boolean; category_id: string | null };
 
