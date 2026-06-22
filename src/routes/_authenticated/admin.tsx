@@ -1277,6 +1277,79 @@ function MembersTab() {
           </div>
         </div>
       )}
+
+      {editTarget && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-sm overflow-hidden rounded-2xl bg-card shadow-2xl">
+            <div className="flex items-center gap-3 bg-primary px-5 py-4 text-primary-foreground">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/20">
+                <Pencil className="h-5 w-5" />
+              </span>
+              <h3 className="text-base font-bold">সদস্য সম্পাদনা</h3>
+            </div>
+            <div className="space-y-3 px-5 py-4">
+              <div>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">নাম</label>
+                <input
+                  value={editForm.name}
+                  onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">পিতার নাম</label>
+                <input
+                  value={editForm.father_name}
+                  onChange={(e) => setEditForm((f) => ({ ...f, father_name: e.target.value }))}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">মোবাইল</label>
+                <input
+                  value={editForm.mobile}
+                  onChange={(e) => setEditForm((f) => ({ ...f, mobile: e.target.value }))}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">ঠিকানা</label>
+                <input
+                  value={editForm.address}
+                  onChange={(e) => setEditForm((f) => ({ ...f, address: e.target.value }))}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">মাসিক দান (টাকা)</label>
+                <input
+                  type="number"
+                  value={editForm.monthly_donation}
+                  onChange={(e) => setEditForm((f) => ({ ...f, monthly_donation: e.target.value }))}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                />
+              </div>
+              <div className="mt-2 flex justify-end gap-2">
+                <button
+                  onClick={() => setEditTarget(null)}
+                  disabled={saving}
+                  className="rounded-lg border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted disabled:opacity-60"
+                >
+                  বাতিল
+                </button>
+                <button
+                  onClick={saveEdit}
+                  disabled={saving}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-60"
+                >
+                  {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                  সংরক্ষণ
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
