@@ -347,6 +347,8 @@ export function Layout({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen flex-col pb-20 lg:pb-0">
       <Header />
       <main className="mx-auto w-full max-w-screen-md flex-1 lg:max-w-6xl">{children}</main>
+      <div className="flex-1" />
+
       <Footer />
       <BottomNav />
     </div>
