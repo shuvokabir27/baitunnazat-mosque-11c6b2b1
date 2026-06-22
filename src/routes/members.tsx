@@ -271,6 +271,27 @@ function Members() {
                 <span className="text-sm font-bold">আপনি একজন নিবন্ধিত সদস্য</span>
               </div>
 
+              {payStatus && (
+                <div
+                  className={`mb-3 flex items-center gap-2 rounded-2xl border p-3 ${
+                    payStatus.paid
+                      ? "border-emerald-300 bg-emerald-50 text-emerald-800"
+                      : "border-rose-300 bg-rose-50 text-rose-800"
+                  }`}
+                >
+                  {payStatus.paid ? (
+                    <CheckCircle2 className="h-5 w-5 shrink-0" />
+                  ) : (
+                    <UserX className="h-5 w-5 shrink-0" />
+                  )}
+                  <span className="text-sm font-bold">
+                    {payStatus.paid
+                      ? "চলতি মাসের দান পরিশোধ করা হয়েছে।"
+                      : "চলতি মাসের দান এখনো বাকি রয়েছে।"}
+                  </span>
+                </div>
+              )}
+
               <MemberCardBlock member={checkResult} siteIcon={siteIcon} />
             </div>
           )}
