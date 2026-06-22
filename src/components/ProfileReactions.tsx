@@ -26,6 +26,8 @@ export function ProfileReactions({ slug, storagePrefix = "staff-reaction" }: { s
     queryKey: ["reactions", slug],
     queryFn: () => fetchReactions({ data: { slug } }),
     placeholderData: { love: 0, like: 0 },
+    staleTime: 5 * 60_000,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
