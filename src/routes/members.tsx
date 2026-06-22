@@ -45,6 +45,7 @@ function Members() {
   const [checking, setChecking] = useState(false);
   const [checkResult, setCheckResult] = useState<MemberInfo | null>(null);
   const [notMember, setNotMember] = useState(false);
+  const [payStatus, setPayStatus] = useState<{ paid: boolean; amount: number } | null>(null);
 
 
 
