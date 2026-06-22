@@ -317,7 +317,7 @@ function BottomNav() {
 function Footer() {
   const { mosque, sections } = useSiteContent();
   return (
-    <footer className="mt-16 gradient-hero text-primary-foreground">
+    <footer className="gradient-hero text-primary-foreground">
       <div className="mx-auto max-w-screen-md px-5 py-10 text-center lg:max-w-6xl">
         <h3 className="text-xl font-bold">{mosque.name}</h3>
         <p className="mt-2 text-sm text-primary-foreground/80">
