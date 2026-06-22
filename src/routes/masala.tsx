@@ -9,7 +9,7 @@ import { MessageCircleQuestion, Send, BadgeCheck } from "lucide-react";
 export const Route = createFileRoute("/masala")({
   head: () => ({
     meta: [
-      { title: "মাসয়ালা জানুন — বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ" },
+      { title: "সরাসরি প্রশ্ন উত্তর — বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ" },
       {
         name: "description",
         content:
