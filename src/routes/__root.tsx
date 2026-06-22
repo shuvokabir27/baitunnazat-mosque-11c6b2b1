@@ -141,6 +141,7 @@ function RootComponent() {
           <Outlet />
           <ClientOnly fallback={null}>
             <WelcomePopup />
+            <Toaster />
           </ClientOnly>
         </SiteContentProvider>
       </Suspense>
