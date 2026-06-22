@@ -1011,11 +1011,15 @@ function MembersTab() {
 
   const load = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from("members")
-      .select("id, member_no, name, father_name, mobile, address, monthly_donation, created_at")
-      .order("member_no", { ascending: true });
+    const [{ data }, { data: addrs }] = await Promise.all([
+      supabase
+        .from("members")
+        .select("id, member_no, name, father_name, mobile, address, monthly_donation, created_at")
+        .order("member_no", { ascending: true }),
+      supabase.from("member_addresses").select("label").order("label", { ascending: true }),
+    ]);
     setMembers((data as Member[]) ?? []);
+    setAddressList(((addrs as { label: string }[]) ?? []).map((a) => a.label).filter(Boolean));
     setLoading(false);
   };
 
