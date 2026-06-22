@@ -732,6 +732,9 @@ function MasalaTab() {
 }
 
 
+const toBengaliNum = (n: number) =>
+  String(n).replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)]);
+
 type QaCategory = { id: string; name: string; sort_order: number; published: boolean };
 type QaRow = { id: string; question: string; answer: string; sort_order: number; published: boolean; category_id: string | null };
 
@@ -993,7 +996,9 @@ function QaTab() {
                     className={inputCls}
                   />
                 ) : (
-                  <span className="flex-1 text-sm font-semibold text-foreground">{c.name}</span>
+                  <span className="flex-1 text-sm font-semibold text-foreground">
+                    {toBengaliNum(i + 1)}। {c.name}
+                  </span>
                 )}
                 <button
                   onClick={() => toggleCatPublished(c)}
