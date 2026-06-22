@@ -129,7 +129,7 @@ function Masala() {
                   <h2 className="text-base font-bold text-primary">{group.name}</h2>
                 </div>
                 <div className="space-y-2.5">
-                  {group.items.map((item) => {
+                  {group.items.map((item, idx) => {
                     const open = openId === item.id;
                     return (
                       <div
@@ -141,7 +141,9 @@ function Masala() {
                           onClick={() => setOpenId(open ? null : item.id)}
                           className="flex w-full items-start justify-between gap-3 px-4 py-3.5 text-left"
                         >
-                          <span className="text-sm font-bold text-foreground">{item.question}</span>
+                          <span className="text-sm font-bold text-foreground">
+                            {toBengaliNum(idx + 1)}। {item.question}
+                          </span>
                           <ChevronDown
                             className={`mt-0.5 h-4 w-4 shrink-0 text-muted-foreground transition-transform ${
                               open ? "rotate-180" : ""
