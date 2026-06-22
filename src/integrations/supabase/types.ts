@@ -196,9 +196,37 @@ export type Database = {
         }
         Relationships: []
       }
+      qa_categories: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          published: boolean
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          published?: boolean
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          published?: boolean
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       qa_entries: {
         Row: {
           answer: string
+          category_id: string | null
           created_at: string
           id: string
           published: boolean
@@ -208,6 +236,7 @@ export type Database = {
         }
         Insert: {
           answer: string
+          category_id?: string | null
           created_at?: string
           id?: string
           published?: boolean
@@ -217,6 +246,7 @@ export type Database = {
         }
         Update: {
           answer?: string
+          category_id?: string | null
           created_at?: string
           id?: string
           published?: boolean
@@ -224,7 +254,15 @@ export type Database = {
           sort_order?: number
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "qa_entries_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "qa_categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       site_content: {
         Row: {
