@@ -463,8 +463,8 @@ function MemberCardBlock({ member, siteIcon }: { member: MemberInfo; siteIcon?: 
       {/* Downloadable membership card */}
       <div
         ref={cardRef}
-        className="relative overflow-hidden rounded-2xl shadow-lg"
-        style={{ background: "#f7f0df" }}
+        className="relative mx-auto w-[320px] max-w-full overflow-hidden rounded-2xl shadow-lg"
+        style={{ background: "#f7f0df", aspectRatio: "320 / 500" }}
       >
         {/* Gold Islamic geometric pattern (fills card, visible as a border frame) */}
         <svg
