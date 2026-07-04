@@ -141,7 +141,8 @@ function HeaderDateTime() {
   });
 
   return (
-    <div className="bg-secondary/60 backdrop-blur-sm rounded-lg px-4 py-2">
+    <div className="shrink-0 rounded-lg bg-secondary/60 px-4 py-2 backdrop-blur-sm">
+
       <div className="flex items-center gap-6 text-center leading-tight lg:text-left">
         <div className="flex flex-col items-center lg:items-start">
           <span className="text-base font-bold tabular-nums text-foreground">{time}</span>
@@ -171,10 +172,10 @@ function Header() {
 
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-md">
       <BismillahBar />
-      <div className="relative mx-auto flex max-w-screen-md items-center justify-center px-4 py-3 lg:max-w-6xl lg:justify-between">
+      <div className="mx-auto flex max-w-screen-md items-center justify-center gap-4 px-4 py-3 lg:max-w-7xl lg:justify-between lg:gap-6">
         <HeaderDateTime />
         {/* Desktop-only top navigation — all menu items visible */}
-        <nav className="hidden items-center gap-1.5 lg:absolute lg:left-1/2 lg:flex lg:-translate-x-1/2">
+        <nav className="hidden min-w-0 flex-wrap items-center justify-end gap-1 lg:flex xl:gap-1.5">
           {[...navItems, ...moreNavItems].map((item) => {
             const Icon = navIcons[item.to] ?? Home;
             const c = navColors[item.to];
@@ -184,12 +185,12 @@ function Header() {
                 to={item.to}
                 activeOptions={{ exact: item.to === "/" }}
                 activeProps={{ className: `${c.activeBg} ${c.activeText} shadow-md` }}
-                className={`flex items-center gap-2 rounded-full px-3 py-2 text-sm font-bold text-muted-foreground transition-all hover:bg-secondary hover:text-foreground hover:shadow-sm`}
+                className={`flex shrink-0 items-center gap-1.5 rounded-full px-2 py-2 text-sm font-bold text-muted-foreground transition-all hover:bg-secondary hover:text-foreground hover:shadow-sm xl:gap-2 xl:px-3`}
               >
-                <span className={`flex h-7 w-7 items-center justify-center rounded-full ${c.bg} ${c.text}`}>
+                <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${c.bg} ${c.text}`}>
                   <Icon className="h-3.5 w-3.5" />
                 </span>
-                <span>{item.label}</span>
+                <span className="whitespace-nowrap">{item.label}</span>
               </Link>
             );
           })}
