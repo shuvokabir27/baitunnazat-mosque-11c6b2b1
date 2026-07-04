@@ -2054,7 +2054,7 @@ function CollectionsTab() {
 
   const load = async () => {
     setLoading(true);
-    const [{ data: mem }, { data: col }] = await Promise.all([
+    const [{ data: mem }, { data: monthCol }, { data: yearCol }] = await Promise.all([
       supabase
         .from("members")
         .select("id, member_no, name, father_name, mobile, address, monthly_donation, created_at")
@@ -2065,9 +2065,14 @@ function CollectionsTab() {
         .eq("year", year)
         .eq("month", month)
         .order("collected_at", { ascending: false }),
+      supabase
+        .from("donation_collections")
+        .select("member_id, month, year")
+        .eq("year", year),
     ]);
     setMembers((mem as Member[]) ?? []);
-    setCollections((col as Collection[]) ?? []);
+    setCollections((monthCol as Collection[]) ?? []);
+    setYearCollections((yearCol as Collection[]) ?? []);
     setLoading(false);
   };
 
@@ -2075,6 +2080,35 @@ function CollectionsTab() {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [year, month]);
+
+  // বছরে প্রতিটি সদস্য কোন কোন মাসে দান দিয়েছে তার সেট
+  const paidMonthsByMember = new Map<string, Set<number>>();
+  yearCollections.forEach((c) => {
+    if (!c.member_id) return;
+    const set = paidMonthsByMember.get(c.member_id) ?? new Set<number>();
+    set.add(c.month);
+    paidMonthsByMember.set(c.member_id, set);
+  });
+
+  // কত মাস পর্যন্ত হিসাব করা হবে (চলতি বছরে চলতি মাস পর্যন্ত, আগের বছরে ১২ মাস)
+  const monthsElapsed =
+    year < now.getFullYear() ? 12 : year === now.getFullYear() ? now.getMonth() + 1 : 0;
+
+  // যাদের দান আদায় হয়নি তাদের তালিকা (একাধিক মাস হলে সব মাস)
+  const unpaidList = members
+    .map((m) => {
+      const created = m.created_at ? new Date(m.created_at) : null;
+      const startMonth =
+        created && created.getFullYear() === year ? created.getMonth() + 1 : 1;
+      const paidSet = paidMonthsByMember.get(m.id) ?? new Set<number>();
+      const unpaidMonths: number[] = [];
+      for (let mo = startMonth; mo <= monthsElapsed; mo++) {
+        if (!paidSet.has(mo)) unpaidMonths.push(mo);
+      }
+      return { member: m, unpaidMonths };
+    })
+    .filter((x) => x.unpaidMonths.length > 0);
+
 
   const q = query.trim().toLowerCase();
   const matches = q
