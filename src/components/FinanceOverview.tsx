@@ -197,7 +197,7 @@ export function FinanceOverview() {
 
       {/* টেবিল */}
       <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
-        <table className="w-full min-w-[540px] text-xs sm:text-sm">
+        <table className="w-full min-w-[560px] text-xs sm:text-sm">
           <thead>
             <tr className="bg-primary text-primary-foreground">
               <th className="px-2.5 py-2.5 text-left font-semibold sm:px-3 sm:py-3">মাস</th>
@@ -209,22 +209,87 @@ export function FinanceOverview() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((r, i) => (
-              <tr key={r.key} className={i % 2 ? "bg-muted/40" : "bg-card"}>
-                <td className="px-2.5 py-2.5 font-medium text-foreground sm:px-3">{r.label}</td>
-                <td className="px-2.5 py-2.5 text-right tabular-nums text-slate-600 sm:px-3">{money(r.opening)}</td>
-                <td className="px-2.5 py-2.5 text-right tabular-nums text-emerald-700 sm:px-3">{money(r.income)}</td>
-                <td className="px-2.5 py-2.5 text-right tabular-nums font-medium text-foreground sm:px-3">{money(r.totalIncome)}</td>
-                <td className="px-2.5 py-2.5 text-right tabular-nums text-rose-700 sm:px-3">{money(r.expense)}</td>
-                <td className="px-2.5 py-2.5 text-right tabular-nums font-bold text-lime-700 sm:px-3">{money(r.closing)}</td>
-              </tr>
-            ))}
+            {rows.map((r, i) => {
+              const open = expanded === r.key;
+              const hasDetail = r.incomeItems.length > 0 || r.expenseItems.length > 0;
+              return (
+                <>
+                  <tr
+                    key={r.key}
+                    onClick={() => hasDetail && setExpanded(open ? null : r.key)}
+                    className={`${i % 2 ? "bg-muted/40" : "bg-card"} ${hasDetail ? "cursor-pointer" : ""}`}
+                  >
+                    <td className="px-2.5 py-2.5 font-medium text-foreground sm:px-3">
+                      <span className="inline-flex items-center gap-1">
+                        {hasDetail && (
+                          <ChevronDown className={`h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+                        )}
+                        {r.label}
+                      </span>
+                    </td>
+                    <td className="px-2.5 py-2.5 text-right tabular-nums text-slate-600 sm:px-3">{money(r.opening)}</td>
+                    <td className="px-2.5 py-2.5 text-right tabular-nums text-emerald-700 sm:px-3">{money(r.income)}</td>
+                    <td className="px-2.5 py-2.5 text-right tabular-nums font-medium text-foreground sm:px-3">{money(r.totalIncome)}</td>
+                    <td className="px-2.5 py-2.5 text-right tabular-nums text-rose-700 sm:px-3">{money(r.expense)}</td>
+                    <td className="px-2.5 py-2.5 text-right tabular-nums font-bold text-lime-700 sm:px-3">{money(r.closing)}</td>
+                  </tr>
+                  {open && (
+                    <tr key={`${r.key}-detail`} className="bg-muted/20">
+                      <td colSpan={6} className="px-3 py-3">
+                        <div className="grid gap-4 sm:grid-cols-2">
+                          <BreakdownList
+                            title="কি বাবদ আয়"
+                            titleClass="text-emerald-700"
+                            items={r.incomeItems}
+                          />
+                          <BreakdownList
+                            title="কি বাবদ ব্যয়"
+                            titleClass="text-rose-700"
+                            items={r.expenseItems}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </>
+              );
+            })}
           </tbody>
         </table>
       </div>
       <p className="text-center text-xs text-muted-foreground">
-        প্রতি মাসের ১ তারিখে গত মাসের স্থিতি স্বয়ংক্রিয়ভাবে পরের মাসের জের হিসেবে যোগ হয়।
+        প্রতিটি মাসে ক্লিক করে কি বাবদ আয় ও ব্যয় হয়েছে তার বিস্তারিত দেখুন। প্রতি মাসের ১ তারিখে গত মাসের স্থিতি স্বয়ংক্রিয়ভাবে পরের মাসের জের হিসেবে যোগ হয়।
       </p>
+    </div>
+  );
+}
+
+function BreakdownList({
+  title,
+  titleClass,
+  items,
+}: {
+  title: string;
+  titleClass: string;
+  items: Item[];
+}) {
+  return (
+    <div className="rounded-xl border border-border bg-card p-3">
+      <h4 className={`mb-2 text-sm font-bold ${titleClass}`}>{title}</h4>
+      {items.length === 0 ? (
+        <p className="text-xs text-muted-foreground">কোনো তথ্য নেই।</p>
+      ) : (
+        <ul className="space-y-1.5">
+          {items.map((it, idx) => (
+            <li key={idx} className="flex items-center justify-between gap-2 text-xs sm:text-sm">
+              <span className="min-w-0 truncate text-foreground">
+                {it.note || "বিবরণ নেই"}
+              </span>
+              <span className="shrink-0 tabular-nums font-medium text-foreground">{money(it.amount)}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
