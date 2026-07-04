@@ -2175,6 +2175,7 @@ function CollectionsTab() {
       return;
     }
     setCollections((prev) => prev.filter((c) => c.id !== deleteTarget.id));
+    setYearCollections((prev) => prev.filter((c) => c.id !== deleteTarget.id));
     setDeleteTarget(null);
     toast.success("রেকর্ড মুছে ফেলা হয়েছে।");
   };
