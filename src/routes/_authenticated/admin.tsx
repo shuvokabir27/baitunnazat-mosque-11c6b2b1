@@ -2022,6 +2022,13 @@ function joinMonthsBn(months: number[]): string {
   return `${names.slice(0, -1).join(", ")} ও ${names[names.length - 1]}`;
 }
 
+// বছর বাংলা অঙ্কে, কমা ছাড়া (যেমন ২০২৬)
+function bnYear(y: number): string {
+  return String(y).replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)]);
+}
+
+
+
 
 type Collection = {
   id: string;
@@ -2728,7 +2735,7 @@ function CollectionsTab() {
                 >
                   ‹
                 </button>
-                <span className="text-sm font-bold text-foreground">{payYear.toLocaleString("bn-BD")}</span>
+                <span className="text-sm font-bold text-foreground">{bnYear(payYear)}</span>
                 <button
                   type="button"
                   onClick={() => setPayYear((y) => y + 1)}
@@ -2773,7 +2780,7 @@ function CollectionsTab() {
                   {paySelList.map(({ y, m, key }) => (
                     <div key={key} className="flex items-center gap-2 rounded-lg border border-border px-3 py-2">
                       <span className="flex-1 text-sm font-medium text-foreground">
-                        {BN_MONTHS[m - 1]} {y.toLocaleString("bn-BD")}
+                        {BN_MONTHS[m - 1]} {bnYear(y)}
                       </span>
                       <input
                         type="number"
