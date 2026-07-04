@@ -2533,10 +2533,7 @@ function CollectionsTab() {
                   </td>
                   <td className="p-2 text-right">
                     <button
-                      onClick={() => {
-                        setView("paid");
-                        pickMember(m);
-                      }}
+                      onClick={() => openPay(m, unpaidMonths)}
                       className="rounded-md gradient-emerald px-3 py-1 text-xs font-bold text-primary-foreground"
                     >
                       আদায় করুন
