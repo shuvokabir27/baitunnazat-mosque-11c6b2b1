@@ -357,7 +357,7 @@ function downloadMonthPdf(r: Row) {
   th { text-align: left; background: #1a7a4c; color: #fff; padding: 6px 8px; }
   th:last-child { text-align: right; }
 </style></head><body>
-<p class="mosque">বায়তুন নাজাত জামে মসজিদ</p>
+<p class="mosque">বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ, মহিপুর</p>
 <p class="tagline">আয়-ব্যয়ের স্বচ্ছ হিসাব</p>
 <h1>${r.label}</h1>
 <p class="sub">আয়-ব্যয় হিসাব</p>
