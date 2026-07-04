@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronLeft } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { staff } from "@/lib/mosque-data";
@@ -10,19 +10,18 @@ import { ShareButton } from "@/components/ShareButton";
 
 export const Route = createFileRoute("/staff/$slug")({
   loader: ({ params }) => {
-    const member = staff.find((s) => s.slug === params.slug);
-    if (!member) throw notFound();
-    return { member };
+    const member = staff.find((s) => s.slug === params.slug) ?? null;
+    return { member, slug: params.slug };
   },
   head: ({ loaderData }) => {
-    const name = loaderData?.member.name ?? "প্রোফাইল";
+    const name = loaderData?.member?.name ?? "প্রোফাইল";
     return {
       meta: [
         { title: `${name} — বাইতুন নাজাত জামে মসজিদ` },
-        { name: "description", content: loaderData?.member.experience ?? "" },
+        { name: "description", content: loaderData?.member?.experience ?? "" },
         { property: "og:title", content: name },
-        { property: "og:description", content: loaderData?.member.experience ?? "" },
-        { property: "og:image", content: loaderData?.member.image ?? "" },
+        { property: "og:description", content: loaderData?.member?.experience ?? "" },
+        { property: "og:image", content: loaderData?.member?.image ?? "" },
       ],
     };
   },
@@ -31,18 +30,22 @@ export const Route = createFileRoute("/staff/$slug")({
       <div className="px-4 py-20 text-center text-muted-foreground">কিছু একটা সমস্যা হয়েছে।</div>
     </Layout>
   ),
-  notFoundComponent: () => (
-    <Layout>
-      <div className="px-4 py-20 text-center text-muted-foreground">প্রোফাইল পাওয়া যায়নি।</div>
-    </Layout>
-  ),
   component: StaffProfilePage,
 });
 
 function StaffProfilePage() {
-  const { member: loaderMember } = Route.useLoaderData();
+  const { member: loaderMember, slug } = Route.useLoaderData();
   const { staff: liveStaff } = useSiteContent();
-  const member = liveStaff.find((s) => s.slug === loaderMember.slug) ?? loaderMember;
+  const member = liveStaff.find((s) => s.slug === slug) ?? loaderMember;
+
+  if (!member) {
+    return (
+      <Layout>
+        <div className="px-4 py-20 text-center text-muted-foreground">প্রোফাইল পাওয়া যায়নি।</div>
+      </Layout>
+    );
+  }
+
   const image = member.image || staffImages[member.slug] || heroImages[0];
 
 
