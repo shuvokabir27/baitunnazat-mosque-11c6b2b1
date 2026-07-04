@@ -2042,6 +2042,8 @@ function CollectionsTab() {
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [members, setMembers] = useState<Member[]>([]);
   const [collections, setCollections] = useState<Collection[]>([]);
+  const [yearCollections, setYearCollections] = useState<Collection[]>([]);
+  const [view, setView] = useState<"paid" | "unpaid">("paid");
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Member | null>(null);
