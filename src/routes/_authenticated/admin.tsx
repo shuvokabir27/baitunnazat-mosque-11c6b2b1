@@ -2547,6 +2547,89 @@ function CollectionsTab() {
       )}
 
 
+      {payTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-card p-5 shadow-2xl">
+            <div className="mb-3 flex items-start justify-between">
+              <div>
+                <p className="text-base font-bold text-foreground">
+                  #{payTarget.member.member_no} · {payTarget.member.name}
+                </p>
+                <p className="text-xs text-muted-foreground">{payTarget.member.mobile}</p>
+              </div>
+              <button onClick={() => setPayTarget(null)} aria-label="বন্ধ করুন" className="text-muted-foreground">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">
+              বকেয়া মাস: <span className="font-semibold">{joinMonthsBn(payTarget.unpaidMonths)}</span>{" "}
+              ({payTarget.unpaidMonths.length} মাস)
+            </div>
+
+            <p className="mb-2 mt-4 text-xs font-semibold text-foreground">যে মাস(গুলো) আদায় করবেন নির্বাচন করুন</p>
+            <div className="space-y-2">
+              {payTarget.unpaidMonths.map((mo) => (
+                <div key={mo} className="flex items-center gap-2 rounded-lg border border-border px-3 py-2">
+                  <input
+                    type="checkbox"
+                    checked={payChecked[mo] ?? false}
+                    onChange={(e) => setPayChecked((p) => ({ ...p, [mo]: e.target.checked }))}
+                    className="h-4 w-4 accent-emerald-600"
+                  />
+                  <span className="flex-1 text-sm font-medium text-foreground">{BN_MONTHS[mo - 1]}</span>
+                  <input
+                    type="number"
+                    value={payAmounts[mo] ?? ""}
+                    onChange={(e) => setPayAmounts((p) => ({ ...p, [mo]: e.target.value }))}
+                    className="w-24 rounded-md border border-input bg-background px-2 py-1 text-right text-sm"
+                  />
+                  <span className="text-xs text-muted-foreground">৳</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-4">
+              <label className="mb-1 block text-xs font-semibold text-foreground">আদায় মাধ্যম</label>
+              <select
+                value={payMethod}
+                onChange={(e) => setPayMethod(e.target.value)}
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                {PAYMENT_METHODS.map((m) => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="mt-4 flex items-center justify-between rounded-lg bg-secondary px-3 py-2">
+              <span className="text-sm font-semibold text-foreground">মোট আদায়</span>
+              <span className="text-lg font-bold text-emerald-700">
+                {payTotal.toLocaleString("bn-BD")} ৳
+              </span>
+            </div>
+
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                onClick={() => setPayTarget(null)}
+                className="rounded-md bg-secondary px-4 py-2 text-sm font-semibold text-foreground"
+              >
+                বাতিল
+              </button>
+              <button
+                onClick={savePay}
+                disabled={paySaving}
+                className="inline-flex items-center gap-2 rounded-md gradient-emerald px-4 py-2 text-sm font-bold text-primary-foreground disabled:opacity-60"
+              >
+                {paySaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                আদায় সম্পন্ন করুন
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-sm rounded-2xl bg-card p-6 shadow-2xl">
