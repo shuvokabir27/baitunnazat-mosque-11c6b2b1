@@ -101,6 +101,12 @@ export type IbadahContent = {
   duas: IbadahDua[];
 };
 
+export type MarqueeContent = {
+  enabled: boolean;
+  html: string;
+  speed: number; // seconds for one full scroll
+};
+
 export type SiteContent = {
   site: SiteSettings;
   mosque: MosqueInfo;
@@ -113,6 +119,7 @@ export type SiteContent = {
   development: DevelopmentContent;
   donate: DonateContent;
   ibadah: IbadahContent;
+  marquee: MarqueeContent;
 };
 
 
