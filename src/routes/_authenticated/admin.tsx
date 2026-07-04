@@ -36,6 +36,7 @@ import {
   Wallet,
   TrendingUp,
   TrendingDown,
+  ScrollText,
 
 
 } from "lucide-react";
