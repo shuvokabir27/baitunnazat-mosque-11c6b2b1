@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Heart, Clock, X, Download, ZoomIn, ChevronDown, HeartHandshake, Loader2, MessageCircleQuestion } from "lucide-react";
 import { Layout } from "@/components/Layout";
+import { FinanceOverview } from "@/components/FinanceOverview";
 import { useSiteContent, siteContentQueryOptions } from "@/lib/use-site-content";
 import { heroImages, staffImages } from "@/lib/site-content";
 import { supabase } from "@/integrations/supabase/client";
@@ -536,7 +537,27 @@ function Index() {
       <PrayerSection />
       <StaffSection />
       <CommitteeSection />
+      <FinanceSection />
       <CtaSection />
     </Layout>
+  );
+}
+
+function FinanceSection() {
+  return (
+    <section className="px-4 py-12">
+      <SectionTitle>আয়-ব্যয় হিসাব</SectionTitle>
+      <div className="mx-auto w-full max-w-4xl">
+        <FinanceOverview />
+        <div className="mt-6 text-center">
+          <Link
+            to="/hisab"
+            className="inline-flex items-center gap-1.5 rounded-full bg-card px-5 py-2.5 text-sm font-semibold text-primary shadow-soft"
+          >
+            সম্পূর্ণ হিসাব দেখুন →
+          </Link>
+        </div>
+      </div>
+    </section>
   );
 }
