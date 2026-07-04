@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Landmark, HandCoins, Coins, MoonStar } from "lucide-react";
+import { Landmark, HandCoins, Coins, MoonStar, ChevronDown } from "lucide-react";
 import {
   ResponsiveContainer,
   BarChart,
