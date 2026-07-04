@@ -70,6 +70,39 @@ export type Database = {
           },
         ]
       }
+      finance_entries: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          kind: string
+          month: number
+          note: string | null
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          kind: string
+          month: number
+          note?: string | null
+          updated_at?: string
+          year: number
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          kind?: string
+          month?: number
+          note?: string | null
+          updated_at?: string
+          year?: number
+        }
+        Relationships: []
+      }
       income_entries: {
         Row: {
           amount: number
