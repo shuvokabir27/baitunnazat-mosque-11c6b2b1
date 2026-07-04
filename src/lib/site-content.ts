@@ -289,5 +289,6 @@ export function mergeContent(stored: Partial<SiteContent> | null | undefined): S
           ? stored.ibadah.duas
           : defaultContent.ibadah.duas,
     },
+    marquee: { ...defaultContent.marquee, ...(stored.marquee ?? {}) },
   };
 }
