@@ -3973,11 +3973,26 @@ ${sections}
 
       {/* মাসভিত্তিক সারাংশ (জের সহ) */}
       <div>
-        <h3 className="mb-2 font-semibold text-foreground">মাসভিত্তিক হিসাব (স্বয়ংক্রিয় জের সহ)</h3>
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+          <h3 className="font-semibold text-foreground">মাসভিত্তিক হিসাব (স্বয়ংক্রিয় জের সহ)</h3>
+          <button
+            type="button"
+            onClick={downloadPdf}
+            disabled={summary.length === 0}
+            className="flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground disabled:opacity-60"
+          >
+            <FileDown className="h-4 w-4" />
+            {selected.size > 0 ? `নির্বাচিত ${finBn(selected.size)} মাস PDF` : "সব মাস PDF"}
+          </button>
+        </div>
+        <p className="mb-2 text-xs text-muted-foreground">এক বা একাধিক মাস সিলেক্ট করে PDF ডাউনলোড করুন। কোনো মাস সিলেক্ট না করলে সব মাস ডাউনলোড হবে।</p>
         <div className="overflow-x-auto rounded-xl border border-border">
-          <table className="w-full min-w-[560px] text-sm">
+          <table className="w-full min-w-[600px] text-sm">
             <thead>
               <tr className="bg-muted text-foreground">
+                <th className="px-3 py-2 text-center">
+                  <input type="checkbox" checked={allSelected} onChange={toggleAll} aria-label="সব নির্বাচন" />
+                </th>
                 <th className="px-3 py-2 text-left">মাস</th>
                 <th className="px-3 py-2 text-right">গত জের</th>
                 <th className="px-3 py-2 text-right">আয়</th>
