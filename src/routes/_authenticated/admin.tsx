@@ -2478,13 +2478,25 @@ function CollectionsTab() {
         >
           আদায় হয়নি ({unpaidList.length})
         </button>
+        <button
+          onClick={() => setView("advance")}
+          className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+            view === "advance"
+              ? "bg-sky-600 text-white"
+              : "bg-secondary text-foreground"
+          }`}
+        >
+          অগ্রিম আদায় ({advanceList.length})
+        </button>
       </div>
 
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
           {view === "paid"
             ? `${periodLabel} — মোট ${collections.length} জন আদায় করেছেন।`
-            : `${year} সালে ${unpaidList.length} জনের বকেয়া রয়েছে।`}
+            : view === "advance"
+              ? `${year} সালে ${advanceList.length} জন অগ্রিম দান দিয়েছেন।`
+              : `${year} সালে ${unpaidList.length} জনের বকেয়া রয়েছে।`}
         </p>
         {view === "paid" && (
           <p className="text-base font-bold text-emerald-700">
