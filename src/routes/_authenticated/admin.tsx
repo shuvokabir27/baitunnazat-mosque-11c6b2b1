@@ -2056,49 +2056,90 @@ function CollectionsTab() {
   const [deleteTarget, setDeleteTarget] = useState<Collection | null>(null);
 
   // বকেয়া আদায় পপআপ
-  const [payTarget, setPayTarget] = useState<{ member: Member; unpaidMonths: number[] } | null>(null);
-  const [payChecked, setPayChecked] = useState<Record<number, boolean>>({});
-  const [payAmounts, setPayAmounts] = useState<Record<number, string>>({});
+  const [payMember, setPayMember] = useState<Member | null>(null);
+  const [paySel, setPaySel] = useState<Record<string, string>>({}); // "year-month" -> amount
+  const [payPaidSet, setPayPaidSet] = useState<Set<string>>(new Set());
+  const [payYear, setPayYear] = useState(now.getFullYear());
+  const [payCount, setPayCount] = useState("");
   const [payMethod, setPayMethod] = useState(PAYMENT_METHODS[0]);
   const [paySaving, setPaySaving] = useState(false);
 
-  const openPay = (member: Member, unpaidMonths: number[]) => {
+  const slotKey = (y: number, m: number) => `${y}-${m}`;
+
+  const openPay = async (member: Member, unpaidMonths: number[]) => {
     const per = String(member.monthly_donation ?? 0);
-    setPayChecked(Object.fromEntries(unpaidMonths.map((m) => [m, true])));
-    setPayAmounts(Object.fromEntries(unpaidMonths.map((m) => [m, per])));
+    const sel: Record<string, string> = {};
+    unpaidMonths.forEach((m) => (sel[slotKey(year, m)] = per));
+    setPaySel(sel);
     setPayMethod(PAYMENT_METHODS[0]);
-    setPayTarget({ member, unpaidMonths });
+    setPayYear(year);
+    setPayCount("");
+    setPayPaidSet(new Set());
+    setPayMember(member);
+    const { data } = await supabase
+      .from("donation_collections")
+      .select("year, month")
+      .eq("member_id", member.id);
+    const s = new Set<string>();
+    (data ?? []).forEach((r: { year: number; month: number }) => s.add(slotKey(r.year, r.month)));
+    setPayPaidSet(s);
   };
 
-  const selectFirstMonths = (n: number) => {
-    if (!payTarget) return;
-    const first = payTarget.unpaidMonths.slice(0, n);
-    setPayChecked(
-      Object.fromEntries(payTarget.unpaidMonths.map((m) => [m, first.includes(m)])),
-    );
+  const toggleSlot = (y: number, m: number) => {
+    const k = slotKey(y, m);
+    if (payPaidSet.has(k)) return;
+    setPaySel((p) => {
+      const n = { ...p };
+      if (k in n) delete n[k];
+      else n[k] = String(payMember?.monthly_donation ?? 0);
+      return n;
+    });
   };
 
-  const payTotal = payTarget
-    ? payTarget.unpaidMonths.reduce(
-        (s, m) => s + (payChecked[m] ? Number(payAmounts[m]) || 0 : 0),
-        0,
-      )
-    : 0;
+  // "কত মাস" — শুরুর সময় (জুলাই ২০২৬) থেকে প্রথম N টি অনাদায়ী মাস নির্বাচন
+  const selectCount = (n: number) => {
+    if (!payMember || n <= 0) return;
+    const per = String(payMember.monthly_donation ?? 0);
+    const added: Record<string, string> = {};
+    let cy = 2026;
+    let cm = 7;
+    let count = 0;
+    while (count < n && cy < 2026 + 25) {
+      const k = slotKey(cy, cm);
+      if (!payPaidSet.has(k)) {
+        added[k] = per;
+        count++;
+      }
+      cm++;
+      if (cm > 12) {
+        cm = 1;
+        cy++;
+      }
+    }
+    setPaySel((p) => ({ ...p, ...added }));
+  };
+
+  const payTotal = Object.values(paySel).reduce((s, v) => s + (Number(v) || 0), 0);
+  const paySelList = Object.keys(paySel)
+    .map((k) => {
+      const [y, m] = k.split("-").map(Number);
+      return { y, m, key: k };
+    })
+    .sort((a, b) => a.y - b.y || a.m - b.m);
 
   const savePay = async () => {
-    if (!payTarget) return;
-    const chosen = payTarget.unpaidMonths.filter((m) => payChecked[m]);
-    if (chosen.length === 0) {
+    if (!payMember) return;
+    if (paySelList.length === 0) {
       toast.error("অন্তত একটি মাস নির্বাচন করুন।");
       return;
     }
-    const rows = chosen.map((m) => ({
-      member_id: payTarget.member.id,
-      member_no: payTarget.member.member_no,
-      member_name: payTarget.member.name,
-      mobile: payTarget.member.mobile,
-      amount: Number(payAmounts[m]) || 0,
-      year,
+    const rows = paySelList.map(({ y, m }) => ({
+      member_id: payMember.id,
+      member_no: payMember.member_no,
+      member_name: payMember.name,
+      mobile: payMember.mobile,
+      amount: Number(paySel[slotKey(y, m)]) || 0,
+      year: y,
       month: m,
       note: null,
       method: payMethod,
@@ -2118,11 +2159,15 @@ function CollectionsTab() {
       return;
     }
     const inserted = (data as Collection[]) ?? [];
-    setYearCollections((prev) => [...prev, ...inserted]);
-    setCollections((prev) => [...inserted.filter((c) => c.month === month), ...prev]);
-    setPayTarget(null);
-    toast.success(`${chosen.length} মাসের দান আদায় সম্পন্ন হয়েছে।`);
+    setYearCollections((prev) => [...prev, ...inserted.filter((c) => c.year === year)]);
+    setCollections((prev) => [
+      ...inserted.filter((c) => c.year === year && c.month === month),
+      ...prev,
+    ]);
+    setPayMember(null);
+    toast.success(`${rows.length} মাসের দান আদায় সম্পন্ন হয়েছে।`);
   };
+
 
 
   const load = async () => {
@@ -2614,74 +2659,141 @@ function CollectionsTab() {
       )}
 
 
-      {payTarget && (
+      {payMember && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-card p-5 shadow-2xl">
             <div className="mb-3 flex items-start justify-between">
               <div>
                 <p className="text-base font-bold text-foreground">
-                  #{payTarget.member.member_no} · {payTarget.member.name}
+                  #{payMember.member_no} · {payMember.name}
                 </p>
-                <p className="text-xs text-muted-foreground">{payTarget.member.mobile}</p>
+                <p className="text-xs text-muted-foreground">{payMember.mobile}</p>
               </div>
-              <button onClick={() => setPayTarget(null)} aria-label="বন্ধ করুন" className="text-muted-foreground">
+              <button onClick={() => setPayMember(null)} aria-label="বন্ধ করুন" className="text-muted-foreground">
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">
-              বকেয়া মাস: <span className="font-semibold">{joinMonthsBn(payTarget.unpaidMonths)}</span>{" "}
-              ({payTarget.unpaidMonths.length} মাস)
-            </div>
-
-            <p className="mb-2 mt-4 text-xs font-semibold text-foreground">যে মাস(গুলো) আদায় করবেন নির্বাচন করুন</p>
-            <div className="mb-3 flex flex-wrap gap-1.5">
+            {/* কত মাস — সংখ্যা লিখে বা বাটনে ক্লিক করে নির্বাচন */}
+            <p className="mb-2 text-xs font-semibold text-foreground">কত মাস আদায় করবেন?</p>
+            <div className="mb-2 flex flex-wrap gap-1.5">
               {[1, 2, 3, 6, 12].map((n) => (
                 <button
                   key={n}
                   type="button"
-                  onClick={() => selectFirstMonths(n)}
-                  disabled={payTarget.unpaidMonths.length < n}
-                  className="rounded-full border border-emerald-600 px-3 py-1 text-xs font-semibold text-emerald-700 disabled:opacity-40"
+                  onClick={() => selectCount(n)}
+                  className="rounded-full border border-emerald-600 px-3 py-1 text-xs font-semibold text-emerald-700"
                 >
                   {n.toLocaleString("bn-BD")} মাস
                 </button>
               ))}
               <button
                 type="button"
-                onClick={() => selectFirstMonths(payTarget.unpaidMonths.length)}
-                className="rounded-full border border-emerald-600 bg-emerald-600 px-3 py-1 text-xs font-semibold text-white"
-              >
-                সব
-              </button>
-              <button
-                type="button"
-                onClick={() => selectFirstMonths(0)}
+                onClick={() => setPaySel({})}
                 className="rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted-foreground"
               >
-                কিছু না
+                সব বাদ
               </button>
             </div>
-            <div className="space-y-2">
-              {payTarget.unpaidMonths.map((mo) => (
-                <div key={mo} className="flex items-center gap-2 rounded-lg border border-border px-3 py-2">
-                  <input
-                    type="checkbox"
-                    checked={payChecked[mo] ?? false}
-                    onChange={(e) => setPayChecked((p) => ({ ...p, [mo]: e.target.checked }))}
-                    className="h-4 w-4 accent-emerald-600"
-                  />
-                  <span className="flex-1 text-sm font-medium text-foreground">{BN_MONTHS[mo - 1]}</span>
-                  <input
-                    type="number"
-                    value={payAmounts[mo] ?? ""}
-                    onChange={(e) => setPayAmounts((p) => ({ ...p, [mo]: e.target.value }))}
-                    className="w-24 rounded-md border border-input bg-background px-2 py-1 text-right text-sm"
-                  />
-                  <span className="text-xs text-muted-foreground">৳</span>
-                </div>
-              ))}
+            <div className="mb-4 flex gap-2">
+              <input
+                type="number"
+                min={1}
+                value={payCount}
+                onChange={(e) => setPayCount(e.target.value)}
+                placeholder="মাসের সংখ্যা লিখুন"
+                className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  selectCount(Number(payCount) || 0);
+                  setPayCount("");
+                }}
+                className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white"
+              >
+                নির্বাচন
+              </button>
             </div>
+
+            {/* বছর ও মাস নির্বাচন */}
+            <div className="mb-2 flex items-center justify-between">
+              <p className="text-xs font-semibold text-foreground">বছর ও মাস নির্বাচন করুন</p>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPayYear((y) => y - 1)}
+                  className="rounded-md bg-secondary px-2 py-0.5 text-sm font-bold text-foreground"
+                >
+                  ‹
+                </button>
+                <span className="text-sm font-bold text-foreground">{payYear.toLocaleString("bn-BD")}</span>
+                <button
+                  type="button"
+                  onClick={() => setPayYear((y) => y + 1)}
+                  className="rounded-md bg-secondary px-2 py-0.5 text-sm font-bold text-foreground"
+                >
+                  ›
+                </button>
+              </div>
+            </div>
+            <div className="mb-4 grid grid-cols-3 gap-1.5">
+              {BN_MONTHS.map((name, i) => {
+                const mo = i + 1;
+                const k = slotKey(payYear, mo);
+                const paid = payPaidSet.has(k);
+                const sel = k in paySel;
+                return (
+                  <button
+                    key={mo}
+                    type="button"
+                    disabled={paid}
+                    onClick={() => toggleSlot(payYear, mo)}
+                    className={`rounded-md px-2 py-1.5 text-xs font-semibold transition ${
+                      paid
+                        ? "cursor-not-allowed bg-emerald-100 text-emerald-700 opacity-70"
+                        : sel
+                          ? "bg-emerald-600 text-white"
+                          : "bg-secondary text-foreground"
+                    }`}
+                  >
+                    {name}
+                    {paid && " ✓"}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* নির্বাচিত মাসের তালিকা ও টাকা */}
+            {paySelList.length > 0 && (
+              <>
+                <p className="mb-2 text-xs font-semibold text-foreground">নির্বাচিত মাস ও টাকা</p>
+                <div className="space-y-2">
+                  {paySelList.map(({ y, m, key }) => (
+                    <div key={key} className="flex items-center gap-2 rounded-lg border border-border px-3 py-2">
+                      <span className="flex-1 text-sm font-medium text-foreground">
+                        {BN_MONTHS[m - 1]} {y.toLocaleString("bn-BD")}
+                      </span>
+                      <input
+                        type="number"
+                        value={paySel[key] ?? ""}
+                        onChange={(e) => setPaySel((p) => ({ ...p, [key]: e.target.value }))}
+                        className="w-24 rounded-md border border-input bg-background px-2 py-1 text-right text-sm"
+                      />
+                      <span className="text-xs text-muted-foreground">৳</span>
+                      <button
+                        type="button"
+                        onClick={() => toggleSlot(y, m)}
+                        aria-label="বাদ দিন"
+                        className="text-destructive"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
 
             <div className="mt-4">
               <label className="mb-1 block text-xs font-semibold text-foreground">আদায় মাধ্যম</label>
@@ -2697,7 +2809,9 @@ function CollectionsTab() {
             </div>
 
             <div className="mt-4 flex items-center justify-between rounded-lg bg-secondary px-3 py-2">
-              <span className="text-sm font-semibold text-foreground">মোট আদায়</span>
+              <span className="text-sm font-semibold text-foreground">
+                মোট আদায় ({paySelList.length.toLocaleString("bn-BD")} মাস)
+              </span>
               <span className="text-lg font-bold text-emerald-700">
                 {payTotal.toLocaleString("bn-BD")} ৳
               </span>
@@ -2705,7 +2819,7 @@ function CollectionsTab() {
 
             <div className="mt-5 flex justify-end gap-2">
               <button
-                onClick={() => setPayTarget(null)}
+                onClick={() => setPayMember(null)}
                 className="rounded-md bg-secondary px-4 py-2 text-sm font-semibold text-foreground"
               >
                 বাতিল
