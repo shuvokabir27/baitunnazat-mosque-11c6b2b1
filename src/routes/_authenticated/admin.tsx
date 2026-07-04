@@ -2009,6 +2009,20 @@ const BN_MONTHS = [
   "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর",
 ];
 
+const BN_MONTHS_SHORT = [
+  "জানু", "ফেব", "মার্চ", "এপ্রিল", "মে", "জুন",
+  "জুলাই", "আগ", "সেপ্ট", "অক্টো", "নভে", "ডিসে",
+];
+
+// মাসের তালিকা বাংলায় সাজানো: "জুন, জানু ও ডিসে"
+function joinMonthsBn(months: number[]): string {
+  const names = months.map((m) => BN_MONTHS_SHORT[m - 1]);
+  if (names.length === 0) return "";
+  if (names.length === 1) return names[0];
+  return `${names.slice(0, -1).join(", ")} ও ${names[names.length - 1]}`;
+}
+
+
 type Collection = {
   id: string;
   member_id: string | null;
@@ -2028,6 +2042,8 @@ function CollectionsTab() {
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [members, setMembers] = useState<Member[]>([]);
   const [collections, setCollections] = useState<Collection[]>([]);
+  const [yearCollections, setYearCollections] = useState<Collection[]>([]);
+  const [view, setView] = useState<"paid" | "unpaid">("paid");
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Member | null>(null);
@@ -2038,7 +2054,7 @@ function CollectionsTab() {
 
   const load = async () => {
     setLoading(true);
-    const [{ data: mem }, { data: col }] = await Promise.all([
+    const [{ data: mem }, { data: monthCol }, { data: yearCol }] = await Promise.all([
       supabase
         .from("members")
         .select("id, member_no, name, father_name, mobile, address, monthly_donation, created_at")
@@ -2049,9 +2065,14 @@ function CollectionsTab() {
         .eq("year", year)
         .eq("month", month)
         .order("collected_at", { ascending: false }),
+      supabase
+        .from("donation_collections")
+        .select("id, member_id, month, year")
+        .eq("year", year),
     ]);
     setMembers((mem as Member[]) ?? []);
-    setCollections((col as Collection[]) ?? []);
+    setCollections((monthCol as Collection[]) ?? []);
+    setYearCollections((yearCol as Collection[]) ?? []);
     setLoading(false);
   };
 
@@ -2059,6 +2080,35 @@ function CollectionsTab() {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [year, month]);
+
+  // বছরে প্রতিটি সদস্য কোন কোন মাসে দান দিয়েছে তার সেট
+  const paidMonthsByMember = new Map<string, Set<number>>();
+  yearCollections.forEach((c) => {
+    if (!c.member_id) return;
+    const set = paidMonthsByMember.get(c.member_id) ?? new Set<number>();
+    set.add(c.month);
+    paidMonthsByMember.set(c.member_id, set);
+  });
+
+  // কত মাস পর্যন্ত হিসাব করা হবে (চলতি বছরে চলতি মাস পর্যন্ত, আগের বছরে ১২ মাস)
+  const monthsElapsed =
+    year < now.getFullYear() ? 12 : year === now.getFullYear() ? now.getMonth() + 1 : 0;
+
+  // যাদের দান আদায় হয়নি তাদের তালিকা (একাধিক মাস হলে সব মাস)
+  const unpaidList = members
+    .map((m) => {
+      const created = m.created_at ? new Date(m.created_at) : null;
+      const startMonth =
+        created && created.getFullYear() === year ? created.getMonth() + 1 : 1;
+      const paidSet = paidMonthsByMember.get(m.id) ?? new Set<number>();
+      const unpaidMonths: number[] = [];
+      for (let mo = startMonth; mo <= monthsElapsed; mo++) {
+        if (!paidSet.has(mo)) unpaidMonths.push(mo);
+      }
+      return { member: m, unpaidMonths };
+    })
+    .filter((x) => x.unpaidMonths.length > 0);
+
 
   const q = query.trim().toLowerCase();
   const matches = q
@@ -2110,6 +2160,7 @@ function CollectionsTab() {
       return;
     }
     setCollections((prev) => [data as Collection, ...prev]);
+    setYearCollections((prev) => [...prev, data as Collection]);
     setSelected(null);
     setAmount("");
     setNote("");
@@ -2124,6 +2175,7 @@ function CollectionsTab() {
       return;
     }
     setCollections((prev) => prev.filter((c) => c.id !== deleteTarget.id));
+    setYearCollections((prev) => prev.filter((c) => c.id !== deleteTarget.id));
     setDeleteTarget(null);
     toast.success("রেকর্ড মুছে ফেলা হয়েছে।");
   };
@@ -2306,45 +2358,114 @@ function CollectionsTab() {
         )}
       </div>
 
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => setView("paid")}
+          className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+            view === "paid"
+              ? "gradient-emerald text-primary-foreground"
+              : "bg-secondary text-foreground"
+          }`}
+        >
+          আদায় হয়েছে ({collections.length})
+        </button>
+        <button
+          onClick={() => setView("unpaid")}
+          className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+            view === "unpaid"
+              ? "bg-amber-500 text-white"
+              : "bg-secondary text-foreground"
+          }`}
+        >
+          আদায় হয়নি ({unpaidList.length})
+        </button>
+      </div>
+
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          {periodLabel} — মোট {collections.length} জন আদায় করেছেন।
+          {view === "paid"
+            ? `${periodLabel} — মোট ${collections.length} জন আদায় করেছেন।`
+            : `${year} সালে ${unpaidList.length} জনের বকেয়া রয়েছে।`}
         </p>
-        <p className="text-base font-bold text-emerald-700">
-          সর্বমোট {total.toLocaleString("bn-BD")} ৳
-        </p>
+        {view === "paid" && (
+          <p className="text-base font-bold text-emerald-700">
+            সর্বমোট {total.toLocaleString("bn-BD")} ৳
+          </p>
+        )}
       </div>
 
       {loading ? (
         <div className="flex justify-center py-10">
           <Loader2 className="h-6 w-6 animate-spin text-primary" />
         </div>
-      ) : collections.length === 0 ? (
-        <p className="py-8 text-center text-sm text-muted-foreground">এই মাসে কোনো আদায় রেকর্ড নেই।</p>
+      ) : view === "paid" ? (
+        collections.length === 0 ? (
+          <p className="py-8 text-center text-sm text-muted-foreground">এই মাসে কোনো আদায় রেকর্ড নেই।</p>
+        ) : (
+          <div className="overflow-x-auto rounded-xl border border-border">
+            <table className="w-full text-sm">
+              <thead className="bg-secondary text-foreground">
+                <tr>
+                  <th className="p-2 text-left">সদস্য নম্বর</th>
+                  <th className="p-2 text-left">নাম</th>
+                  <th className="p-2 text-left">মোবাইল</th>
+                  <th className="p-2 text-left">টাকা</th>
+                  <th className="p-2 text-left">তারিখ</th>
+                  <th className="p-2"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {collections.map((c) => (
+                  <tr key={c.id} className="border-t border-border">
+                    <td className="p-2 text-foreground">{c.member_no ?? "-"}</td>
+                    <td className="p-2 text-foreground">{c.member_name}</td>
+                    <td className="p-2 text-muted-foreground">{c.mobile}</td>
+                    <td className="p-2 font-semibold text-emerald-700">{c.amount} ৳</td>
+                    <td className="p-2 text-muted-foreground">{new Date(c.collected_at).toLocaleDateString("bn-BD")}</td>
+                    <td className="p-2 text-right">
+                      <button onClick={() => setDeleteTarget(c)} aria-label="মুছুন" className="text-destructive">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )
+      ) : unpaidList.length === 0 ? (
+        <p className="py-8 text-center text-sm text-muted-foreground">সবার দান আদায় সম্পন্ন হয়েছে। 🎉</p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-border">
+        <div className="overflow-x-auto rounded-xl border border-amber-300">
           <table className="w-full text-sm">
-            <thead className="bg-secondary text-foreground">
+            <thead className="bg-amber-100 text-amber-900">
               <tr>
                 <th className="p-2 text-left">সদস্য নম্বর</th>
                 <th className="p-2 text-left">নাম</th>
                 <th className="p-2 text-left">মোবাইল</th>
-                <th className="p-2 text-left">টাকা</th>
-                <th className="p-2 text-left">তারিখ</th>
+                <th className="p-2 text-left">বকেয়া মাস</th>
                 <th className="p-2"></th>
               </tr>
             </thead>
             <tbody>
-              {collections.map((c) => (
-                <tr key={c.id} className="border-t border-border">
-                  <td className="p-2 text-foreground">{c.member_no ?? "-"}</td>
-                  <td className="p-2 text-foreground">{c.member_name}</td>
-                  <td className="p-2 text-muted-foreground">{c.mobile}</td>
-                  <td className="p-2 font-semibold text-emerald-700">{c.amount} ৳</td>
-                  <td className="p-2 text-muted-foreground">{new Date(c.collected_at).toLocaleDateString("bn-BD")}</td>
+              {unpaidList.map(({ member: m, unpaidMonths }) => (
+                <tr key={m.id} className="border-t border-amber-200">
+                  <td className="p-2 text-foreground">{m.member_no ?? "-"}</td>
+                  <td className="p-2 text-foreground">{m.name}</td>
+                  <td className="p-2 text-muted-foreground">{m.mobile}</td>
+                  <td className="p-2 font-semibold text-amber-700">
+                    {joinMonthsBn(unpaidMonths)}{" "}
+                    <span className="text-xs font-normal text-muted-foreground">({unpaidMonths.length} মাস)</span>
+                  </td>
                   <td className="p-2 text-right">
-                    <button onClick={() => setDeleteTarget(c)} aria-label="মুছুন" className="text-destructive">
-                      <Trash2 className="h-4 w-4" />
+                    <button
+                      onClick={() => {
+                        setView("paid");
+                        pickMember(m);
+                      }}
+                      className="rounded-md gradient-emerald px-3 py-1 text-xs font-bold text-primary-foreground"
+                    >
+                      আদায় করুন
                     </button>
                   </td>
                 </tr>
@@ -2353,6 +2474,7 @@ function CollectionsTab() {
           </table>
         </div>
       )}
+
 
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
