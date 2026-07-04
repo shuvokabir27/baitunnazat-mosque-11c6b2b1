@@ -3869,7 +3869,9 @@ function FinanceTab() {
   th { text-align:left; background:#1a7a4c; color:#fff; padding: 5px 8px; }
   th:last-child { text-align:right; }
 </style></head><body>
-<h1>বায়তুন নাজাত মসজিদ — আয়-ব্যয় হিসাব</h1>
+<p class="mosque">বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ, মহিপুর</p>
+<p class="tagline">আয়-ব্যয়ের স্বচ্ছ হিসাব</p>
+<h1>আয়-ব্যয় হিসাব</h1>
 ${sections}
 </body></html>`;
 
