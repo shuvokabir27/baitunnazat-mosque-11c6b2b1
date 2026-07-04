@@ -101,6 +101,12 @@ export type IbadahContent = {
   duas: IbadahDua[];
 };
 
+export type MarqueeContent = {
+  enabled: boolean;
+  html: string;
+  speed: number; // seconds for one full scroll
+};
+
 export type SiteContent = {
   site: SiteSettings;
   mosque: MosqueInfo;
@@ -113,6 +119,7 @@ export type SiteContent = {
   development: DevelopmentContent;
   donate: DonateContent;
   ibadah: IbadahContent;
+  marquee: MarqueeContent;
 };
 
 
@@ -220,6 +227,11 @@ export const defaultContent: SiteContent = {
       },
     ],
   },
+  marquee: {
+    enabled: false,
+    html: "",
+    speed: 20,
+  },
 };
 
 
@@ -277,5 +289,6 @@ export function mergeContent(stored: Partial<SiteContent> | null | undefined): S
           ? stored.ibadah.duas
           : defaultContent.ibadah.duas,
     },
+    marquee: { ...defaultContent.marquee, ...(stored.marquee ?? {}) },
   };
 }

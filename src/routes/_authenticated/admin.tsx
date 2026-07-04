@@ -36,12 +36,14 @@ import {
   Wallet,
   TrendingUp,
   TrendingDown,
+  ScrollText,
 
 
 } from "lucide-react";
 import { mosque } from "@/lib/mosque-data";
 import { defaultContent, mergeContent, type SiteContent } from "@/lib/site-content";
 import { ImageCropUpload } from "@/components/ImageCropUpload";
+import { RichTextEditor } from "@/components/RichTextEditor";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -253,6 +255,7 @@ function AdminPage() {
                 {tab === "mosque" && <MosqueTab content={content} setContent={setContent} />}
                 {tab === "slider" && <SliderTab content={content} setContent={setContent} />}
                 {tab === "sections" && <SectionsTab content={content} setContent={setContent} />}
+                {tab === "marquee" && <MarqueeTab content={content} setContent={setContent} />}
                 {tab === "prayer" && <PrayerTab content={content} setContent={setContent} />}
                 {tab === "staff" && <StaffTab content={content} setContent={setContent} />}
                 {tab === "committee" && <CommitteeTab content={content} setContent={setContent} />}
@@ -276,12 +279,13 @@ function AdminPage() {
   );
 }
 
-type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "ibadah" | "development" | "donate" | "footer" | "leads" | "masala" | "qa" | "addresses" | "members" | "collections" | "finance";
+type Tab = "site" | "mosque" | "slider" | "sections" | "marquee" | "prayer" | "staff" | "committee" | "ibadah" | "development" | "donate" | "footer" | "leads" | "masala" | "qa" | "addresses" | "members" | "collections" | "finance";
 const TAB_LABELS: Record<Tab, string> = {
   site: "সাইট সেটিংস",
   mosque: "মসজিদ",
   slider: "স্লাইডার",
   sections: "সেকশন লেখা",
+  marquee: "স্ক্রোলিং টাইটেল",
   prayer: "নামাজ",
   staff: "দায়িত্বপ্রাপ্ত",
   committee: "কমিটি",
@@ -303,6 +307,7 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   mosque: LayoutDashboard,
   slider: Images,
   sections: FileText,
+  marquee: ScrollText,
   prayer: Clock,
   staff: Users,
   committee: UsersRound,
@@ -331,7 +336,7 @@ const TAB_GROUPS: {
 }[] = [
   {
     label: "ওয়েবসাইট কন্টেন্ট",
-    tabs: ["site", "mosque", "slider", "sections", "prayer", "ibadah", "footer"],
+    tabs: ["site", "mosque", "slider", "sections", "marquee", "prayer", "ibadah", "footer"],
     labelColor: "text-[#72aee6]",
     activeBg: "bg-[#2271b1]",
     itemText: "text-[#9cc8ee]",
@@ -3039,6 +3044,72 @@ function SectionsTab({ content, setContent }: TabProps) {
     </Card>
   );
 }
+
+function MarqueeTab({ content, setContent }: TabProps) {
+  const m = content.marquee;
+  const set = (patch: Partial<typeof m>) =>
+    setContent((c) => ({ ...c, marquee: { ...c.marquee, ...patch } }));
+  return (
+    <Card>
+      <label className="flex items-center justify-between gap-3 rounded-xl border border-border bg-background px-4 py-3">
+        <span className="text-sm font-semibold text-foreground">
+          স্ক্রোলিং টাইটেল চালু রাখুন
+          <span className="mt-0.5 block text-xs font-normal text-muted-foreground">
+            চালু থাকলে হোম পেজে মাসয়ালার নিচে দেখাবে।
+          </span>
+        </span>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={m.enabled}
+          onClick={() => set({ enabled: !m.enabled })}
+          className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${m.enabled ? "bg-primary" : "bg-muted"}`}
+        >
+          <span
+            className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${m.enabled ? "left-[22px]" : "left-0.5"}`}
+          />
+        </button>
+      </label>
+
+      <div>
+        <span className="mb-1 block text-sm font-semibold text-foreground">টাইটেল লেখা</span>
+        <RichTextEditor
+          value={m.html}
+          onChange={(html) => set({ html })}
+          placeholder="এখানে স্ক্রোলিং লেখা লিখুন — শব্দ সিলেক্ট করে বোল্ড, ইটালিক, কালার বা সিম্বল যুক্ত করুন…"
+        />
+      </div>
+
+      <label className="block">
+        <span className="mb-1 block text-sm font-semibold text-foreground">
+          স্ক্রোলিং গতি — {m.speed} সেকেন্ড (কম মানে দ্রুত)
+        </span>
+        <input
+          type="range"
+          min={5}
+          max={60}
+          step={1}
+          value={m.speed}
+          onChange={(e) => set({ speed: Number(e.target.value) })}
+          className="w-full accent-primary"
+        />
+      </label>
+
+      {m.enabled && m.html.trim() ? (
+        <div className="rounded-xl border border-border bg-secondary/40 p-3">
+          <span className="mb-2 block text-xs font-semibold text-muted-foreground">প্রিভিউ</span>
+          <div className="overflow-hidden">
+            <div
+              className="whitespace-nowrap text-sm font-semibold text-foreground"
+              dangerouslySetInnerHTML={{ __html: m.html }}
+            />
+          </div>
+        </div>
+      ) : null}
+    </Card>
+  );
+}
+
 
 function FooterTab({ content, setContent }: TabProps) {
   const s = content.sections;
