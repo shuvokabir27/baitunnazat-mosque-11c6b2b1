@@ -250,7 +250,7 @@ export function FinanceOverview() {
                       </td>
                     </tr>
                   )}
-                </>
+                </Fragment>
               );
             })}
           </tbody>
