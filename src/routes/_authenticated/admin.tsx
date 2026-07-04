@@ -3733,6 +3733,27 @@ function FinanceTab() {
   };
 
   // মাসভিত্তিক জের সহ সারাংশ
+  // আগে লেখা নোটগুলো — বর্তমান ধরন অগ্রাধিকার পাবে, তারপর বাকিগুলো
+  const noteSuggestions = (() => {
+    const seen = new Set<string>();
+    const ordered: string[] = [];
+    for (const r of rows) {
+      const n = (r.note ?? "").trim();
+      if (n && r.kind === kind && !seen.has(n)) {
+        seen.add(n);
+        ordered.push(n);
+      }
+    }
+    for (const r of rows) {
+      const n = (r.note ?? "").trim();
+      if (n && !seen.has(n)) {
+        seen.add(n);
+        ordered.push(n);
+      }
+    }
+    return ordered;
+  })();
+
   const summary = (() => {
     const map = new Map<string, { year: number; month: number; income: number; expense: number }>();
     for (const r of rows) {
@@ -3823,11 +3844,17 @@ function FinanceTab() {
             <label className="mb-1 block text-xs text-muted-foreground">নোট (ঐচ্ছিক)</label>
             <input
               type="text"
+              list="finance-note-suggestions"
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="যেমন: বিদ্যুৎ বিল, দান ইত্যাদি"
               className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
             />
+            <datalist id="finance-note-suggestions">
+              {noteSuggestions.map((n) => (
+                <option key={n} value={n} />
+              ))}
+            </datalist>
           </div>
         </div>
         <button
