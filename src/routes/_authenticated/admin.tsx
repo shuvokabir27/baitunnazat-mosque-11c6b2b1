@@ -2055,6 +2055,68 @@ function CollectionsTab() {
   const [saving, setSaving] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Collection | null>(null);
 
+  // বকেয়া আদায় পপআপ
+  const [payTarget, setPayTarget] = useState<{ member: Member; unpaidMonths: number[] } | null>(null);
+  const [payChecked, setPayChecked] = useState<Record<number, boolean>>({});
+  const [payAmounts, setPayAmounts] = useState<Record<number, string>>({});
+  const [payMethod, setPayMethod] = useState(PAYMENT_METHODS[0]);
+  const [paySaving, setPaySaving] = useState(false);
+
+  const openPay = (member: Member, unpaidMonths: number[]) => {
+    const per = String(member.monthly_donation ?? 0);
+    setPayChecked(Object.fromEntries(unpaidMonths.map((m) => [m, true])));
+    setPayAmounts(Object.fromEntries(unpaidMonths.map((m) => [m, per])));
+    setPayMethod(PAYMENT_METHODS[0]);
+    setPayTarget({ member, unpaidMonths });
+  };
+
+  const payTotal = payTarget
+    ? payTarget.unpaidMonths.reduce(
+        (s, m) => s + (payChecked[m] ? Number(payAmounts[m]) || 0 : 0),
+        0,
+      )
+    : 0;
+
+  const savePay = async () => {
+    if (!payTarget) return;
+    const chosen = payTarget.unpaidMonths.filter((m) => payChecked[m]);
+    if (chosen.length === 0) {
+      toast.error("অন্তত একটি মাস নির্বাচন করুন।");
+      return;
+    }
+    const rows = chosen.map((m) => ({
+      member_id: payTarget.member.id,
+      member_no: payTarget.member.member_no,
+      member_name: payTarget.member.name,
+      mobile: payTarget.member.mobile,
+      amount: Number(payAmounts[m]) || 0,
+      year,
+      month: m,
+      note: null,
+      method: payMethod,
+    }));
+    if (rows.some((r) => r.amount <= 0)) {
+      toast.error("প্রতিটি মাসের সঠিক টাকা দিন।");
+      return;
+    }
+    setPaySaving(true);
+    const { data, error } = await supabase
+      .from("donation_collections")
+      .insert(rows)
+      .select("*");
+    setPaySaving(false);
+    if (error) {
+      toast.error("আদায় সংরক্ষণ করা যায়নি।");
+      return;
+    }
+    const inserted = (data as Collection[]) ?? [];
+    setYearCollections((prev) => [...prev, ...inserted]);
+    setCollections((prev) => [...inserted.filter((c) => c.month === month), ...prev]);
+    setPayTarget(null);
+    toast.success(`${chosen.length} মাসের দান আদায় সম্পন্ন হয়েছে।`);
+  };
+
+
   const load = async () => {
     setLoading(true);
     const [{ data: mem }, { data: monthCol }, { data: yearCol }] = await Promise.all([
