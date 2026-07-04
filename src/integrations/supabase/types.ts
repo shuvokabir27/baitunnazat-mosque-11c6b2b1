@@ -23,6 +23,7 @@ export type Database = {
           member_id: string | null
           member_name: string
           member_no: number | null
+          method: string | null
           mobile: string | null
           month: number
           note: string | null
@@ -37,6 +38,7 @@ export type Database = {
           member_id?: string | null
           member_name: string
           member_no?: number | null
+          method?: string | null
           mobile?: string | null
           month: number
           note?: string | null
@@ -51,6 +53,7 @@ export type Database = {
           member_id?: string | null
           member_name?: string
           member_no?: number | null
+          method?: string | null
           mobile?: string | null
           month?: number
           note?: string | null

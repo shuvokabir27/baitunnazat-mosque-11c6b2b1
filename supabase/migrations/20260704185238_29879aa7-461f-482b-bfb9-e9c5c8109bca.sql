@@ -1,0 +1,1 @@
+ALTER TABLE public.donation_collections ADD COLUMN IF NOT EXISTS method text;
