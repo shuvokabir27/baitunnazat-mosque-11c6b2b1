@@ -2190,6 +2190,23 @@ function CollectionsTab() {
           })
           .filter((x) => x.unpaidMonths.length > 0);
 
+  // অগ্রিম আদায় — যারা এখনো আসেনি এমন ভবিষ্যৎ মাসের দান আগেই দিয়েছেন
+  const advanceList =
+    year < now.getFullYear()
+      ? []
+      : members
+          .map((m) => {
+            const paidSet = paidMonthsByMember.get(m.id) ?? new Set<number>();
+            const advanceMonths: number[] = [];
+            for (let mo = monthsElapsed + 1; mo <= 12; mo++) {
+              if (paidSet.has(mo)) advanceMonths.push(mo);
+            }
+            return { member: m, advanceMonths };
+          })
+          .filter((x) => x.advanceMonths.length > 0);
+
+
+
 
 
   const q = query.trim().toLowerCase();
