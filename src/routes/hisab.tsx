@@ -156,25 +156,25 @@ function Hisab() {
                 </p>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                   <SummaryCard
-                    icon={<Wallet className="h-5 w-5" />}
+                    icon={<Landmark className="h-5 w-5" />}
                     label="গত মাসের জের"
                     value={money(latest.opening)}
                     tone="bg-slate-100 text-slate-700"
                   />
                   <SummaryCard
-                    icon={<TrendingUp className="h-5 w-5" />}
+                    icon={<HandCoins className="h-5 w-5" />}
                     label="এ মাসের আয়"
                     value={money(latest.income)}
                     tone="bg-emerald-100 text-emerald-700"
                   />
                   <SummaryCard
-                    icon={<TrendingDown className="h-5 w-5" />}
+                    icon={<Coins className="h-5 w-5" />}
                     label="এ মাসের ব্যয়"
                     value={money(latest.expense)}
                     tone="bg-rose-100 text-rose-700"
                   />
                   <SummaryCard
-                    icon={<PiggyBank className="h-5 w-5" />}
+                    icon={<MoonStar className="h-5 w-5" />}
                     label="বর্তমান স্থিতি"
                     value={money(latest.closing)}
                     tone="bg-lime-100 text-lime-700"
