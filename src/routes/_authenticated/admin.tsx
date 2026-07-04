@@ -3682,6 +3682,7 @@ function FinanceTab() {
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
   const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const load = async () => {
     setLoading(true);
@@ -3774,6 +3775,109 @@ function FinanceTab() {
     });
     return out.reverse();
   })();
+
+  const itemsByMonth = (() => {
+    const map = new Map<string, { income: { note: string; amount: number }[]; expense: { note: string; amount: number }[] }>();
+    for (const r of rows) {
+      const key = `${r.year}-${r.month}`;
+      const cur = map.get(key) ?? { income: [], expense: [] };
+      const item = { note: (r.note ?? "").trim(), amount: Number(r.amount) };
+      if (r.kind === "income") cur.income.push(item);
+      else cur.expense.push(item);
+      map.set(key, cur);
+    }
+    return map;
+  })();
+
+  const toggleSelect = (key: string) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+
+  const allSelected = summary.length > 0 && selected.size === summary.length;
+  const toggleAll = () =>
+    setSelected(allSelected ? new Set() : new Set(summary.map((s) => `${s.year}-${s.month}`)));
+
+  const escapeHtml = (s: string) =>
+    s.replace(/[&<>"']/g, (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string,
+    );
+
+  const downloadPdf = () => {
+    const chosen =
+      selected.size > 0
+        ? summary.filter((s) => selected.has(`${s.year}-${s.month}`))
+        : summary;
+    if (chosen.length === 0) {
+      setError("ডাউনলোড করার জন্য কোনো মাস নেই।");
+      return;
+    }
+    const chronological = [...chosen].sort((a, b) =>
+      a.year !== b.year ? a.year - b.year : a.month - b.month,
+    );
+    const itemRows = (items: { note: string; amount: number }[]) =>
+      items.length === 0
+        ? `<tr><td colspan="2" style="padding:6px 8px;color:#888;">কোনো তথ্য নেই।</td></tr>`
+        : items
+            .map(
+              (it) =>
+                `<tr><td style="padding:5px 8px;border-bottom:1px solid #eee;">${escapeHtml(it.note || "বিবরণ নেই")}</td><td style="padding:5px 8px;border-bottom:1px solid #eee;text-align:right;">${finMoney(it.amount)}</td></tr>`,
+            )
+            .join("");
+
+    const sections = chronological
+      .map((s) => {
+        const it = itemsByMonth.get(`${s.year}-${s.month}`) ?? { income: [], expense: [] };
+        return `
+<div class="month">
+  <h2>${FIN_MONTHS[s.month - 1]} ${finBn(s.year)}</h2>
+  <div class="grid">
+    <div class="stat"><b>গত জের</b><span>${finMoney(s.opening)}</span></div>
+    <div class="stat"><b>আয়</b><span>${finMoney(s.income)}</span></div>
+    <div class="stat"><b>মোট আয়</b><span>${finMoney(s.totalIncome)}</span></div>
+    <div class="stat"><b>ব্যয়</b><span>${finMoney(s.expense)}</span></div>
+    <div class="stat"><b>স্থিতি</b><span>${finMoney(s.closing)}</span></div>
+  </div>
+  <div class="cols">
+    <div><h3>কি বাবদ আয়</h3><table><tr><th>বিবরণ</th><th>পরিমাণ</th></tr>${itemRows(it.income)}</table></div>
+    <div><h3>কি বাবদ ব্যয়</h3><table><tr><th>বিবরণ</th><th>পরিমাণ</th></tr>${itemRows(it.expense)}</table></div>
+  </div>
+</div>`;
+      })
+      .join("");
+
+    const html = `<!DOCTYPE html><html lang="bn"><head><meta charset="utf-8" />
+<title>আয়-ব্যয় হিসাব</title>
+<style>
+  * { font-family: 'Noto Sans Bengali','SolaimanLipi',system-ui,sans-serif; }
+  body { margin: 28px; color: #1a1a1a; }
+  h1 { text-align:center; font-size: 20px; margin: 0 0 20px; }
+  .month { margin-bottom: 26px; page-break-inside: avoid; }
+  h2 { font-size: 15px; margin: 0 0 8px; border-bottom: 2px solid #1a7a4c; padding-bottom: 4px; }
+  .grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 8px; margin-bottom: 12px; }
+  .stat { border: 1px solid #ddd; border-radius: 6px; padding: 8px; }
+  .stat b { display:block; font-size: 10px; color:#666; font-weight: normal; }
+  .stat span { font-size: 14px; font-weight: bold; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  h3 { font-size: 12px; margin: 8px 0 4px; }
+  table { width:100%; border-collapse: collapse; font-size: 12px; }
+  th { text-align:left; background:#1a7a4c; color:#fff; padding: 5px 8px; }
+  th:last-child { text-align:right; }
+</style></head><body>
+<h1>বায়তুন নাজাত মসজিদ — আয়-ব্যয় হিসাব</h1>
+${sections}
+</body></html>`;
+
+    const w = window.open("", "_blank");
+    if (!w) return;
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+    setTimeout(() => w.print(), 400);
+  };
 
   const years = Array.from({ length: 7 }, (_, i) => now.getFullYear() - 1 + i);
 
@@ -3869,11 +3973,26 @@ function FinanceTab() {
 
       {/* মাসভিত্তিক সারাংশ (জের সহ) */}
       <div>
-        <h3 className="mb-2 font-semibold text-foreground">মাসভিত্তিক হিসাব (স্বয়ংক্রিয় জের সহ)</h3>
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+          <h3 className="font-semibold text-foreground">মাসভিত্তিক হিসাব (স্বয়ংক্রিয় জের সহ)</h3>
+          <button
+            type="button"
+            onClick={downloadPdf}
+            disabled={summary.length === 0}
+            className="flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground disabled:opacity-60"
+          >
+            <FileDown className="h-4 w-4" />
+            {selected.size > 0 ? `নির্বাচিত ${finBn(selected.size)} মাস PDF` : "সব মাস PDF"}
+          </button>
+        </div>
+        <p className="mb-2 text-xs text-muted-foreground">এক বা একাধিক মাস সিলেক্ট করে PDF ডাউনলোড করুন। কোনো মাস সিলেক্ট না করলে সব মাস ডাউনলোড হবে।</p>
         <div className="overflow-x-auto rounded-xl border border-border">
-          <table className="w-full min-w-[560px] text-sm">
+          <table className="w-full min-w-[600px] text-sm">
             <thead>
               <tr className="bg-muted text-foreground">
+                <th className="px-3 py-2 text-center">
+                  <input type="checkbox" checked={allSelected} onChange={toggleAll} aria-label="সব নির্বাচন" />
+                </th>
                 <th className="px-3 py-2 text-left">মাস</th>
                 <th className="px-3 py-2 text-right">গত জের</th>
                 <th className="px-3 py-2 text-right">আয়</th>
@@ -3885,13 +4004,18 @@ function FinanceTab() {
             <tbody>
               {summary.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-3 py-6 text-center text-muted-foreground">
+                  <td colSpan={7} className="px-3 py-6 text-center text-muted-foreground">
                     {loading ? "লোড হচ্ছে…" : "কোনো তথ্য নেই।"}
                   </td>
                 </tr>
               ) : (
-                summary.map((s) => (
-                  <tr key={`${s.year}-${s.month}`} className="border-t border-border">
+                summary.map((s) => {
+                  const key = `${s.year}-${s.month}`;
+                  return (
+                  <tr key={key} className="border-t border-border">
+                    <td className="px-3 py-2 text-center">
+                      <input type="checkbox" checked={selected.has(key)} onChange={() => toggleSelect(key)} aria-label={`${FIN_MONTHS[s.month - 1]} নির্বাচন`} />
+                    </td>
                     <td className="px-3 py-2 font-medium">{FIN_MONTHS[s.month - 1]} {finBn(s.year)}</td>
                     <td className="px-3 py-2 text-right tabular-nums text-slate-600">{finMoney(s.opening)}</td>
                     <td className="px-3 py-2 text-right tabular-nums text-emerald-700">{finMoney(s.income)}</td>
@@ -3899,7 +4023,8 @@ function FinanceTab() {
                     <td className="px-3 py-2 text-right tabular-nums text-rose-700">{finMoney(s.expense)}</td>
                     <td className="px-3 py-2 text-right tabular-nums font-bold text-lime-700">{finMoney(s.closing)}</td>
                   </tr>
-                ))
+                  );
+                })
               )}
             </tbody>
           </table>
