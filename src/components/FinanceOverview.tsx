@@ -195,11 +195,14 @@ export function FinanceOverview() {
                   <stop offset="100%" stopColor="#e11d48" stopOpacity={0.85} />
                 </linearGradient>
                 <linearGradient id="fin-balance" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#a3e635" />
-                  <stop offset="100%" stopColor="#65a30d" />
+                  <stop offset="0%" stopColor="#818cf8" />
+                  <stop offset="100%" stopColor="#4f46e5" />
                 </linearGradient>
                 <filter id="fin-shadow" x="-20%" y="-20%" width="140%" height="140%">
                   <feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#0f172a" floodOpacity="0.18" />
+                </filter>
+                <filter id="fin-line-glow" x="-30%" y="-30%" width="160%" height="160%">
+                  <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#4f46e5" floodOpacity="0.55" />
                 </filter>
               </defs>
               <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#94a3b8" opacity={0.25} />
