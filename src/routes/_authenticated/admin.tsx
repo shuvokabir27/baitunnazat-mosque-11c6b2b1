@@ -2033,8 +2033,11 @@ type Collection = {
   year: number;
   month: number;
   note: string | null;
+  method: string | null;
   collected_at: string;
 };
+
+const PAYMENT_METHODS = ["নগদ", "বিকাশ", "নগদ (অ্যাকাউন্ট)", "রকেট", "ব্যাংক", "অন্যান্য"];
 
 function CollectionsTab() {
   const now = new Date();
