@@ -2568,6 +2568,33 @@ function CollectionsTab() {
             </div>
 
             <p className="mb-2 mt-4 text-xs font-semibold text-foreground">যে মাস(গুলো) আদায় করবেন নির্বাচন করুন</p>
+            <div className="mb-3 flex flex-wrap gap-1.5">
+              {[1, 2, 3, 6, 12].map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => selectFirstMonths(n)}
+                  disabled={payTarget.unpaidMonths.length < n}
+                  className="rounded-full border border-emerald-600 px-3 py-1 text-xs font-semibold text-emerald-700 disabled:opacity-40"
+                >
+                  {n.toLocaleString("bn-BD")} মাস
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => selectFirstMonths(payTarget.unpaidMonths.length)}
+                className="rounded-full border border-emerald-600 bg-emerald-600 px-3 py-1 text-xs font-semibold text-white"
+              >
+                সব
+              </button>
+              <button
+                type="button"
+                onClick={() => selectFirstMonths(0)}
+                className="rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted-foreground"
+              >
+                কিছু না
+              </button>
+            </div>
             <div className="space-y-2">
               {payTarget.unpaidMonths.map((mo) => (
                 <div key={mo} className="flex items-center gap-2 rounded-lg border border-border px-3 py-2">
