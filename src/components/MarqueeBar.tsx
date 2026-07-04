@@ -10,7 +10,7 @@ import { useSiteContent } from "@/lib/use-site-content";
  *  - "inline"       → sits in the page flow (used on the home page, desktop only)
  *  - "mobile-fixed" → fixed just above the bottom nav, visible on every page (mobile only)
  */
-export function MarqueeBar({ variant = "inline" }: { variant?: "inline" | "mobile-fixed" }) {
+export function MarqueeBar({ variant = "inline" }: { variant?: "inline" | "mobile-fixed" | "desktop-top" }) {
   const { marquee } = useSiteContent();
 
   const safeHtml = useMemo(() => {
