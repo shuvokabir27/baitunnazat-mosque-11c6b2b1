@@ -2009,6 +2009,20 @@ const BN_MONTHS = [
   "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর",
 ];
 
+const BN_MONTHS_SHORT = [
+  "জানু", "ফেব", "মার্চ", "এপ্রিল", "মে", "জুন",
+  "জুলাই", "আগ", "সেপ্ট", "অক্টো", "নভে", "ডিসে",
+];
+
+// মাসের তালিকা বাংলায় সাজানো: "জুন, জানু ও ডিসে"
+function joinMonthsBn(months: number[]): string {
+  const names = months.map((m) => BN_MONTHS_SHORT[m - 1]);
+  if (names.length === 0) return "";
+  if (names.length === 1) return names[0];
+  return `${names.slice(0, -1).join(", ")} ও ${names[names.length - 1]}`;
+}
+
+
 type Collection = {
   id: string;
   member_id: string | null;
