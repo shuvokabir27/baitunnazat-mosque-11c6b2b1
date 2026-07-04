@@ -165,25 +165,15 @@ function BismillahBar() {
 }
 
 function Header() {
-  const [moreOpen, setMoreOpen] = useState(false);
-  const ref = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    function onClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setMoreOpen(false);
-    }
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
-  }, []);
-
   return (
+
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-md">
       <BismillahBar />
       <div className="relative mx-auto flex max-w-screen-md items-center justify-center px-4 py-3 lg:max-w-6xl lg:justify-between">
         <HeaderDateTime />
-        {/* Desktop-only top navigation */}
-        <nav className="hidden items-center gap-2 lg:absolute lg:left-1/2 lg:flex lg:-translate-x-1/2">
-          {navItems.map((item) => {
+        {/* Desktop-only top navigation — all menu items visible */}
+        <nav className="hidden items-center gap-1.5 lg:absolute lg:left-1/2 lg:flex lg:-translate-x-1/2">
+          {[...navItems, ...moreNavItems].map((item) => {
             const Icon = navIcons[item.to] ?? Home;
             const c = navColors[item.to];
             return (
@@ -192,7 +182,7 @@ function Header() {
                 to={item.to}
                 activeOptions={{ exact: item.to === "/" }}
                 activeProps={{ className: `${c.activeBg} ${c.activeText} shadow-md` }}
-                className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold text-muted-foreground transition-all hover:bg-secondary hover:text-foreground hover:shadow-sm`}
+                className={`flex items-center gap-2 rounded-full px-3 py-2 text-sm font-bold text-muted-foreground transition-all hover:bg-secondary hover:text-foreground hover:shadow-sm`}
               >
                 <span className={`flex h-7 w-7 items-center justify-center rounded-full ${c.bg} ${c.text}`}>
                   <Icon className="h-3.5 w-3.5" />
@@ -201,41 +191,6 @@ function Header() {
               </Link>
             );
           })}
-          {/* More dropdown */}
-          <div className="relative" ref={ref}>
-            <button
-              type="button"
-              onClick={() => setMoreOpen((o) => !o)}
-              className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold text-muted-foreground transition-all hover:bg-secondary hover:text-foreground hover:shadow-sm"
-            >
-              <span className={`flex h-7 w-7 items-center justify-center rounded-full ${navColors.more.bg} ${navColors.more.text}`}>
-                <MoreHorizontal className="h-3.5 w-3.5" />
-              </span>
-              <span>আরো</span>
-            </button>
-            {moreOpen && (
-              <div className="absolute left-1/2 top-full mt-2 w-48 -translate-x-1/2 rounded-2xl border border-border bg-card p-2 shadow-lg">
-                {moreNavItems.map((item) => {
-                  const Icon = navIcons[item.to] ?? Home;
-                  const c = navColors[item.to];
-                  return (
-                    <Link
-                      key={item.to}
-                      to={item.to}
-                      onClick={() => setMoreOpen(false)}
-                      activeProps={{ className: "bg-secondary text-foreground" }}
-                      className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold text-muted-foreground transition-all hover:bg-secondary hover:text-foreground"
-                    >
-                      <span className={`flex h-7 w-7 items-center justify-center rounded-full ${c.bg} ${c.text}`}>
-                        <Icon className="h-3.5 w-3.5" />
-                      </span>
-                      <span>{item.label}</span>
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
-          </div>
         </nav>
       </div>
     </header>
