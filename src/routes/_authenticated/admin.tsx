@@ -3733,6 +3733,27 @@ function FinanceTab() {
   };
 
   // মাসভিত্তিক জের সহ সারাংশ
+  // আগে লেখা নোটগুলো — বর্তমান ধরন অগ্রাধিকার পাবে, তারপর বাকিগুলো
+  const noteSuggestions = (() => {
+    const seen = new Set<string>();
+    const ordered: string[] = [];
+    for (const r of rows) {
+      const n = (r.note ?? "").trim();
+      if (n && r.kind === kind && !seen.has(n)) {
+        seen.add(n);
+        ordered.push(n);
+      }
+    }
+    for (const r of rows) {
+      const n = (r.note ?? "").trim();
+      if (n && !seen.has(n)) {
+        seen.add(n);
+        ordered.push(n);
+      }
+    }
+    return ordered;
+  })();
+
   const summary = (() => {
     const map = new Map<string, { year: number; month: number; income: number; expense: number }>();
     for (const r of rows) {
