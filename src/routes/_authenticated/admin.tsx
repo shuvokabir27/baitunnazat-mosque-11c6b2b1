@@ -3024,6 +3024,19 @@ function PersonEditor({
           <ImageCropUpload value={person.image} onChange={(img) => onChange({ ...person, image: img })} />
           <Field label="নাম" value={person.name} onChange={(v) => onChange({ ...person, name: v })} />
           <Field label="পদবি" value={person.role} onChange={(v) => onChange({ ...person, role: v })} />
+          <div>
+            <Field
+              label="কাস্টম স্লাগ / লিংক (ঐচ্ছিক)"
+              value={person.slug}
+              onChange={(v) => {
+                const clean = v.trim().toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+                onChange({ ...person, slug: clean || slugify(person.name, `person-${Date.now()}`) });
+              }}
+            />
+            <p className="mt-1 text-xs text-muted-foreground">
+              খালি রাখলে স্বয়ংক্রিয়ভাবে স্লাগ তৈরি হবে। শুধু ইংরেজি অক্ষর, সংখ্যা ও হাইফেন (-) ব্যবহার করা যাবে।
+            </p>
+          </div>
           <Field label="সংক্ষিপ্ত বিবরণ" value={person.detail} onChange={(v) => onChange({ ...person, detail: v })} textarea />
           <Field label="অভিজ্ঞতা" value={person.experience} onChange={(v) => onChange({ ...person, experience: v })} textarea />
           <Field label="হোয়াটসঅ্যাপ নম্বর (যেমন 8801712345678)" value={person.whatsapp ?? ""} onChange={(v) => onChange({ ...person, whatsapp: v.replace(/[^\d]/g, "") })} />
