@@ -228,9 +228,10 @@ export function FinanceOverview() {
                 type="monotone"
                 dataKey="স্থিতি"
                 stroke="url(#fin-balance)"
-                strokeWidth={3}
-                dot={{ r: 4, fill: "#fff", stroke: "#65a30d", strokeWidth: 2 }}
-                activeDot={{ r: 6, fill: "#65a30d", stroke: "#fff", strokeWidth: 2 }}
+                strokeWidth={3.5}
+                filter="url(#fin-line-glow)"
+                dot={{ r: 4, fill: "#fff", stroke: "#4f46e5", strokeWidth: 2 }}
+                activeDot={{ r: 6, fill: "#4f46e5", stroke: "#fff", strokeWidth: 2 }}
                 animationDuration={1100}
               />
             </ComposedChart>
