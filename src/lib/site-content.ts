@@ -52,7 +52,8 @@ export type SiteSections = {
 
 export type HeroSlide = { image?: string; caption: string };
 
-export type DevelopmentItem = { image?: string; caption: string };
+// এক শিরোনামের অধীনে একাধিক ছবি (image পুরনো একক ছবির জন্য রাখা হয়েছে)
+export type DevelopmentItem = { image?: string; images?: string[]; caption: string };
 
 export type DevelopmentContent = {
   title: string;
