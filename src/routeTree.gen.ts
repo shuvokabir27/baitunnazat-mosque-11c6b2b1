@@ -13,6 +13,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as MembersRouteImport } from './routes/members'
 import { Route as MasalaRouteImport } from './routes/masala'
 import { Route as IbadahRouteImport } from './routes/ibadah'
+import { Route as HisabRouteImport } from './routes/hisab'
 import { Route as DonateRouteImport } from './routes/donate'
 import { Route as DevelopmentRouteImport } from './routes/development'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -41,6 +42,11 @@ const MasalaRoute = MasalaRouteImport.update({
 const IbadahRoute = IbadahRouteImport.update({
   id: '/ibadah',
   path: '/ibadah',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HisabRoute = HisabRouteImport.update({
+  id: '/hisab',
+  path: '/hisab',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DonateRoute = DonateRouteImport.update({
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/development': typeof DevelopmentRoute
   '/donate': typeof DonateRoute
+  '/hisab': typeof HisabRoute
   '/ibadah': typeof IbadahRoute
   '/masala': typeof MasalaRoute
   '/members': typeof MembersRoute
@@ -107,6 +114,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/development': typeof DevelopmentRoute
   '/donate': typeof DonateRoute
+  '/hisab': typeof HisabRoute
   '/ibadah': typeof IbadahRoute
   '/masala': typeof MasalaRoute
   '/members': typeof MembersRoute
@@ -123,6 +131,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/development': typeof DevelopmentRoute
   '/donate': typeof DonateRoute
+  '/hisab': typeof HisabRoute
   '/ibadah': typeof IbadahRoute
   '/masala': typeof MasalaRoute
   '/members': typeof MembersRoute
@@ -139,6 +148,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/development'
     | '/donate'
+    | '/hisab'
     | '/ibadah'
     | '/masala'
     | '/members'
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/development'
     | '/donate'
+    | '/hisab'
     | '/ibadah'
     | '/masala'
     | '/members'
@@ -168,6 +179,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/development'
     | '/donate'
+    | '/hisab'
     | '/ibadah'
     | '/masala'
     | '/members'
@@ -184,6 +196,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   DevelopmentRoute: typeof DevelopmentRoute
   DonateRoute: typeof DonateRoute
+  HisabRoute: typeof HisabRoute
   IbadahRoute: typeof IbadahRoute
   MasalaRoute: typeof MasalaRoute
   MembersRoute: typeof MembersRoute
@@ -221,6 +234,13 @@ declare module '@tanstack/react-router' {
       path: '/ibadah'
       fullPath: '/ibadah'
       preLoaderRoute: typeof IbadahRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hisab': {
+      id: '/hisab'
+      path: '/hisab'
+      fullPath: '/hisab'
+      preLoaderRoute: typeof HisabRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/donate': {
@@ -306,6 +326,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   DevelopmentRoute: DevelopmentRoute,
   DonateRoute: DonateRoute,
+  HisabRoute: HisabRoute,
   IbadahRoute: IbadahRoute,
   MasalaRoute: MasalaRoute,
   MembersRoute: MembersRoute,

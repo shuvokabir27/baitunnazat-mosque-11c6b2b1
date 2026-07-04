@@ -34,8 +34,7 @@ const BN_MONTHS = [
 const bn = (n: number) =>
   String(n).replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)]);
 const bnYear = (n: number) => bn(n);
-const taka = (n: number) => `৳ ${bn(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
-// use grouping on latin then convert — simpler: format latin with commas then map
+// মাসভিত্তিক টাকার অঙ্ক বাংলা সংখ্যায় ও কমা সহ
 const money = (n: number) => {
   const s = Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   return "৳ " + s.replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)]);
