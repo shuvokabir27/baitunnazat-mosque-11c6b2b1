@@ -141,7 +141,8 @@ function HeaderDateTime() {
   });
 
   return (
-    <div className="bg-secondary/60 backdrop-blur-sm rounded-lg px-4 py-2">
+    <div className="shrink-0 rounded-lg bg-secondary/60 px-4 py-2 backdrop-blur-sm">
+
       <div className="flex items-center gap-6 text-center leading-tight lg:text-left">
         <div className="flex flex-col items-center lg:items-start">
           <span className="text-base font-bold tabular-nums text-foreground">{time}</span>
