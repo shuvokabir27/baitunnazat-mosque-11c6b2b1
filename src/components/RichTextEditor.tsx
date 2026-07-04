@@ -58,8 +58,10 @@ export function RichTextEditor({
   placeholder?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const savedRange = useRef<Range | null>(null);
   const [showColors, setShowColors] = useState(false);
   const [showSymbols, setShowSymbols] = useState(false);
+  const [customColor, setCustomColor] = useState("#16a34a");
 
   // Keep the DOM in sync when the external value changes (e.g. initial load),
   // but avoid clobbering the caret while the user is typing.
@@ -74,15 +76,43 @@ export function RichTextEditor({
     if (ref.current) onChange(ref.current.innerHTML);
   };
 
+  // Remember the current text selection so color pickers can restore it
+  // (opening a popover / native color input can drop the selection).
+  const saveSelection = () => {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0 && ref.current?.contains(sel.anchorNode)) {
+      savedRange.current = sel.getRangeAt(0).cloneRange();
+    }
+  };
+
+  const restoreSelection = () => {
+    const sel = window.getSelection();
+    if (savedRange.current && sel) {
+      sel.removeAllRanges();
+      sel.addRange(savedRange.current);
+    }
+  };
+
   const applyColor = (color: string) => {
     ref.current?.focus();
+    restoreSelection();
+    exec("styleWithCSS", "true");
     exec("foreColor", color);
     setShowColors(false);
     emit();
   };
 
+  const applyHighlight = (color: string) => {
+    ref.current?.focus();
+    restoreSelection();
+    exec("styleWithCSS", "true");
+    exec("hiliteColor", color);
+    emit();
+  };
+
   const insertSymbol = (sym: string) => {
     ref.current?.focus();
+    restoreSelection();
     exec("insertText", sym);
     setShowSymbols(false);
     emit();
