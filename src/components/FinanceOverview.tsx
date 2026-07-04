@@ -60,7 +60,7 @@ export function FinanceOverview() {
     (async () => {
       const { data } = await supabase
         .from("finance_entries")
-        .select("year, month, kind, amount")
+        .select("year, month, kind, amount, note")
         .order("year", { ascending: true })
         .order("month", { ascending: true });
       if (!cancelled) {
@@ -74,12 +74,19 @@ export function FinanceOverview() {
   }, []);
 
   const rows = useMemo<Row[]>(() => {
-    const map = new Map<string, { year: number; month: number; income: number; expense: number }>();
+    type Agg = { year: number; month: number; income: number; expense: number; incomeItems: Item[]; expenseItems: Item[] };
+    const map = new Map<string, Agg>();
     for (const e of entries) {
       const key = `${e.year}-${e.month}`;
-      const cur = map.get(key) ?? { year: e.year, month: e.month, income: 0, expense: 0 };
-      if (e.kind === "income") cur.income += Number(e.amount);
-      else if (e.kind === "expense") cur.expense += Number(e.amount);
+      const cur = map.get(key) ?? { year: e.year, month: e.month, income: 0, expense: 0, incomeItems: [], expenseItems: [] };
+      const item: Item = { note: (e.note ?? "").trim(), amount: Number(e.amount) };
+      if (e.kind === "income") {
+        cur.income += Number(e.amount);
+        cur.incomeItems.push(item);
+      } else if (e.kind === "expense") {
+        cur.expense += Number(e.amount);
+        cur.expenseItems.push(item);
+      }
       map.set(key, cur);
     }
     const sorted = [...map.values()].sort((a, b) =>
@@ -97,6 +104,8 @@ export function FinanceOverview() {
         totalIncome,
         expense: m.expense,
         closing,
+        incomeItems: m.incomeItems,
+        expenseItems: m.expenseItems,
       };
       opening = closing;
       return row;
