@@ -2046,7 +2046,7 @@ function CollectionsTab() {
   const [members, setMembers] = useState<Member[]>([]);
   const [collections, setCollections] = useState<Collection[]>([]);
   const [yearCollections, setYearCollections] = useState<Collection[]>([]);
-  const [view, setView] = useState<"paid" | "unpaid">("paid");
+  const [view, setView] = useState<"paid" | "unpaid" | "advance">("paid");
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Member | null>(null);
@@ -2189,6 +2189,23 @@ function CollectionsTab() {
             return { member: m, unpaidMonths };
           })
           .filter((x) => x.unpaidMonths.length > 0);
+
+  // অগ্রিম আদায় — যারা এখনো আসেনি এমন ভবিষ্যৎ মাসের দান আগেই দিয়েছেন
+  const advanceList =
+    year < now.getFullYear()
+      ? []
+      : members
+          .map((m) => {
+            const paidSet = paidMonthsByMember.get(m.id) ?? new Set<number>();
+            const advanceMonths: number[] = [];
+            for (let mo = monthsElapsed + 1; mo <= 12; mo++) {
+              if (paidSet.has(mo)) advanceMonths.push(mo);
+            }
+            return { member: m, advanceMonths };
+          })
+          .filter((x) => x.advanceMonths.length > 0);
+
+
 
 
 
@@ -2461,13 +2478,25 @@ function CollectionsTab() {
         >
           আদায় হয়নি ({unpaidList.length})
         </button>
+        <button
+          onClick={() => setView("advance")}
+          className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+            view === "advance"
+              ? "bg-sky-600 text-white"
+              : "bg-secondary text-foreground"
+          }`}
+        >
+          অগ্রিম আদায় ({advanceList.length})
+        </button>
       </div>
 
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
           {view === "paid"
             ? `${periodLabel} — মোট ${collections.length} জন আদায় করেছেন।`
-            : `${year} সালে ${unpaidList.length} জনের বকেয়া রয়েছে।`}
+            : view === "advance"
+              ? `${year} সালে ${advanceList.length} জন অগ্রিম দান দিয়েছেন।`
+              : `${year} সালে ${unpaidList.length} জনের বকেয়া রয়েছে।`}
         </p>
         {view === "paid" && (
           <p className="text-base font-bold text-emerald-700">
@@ -2515,7 +2544,8 @@ function CollectionsTab() {
             </table>
           </div>
         )
-      ) : unpaidList.length === 0 ? (
+      ) : view === "unpaid" ? (
+        unpaidList.length === 0 ? (
         <p className="py-8 text-center text-sm text-muted-foreground">সবার দান আদায় সম্পন্ন হয়েছে। 🎉</p>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-amber-300">
@@ -2546,6 +2576,35 @@ function CollectionsTab() {
                     >
                       আদায় করুন
                     </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        )
+      ) : advanceList.length === 0 ? (
+        <p className="py-8 text-center text-sm text-muted-foreground">এখনো কেউ অগ্রিম দান দেননি।</p>
+      ) : (
+        <div className="overflow-x-auto rounded-xl border border-sky-300">
+          <table className="w-full text-sm">
+            <thead className="bg-sky-100 text-sky-900">
+              <tr>
+                <th className="p-2 text-left">সদস্য নম্বর</th>
+                <th className="p-2 text-left">নাম</th>
+                <th className="p-2 text-left">মোবাইল</th>
+                <th className="p-2 text-left">অগ্রিম মাস</th>
+              </tr>
+            </thead>
+            <tbody>
+              {advanceList.map(({ member: m, advanceMonths }) => (
+                <tr key={m.id} className="border-t border-sky-200">
+                  <td className="p-2 text-foreground">{m.member_no ?? "-"}</td>
+                  <td className="p-2 text-foreground">{m.name}</td>
+                  <td className="p-2 text-muted-foreground">{m.mobile}</td>
+                  <td className="p-2 font-semibold text-sky-700">
+                    {joinMonthsBn(advanceMonths)}{" "}
+                    <span className="text-xs font-normal text-muted-foreground">({advanceMonths.length} মাস)</span>
                   </td>
                 </tr>
               ))}
