@@ -2160,6 +2160,7 @@ function CollectionsTab() {
       return;
     }
     setCollections((prev) => [data as Collection, ...prev]);
+    setYearCollections((prev) => [...prev, data as Collection]);
     setSelected(null);
     setAmount("");
     setNote("");
