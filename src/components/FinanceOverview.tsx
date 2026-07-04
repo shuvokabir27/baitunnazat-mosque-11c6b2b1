@@ -168,7 +168,7 @@ export function FinanceOverview() {
               icon={<MoonStar className="h-4 w-4 sm:h-5 sm:w-5" />}
               label="বর্তমান স্থিতি"
               value={money(latest.closing)}
-              tone="bg-lime-100 text-lime-700"
+              tone="bg-indigo-100 text-indigo-700"
             />
           </div>
         </div>
