@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Heart, Clock, X, Download, ZoomIn, ChevronDown, HeartHandshake, Loader2, MessageCircleQuestion } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { FinanceOverview } from "@/components/FinanceOverview";
-import { MarqueeBar } from "@/components/MarqueeBar";
+
 import { useSiteContent, siteContentQueryOptions } from "@/lib/use-site-content";
 import { heroImages, staffImages } from "@/lib/site-content";
 import { supabase } from "@/integrations/supabase/client";
@@ -239,8 +239,6 @@ function HeroSlider() {
         </Link>
       </div>
 
-      {/* Admin-controlled scrolling title */}
-      <MarqueeBar />
 
       {/* Zoom lightbox */}
       {zoom && (

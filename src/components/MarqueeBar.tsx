@@ -10,7 +10,7 @@ import { useSiteContent } from "@/lib/use-site-content";
  *  - "inline"       → sits in the page flow (used on the home page, desktop only)
  *  - "mobile-fixed" → fixed just above the bottom nav, visible on every page (mobile only)
  */
-export function MarqueeBar({ variant = "inline" }: { variant?: "inline" | "mobile-fixed" }) {
+export function MarqueeBar({ variant = "inline" }: { variant?: "inline" | "mobile-fixed" | "desktop-top" }) {
   const { marquee } = useSiteContent();
 
   const safeHtml = useMemo(() => {
@@ -30,6 +30,8 @@ export function MarqueeBar({ variant = "inline" }: { variant?: "inline" | "mobil
   const wrapperClass =
     variant === "mobile-fixed"
       ? "fixed inset-x-0 bottom-[76px] z-40 border-y border-gold/40 bg-background/95 shadow-[0_-4px_16px_-6px_oklch(0.4_0.1_165/0.3)] backdrop-blur-md lg:hidden"
+      : variant === "desktop-top"
+      ? "hidden border-b border-gold/30 bg-gradient-to-r from-primary/10 via-gold/10 to-primary/10 lg:block"
       : "hidden border-y border-gold/30 bg-gradient-to-r from-primary/10 via-gold/10 to-primary/10 lg:block";
 
   return (
