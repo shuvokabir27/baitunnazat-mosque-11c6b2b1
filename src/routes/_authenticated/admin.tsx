@@ -305,6 +305,7 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   mosque: LayoutDashboard,
   slider: Images,
   sections: FileText,
+  marquee: ScrollText,
   prayer: Clock,
   staff: Users,
   committee: UsersRound,
