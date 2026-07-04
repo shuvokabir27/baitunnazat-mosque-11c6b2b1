@@ -344,7 +344,9 @@ function downloadMonthPdf(r: Row) {
 <style>
   * { font-family: 'Noto Sans Bengali', 'SolaimanLipi', system-ui, sans-serif; }
   body { margin: 32px; color: #1a1a1a; }
-  h1 { text-align: center; font-size: 20px; margin: 0 0 4px; }
+  .mosque { text-align: center; font-size: 22px; font-weight: bold; color: #1a7a4c; margin: 0 0 2px; }
+  .tagline { text-align: center; font-size: 12px; color: #666; margin: 0 0 16px; }
+  h1 { text-align: center; font-size: 18px; margin: 0 0 4px; }
   .sub { text-align: center; color: #555; margin: 0 0 20px; font-size: 13px; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
   .stat { border: 1px solid #ddd; border-radius: 8px; padding: 10px; }
@@ -355,6 +357,8 @@ function downloadMonthPdf(r: Row) {
   th { text-align: left; background: #1a7a4c; color: #fff; padding: 6px 8px; }
   th:last-child { text-align: right; }
 </style></head><body>
+<p class="mosque">বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ, মহিপুর</p>
+<p class="tagline">আয়-ব্যয়ের স্বচ্ছ হিসাব</p>
 <h1>${r.label}</h1>
 <p class="sub">আয়-ব্যয় হিসাব</p>
 <div class="grid">

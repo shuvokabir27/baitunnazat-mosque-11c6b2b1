@@ -3854,6 +3854,8 @@ function FinanceTab() {
 <style>
   * { font-family: 'Noto Sans Bengali','SolaimanLipi',system-ui,sans-serif; }
   body { margin: 28px; color: #1a1a1a; }
+  .mosque { text-align:center; font-size: 22px; font-weight: bold; color:#1a7a4c; margin: 0 0 2px; }
+  .tagline { text-align:center; font-size: 12px; color:#666; margin: 0 0 20px; }
   h1 { text-align:center; font-size: 20px; margin: 0 0 20px; }
   .month { margin-bottom: 26px; page-break-inside: avoid; }
   h2 { font-size: 15px; margin: 0 0 8px; border-bottom: 2px solid #1a7a4c; padding-bottom: 4px; }
@@ -3867,7 +3869,9 @@ function FinanceTab() {
   th { text-align:left; background:#1a7a4c; color:#fff; padding: 5px 8px; }
   th:last-child { text-align:right; }
 </style></head><body>
-<h1>বায়তুন নাজাত মসজিদ — আয়-ব্যয় হিসাব</h1>
+<p class="mosque">বাইতুন নাজাত কেন্দ্রিয় জামে মসজিদ, মহিপুর</p>
+<p class="tagline">আয়-ব্যয়ের স্বচ্ছ হিসাব</p>
+<h1>আয়-ব্যয় হিসাব</h1>
 ${sections}
 </body></html>`;
 
