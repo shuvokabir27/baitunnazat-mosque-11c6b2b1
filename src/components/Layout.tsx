@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Home, HeartHandshake, HardHat, BookOpen, MoreHorizontal, Users, MessageCircleQuestion, Wallet } from "lucide-react";
 import { navItems, moreNavItems } from "@/lib/mosque-data";
 import { useSiteContent } from "@/lib/use-site-content";
+import { MarqueeBar } from "@/components/MarqueeBar";
 
 const navIcons: Record<string, typeof Home> = {
   "/": Home,
