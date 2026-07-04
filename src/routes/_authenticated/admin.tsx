@@ -2022,6 +2022,13 @@ function joinMonthsBn(months: number[]): string {
   return `${names.slice(0, -1).join(", ")} ও ${names[names.length - 1]}`;
 }
 
+// বছর বাংলা অঙ্কে, কমা ছাড়া (যেমন ২০২৬)
+function bnYear(y: number): string {
+  return String(y).replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)]);
+}
+
+
+
 
 type Collection = {
   id: string;
