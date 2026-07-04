@@ -305,7 +305,10 @@ export function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col pb-20 lg:pb-0">
       <Header />
+      {/* Scrolling title below the menu on desktop — visible on every page */}
+      <MarqueeBar variant="desktop-top" />
       <main className="mx-auto w-full max-w-screen-md lg:max-w-6xl">{children}</main>
+
 
       <Footer />
       {/* Scrolling title fixed above the bottom nav on mobile — visible on every page */}
