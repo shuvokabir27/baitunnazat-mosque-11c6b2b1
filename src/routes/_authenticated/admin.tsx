@@ -2276,11 +2276,18 @@ function CollectionsTab() {
   const paidIds = new Set(collections.map((c) => c.member_id).filter(Boolean) as string[]);
 
   const pickMember = (m: Member) => {
-    setSelected(m);
     setQuery("");
-    setAmount(String(m.monthly_donation ?? 0));
-    setNote("");
+    // চলতি বছরের অনাদায়ী মাসগুলো বের করে রিচ পপআপ খুলি (মাস ও বছর নির্বাচনসহ)
+    const paidSet = paidMonthsByMember.get(m.id) ?? new Set<number>();
+    const programStart = year === START_YEAR ? START_MONTH : 1;
+    const start = year > START_YEAR ? 1 : programStart;
+    const unpaid: number[] = [];
+    for (let mo = start; mo <= monthsElapsed; mo++) {
+      if (!paidSet.has(mo)) unpaid.push(mo);
+    }
+    openPay(m, unpaid);
   };
+
 
   const save = async () => {
     if (!selected) return;
