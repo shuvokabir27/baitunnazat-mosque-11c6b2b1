@@ -1,6 +1,6 @@
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Home, HeartHandshake, HardHat, BookOpen, MoreHorizontal, Users, MessageCircleQuestion } from "lucide-react";
+import { Home, HeartHandshake, HardHat, BookOpen, MoreHorizontal, Users, MessageCircleQuestion, Wallet } from "lucide-react";
 import { navItems, moreNavItems } from "@/lib/mosque-data";
 import { useSiteContent } from "@/lib/use-site-content";
 
@@ -8,6 +8,7 @@ const navIcons: Record<string, typeof Home> = {
   "/": Home,
   "/donate": HeartHandshake,
   "/development": HardHat,
+  "/hisab": Wallet,
   "/ibadah": BookOpen,
   "/members": Users,
   "/masala": MessageCircleQuestion,
