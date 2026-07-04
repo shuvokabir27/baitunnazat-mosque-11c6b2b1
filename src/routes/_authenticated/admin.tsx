@@ -3682,6 +3682,7 @@ function FinanceTab() {
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
   const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const load = async () => {
     setLoading(true);
