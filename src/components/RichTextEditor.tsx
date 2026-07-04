@@ -208,7 +208,7 @@ export function RichTextEditor({
           <button
             type="button"
             className={btn}
-            onMouseDown={(e) => e.preventDefault()}
+            onMouseDown={(e) => { e.preventDefault(); saveSelection(); }}
             onClick={() => { setShowSymbols((s) => !s); setShowColors(false); }}
             aria-label="সিম্বল"
           >
