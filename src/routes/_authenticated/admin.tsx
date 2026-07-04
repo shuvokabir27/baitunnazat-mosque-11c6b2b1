@@ -334,7 +334,7 @@ const TAB_GROUPS: {
 }[] = [
   {
     label: "ওয়েবসাইট কন্টেন্ট",
-    tabs: ["site", "mosque", "slider", "sections", "prayer", "ibadah", "footer"],
+    tabs: ["site", "mosque", "slider", "sections", "marquee", "prayer", "ibadah", "footer"],
     labelColor: "text-[#72aee6]",
     activeBg: "bg-[#2271b1]",
     itemText: "text-[#9cc8ee]",
