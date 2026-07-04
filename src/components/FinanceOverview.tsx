@@ -213,9 +213,8 @@ export function FinanceOverview() {
               const open = expanded === r.key;
               const hasDetail = r.incomeItems.length > 0 || r.expenseItems.length > 0;
               return (
-                <>
+                <Fragment key={r.key}>
                   <tr
-                    key={r.key}
                     onClick={() => hasDetail && setExpanded(open ? null : r.key)}
                     className={`${i % 2 ? "bg-muted/40" : "bg-card"} ${hasDetail ? "cursor-pointer" : ""}`}
                   >
