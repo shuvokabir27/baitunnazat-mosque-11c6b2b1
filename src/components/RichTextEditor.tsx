@@ -6,19 +6,31 @@ import {
   Strikethrough,
   RemoveFormatting,
   Smile,
+  Pipette,
+  Highlighter,
 } from "lucide-react";
 
 const COLORS = [
   "#e11d48", // red
+  "#f43f5e", // rose
   "#ea580c", // orange
+  "#f59e0b", // amber
   "#ca8a04", // gold
+  "#eab308", // yellow
   "#16a34a", // green
+  "#22c55e", // emerald
   "#0d9488", // teal
+  "#06b6d4", // cyan
   "#2563eb", // blue
+  "#3b82f6", // sky
+  "#6366f1", // indigo
   "#7c3aed", // violet
+  "#a855f7", // purple
   "#db2777", // pink
   "#0f172a", // near-black
+  "#64748b", // slate
   "#ffffff", // white
+  "#facc15", // bright gold
 ];
 
 const SYMBOLS = [
