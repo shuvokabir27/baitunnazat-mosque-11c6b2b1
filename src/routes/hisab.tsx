@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Layout, PageHeader } from "@/components/Layout";
 import { supabase } from "@/integrations/supabase/client";
-import { TrendingUp, TrendingDown, Wallet, PiggyBank } from "lucide-react";
+import { Landmark, HandCoins, Coins, MoonStar } from "lucide-react";
 import {
   ResponsiveContainer,
   BarChart,
