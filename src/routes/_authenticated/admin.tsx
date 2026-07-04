@@ -3167,11 +3167,15 @@ function DevelopmentTab({ content, setContent }: TabProps) {
       <p className="text-sm text-muted-foreground">
         উন্নয়ন কাজের প্রতিটি ছবি আপলোড করুন এবং নিচে ক্যাপশন লিখুন।
       </p>
-      {dev.items.map((it, i) => (
+      {dev.items.map((it, i) => {
+        const imgs = it.images ?? (it.image ? [it.image] : []);
+        const setImgs = (next: string[]) =>
+          setItem(i, { images: next, image: next[0] });
+        return (
         <Card key={i}>
           <div className="flex items-center justify-between">
             <span className="rounded-full gradient-gold px-3 py-0.5 text-xs font-semibold text-gold-foreground">
-              ছবি {i + 1}
+              কাজ {i + 1} ({imgs.length.toLocaleString("bn-BD")} ছবি)
             </span>
             <button
               onClick={() => remove(i)}
@@ -3181,23 +3185,48 @@ function DevelopmentTab({ content, setContent }: TabProps) {
               <Trash2 className="h-4 w-4" />
             </button>
           </div>
-          <ImageCropUpload
-            label="উন্নয়ন কাজের ছবি"
-            value={it.image}
-            aspect={1}
-            round={false}
-            outputWidth={800}
-            onChange={(img) => setItem(i, { image: img })}
-          />
           <Field
-            label="ক্যাপশন"
+            label="ক্যাপশন / শিরোনাম"
             value={it.caption}
             onChange={(v) => setItem(i, { caption: v })}
             textarea
           />
+          <p className="text-xs font-semibold text-foreground">ছবিসমূহ (একাধিক আপলোড করা যাবে)</p>
+          <div className="grid grid-cols-2 gap-3">
+            {imgs.map((img, gi) => (
+              <div key={gi} className="space-y-1">
+                <ImageCropUpload
+                  label={`ছবি ${(gi + 1).toLocaleString("bn-BD")}`}
+                  value={img}
+                  aspect={1}
+                  round={false}
+                  outputWidth={800}
+                  onChange={(v) =>
+                    setImgs(imgs.map((x, xi) => (xi === gi ? v || "" : x)).filter(Boolean))
+                  }
+                />
+                <button
+                  onClick={() => setImgs(imgs.filter((_, xi) => xi !== gi))}
+                  className="w-full rounded-md bg-destructive/10 py-1 text-xs font-semibold text-destructive"
+                >
+                  এই ছবি মুছুন
+                </button>
+              </div>
+            ))}
+            <ImageCropUpload
+              key={`add-${imgs.length}`}
+              label="নতুন ছবি যোগ"
+              value={undefined}
+              aspect={1}
+              round={false}
+              outputWidth={800}
+              onChange={(v) => v && setImgs([...imgs, v])}
+            />
+          </div>
         </Card>
-      ))}
-      <AddButton onClick={add} label="নতুন ছবি যোগ করুন" />
+        );
+      })}
+      <AddButton onClick={add} label="নতুন কাজ যোগ করুন" />
     </div>
   );
 }
