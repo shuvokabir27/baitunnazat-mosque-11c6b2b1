@@ -195,8 +195,8 @@ export function FinanceOverview() {
         </div>
       </div>
 
-      {/* মাসভিত্তিক তালিকা */}
-      <div className="space-y-3">
+      {/* মাসভিত্তিক তালিকা — মোবাইলে কার্ড (স্ক্রল ছাড়াই সব দেখা যায়) */}
+      <div className="space-y-3 sm:hidden">
         {[...rows].reverse().map((r) => {
           const open = expanded === r.key;
           const hasDetail = r.incomeItems.length > 0 || r.expenseItems.length > 0;
