@@ -2544,7 +2544,8 @@ function CollectionsTab() {
             </table>
           </div>
         )
-      ) : unpaidList.length === 0 ? (
+      ) : view === "unpaid" ? (
+        unpaidList.length === 0 ? (
         <p className="py-8 text-center text-sm text-muted-foreground">সবার দান আদায় সম্পন্ন হয়েছে। 🎉</p>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-amber-300">
@@ -2575,6 +2576,35 @@ function CollectionsTab() {
                     >
                       আদায় করুন
                     </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        )
+      ) : advanceList.length === 0 ? (
+        <p className="py-8 text-center text-sm text-muted-foreground">এখনো কেউ অগ্রিম দান দেননি।</p>
+      ) : (
+        <div className="overflow-x-auto rounded-xl border border-sky-300">
+          <table className="w-full text-sm">
+            <thead className="bg-sky-100 text-sky-900">
+              <tr>
+                <th className="p-2 text-left">সদস্য নম্বর</th>
+                <th className="p-2 text-left">নাম</th>
+                <th className="p-2 text-left">মোবাইল</th>
+                <th className="p-2 text-left">অগ্রিম মাস</th>
+              </tr>
+            </thead>
+            <tbody>
+              {advanceList.map(({ member: m, advanceMonths }) => (
+                <tr key={m.id} className="border-t border-sky-200">
+                  <td className="p-2 text-foreground">{m.member_no ?? "-"}</td>
+                  <td className="p-2 text-foreground">{m.name}</td>
+                  <td className="p-2 text-muted-foreground">{m.mobile}</td>
+                  <td className="p-2 font-semibold text-sky-700">
+                    {joinMonthsBn(advanceMonths)}{" "}
+                    <span className="text-xs font-normal text-muted-foreground">({advanceMonths.length} মাস)</span>
                   </td>
                 </tr>
               ))}
