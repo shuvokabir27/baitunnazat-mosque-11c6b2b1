@@ -254,6 +254,7 @@ function AdminPage() {
                 {tab === "mosque" && <MosqueTab content={content} setContent={setContent} />}
                 {tab === "slider" && <SliderTab content={content} setContent={setContent} />}
                 {tab === "sections" && <SectionsTab content={content} setContent={setContent} />}
+                {tab === "marquee" && <MarqueeTab content={content} setContent={setContent} />}
                 {tab === "prayer" && <PrayerTab content={content} setContent={setContent} />}
                 {tab === "staff" && <StaffTab content={content} setContent={setContent} />}
                 {tab === "committee" && <CommitteeTab content={content} setContent={setContent} />}
