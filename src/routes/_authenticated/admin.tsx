@@ -2070,6 +2070,14 @@ function CollectionsTab() {
     setPayTarget({ member, unpaidMonths });
   };
 
+  const selectFirstMonths = (n: number) => {
+    if (!payTarget) return;
+    const first = payTarget.unpaidMonths.slice(0, n);
+    setPayChecked(
+      Object.fromEntries(payTarget.unpaidMonths.map((m) => [m, first.includes(m)])),
+    );
+  };
+
   const payTotal = payTarget
     ? payTarget.unpaidMonths.reduce(
         (s, m) => s + (payChecked[m] ? Number(payAmounts[m]) || 0 : 0),
