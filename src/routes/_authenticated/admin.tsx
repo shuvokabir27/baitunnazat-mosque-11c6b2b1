@@ -2056,49 +2056,90 @@ function CollectionsTab() {
   const [deleteTarget, setDeleteTarget] = useState<Collection | null>(null);
 
   // বকেয়া আদায় পপআপ
-  const [payTarget, setPayTarget] = useState<{ member: Member; unpaidMonths: number[] } | null>(null);
-  const [payChecked, setPayChecked] = useState<Record<number, boolean>>({});
-  const [payAmounts, setPayAmounts] = useState<Record<number, string>>({});
+  const [payMember, setPayMember] = useState<Member | null>(null);
+  const [paySel, setPaySel] = useState<Record<string, string>>({}); // "year-month" -> amount
+  const [payPaidSet, setPayPaidSet] = useState<Set<string>>(new Set());
+  const [payYear, setPayYear] = useState(now.getFullYear());
+  const [payCount, setPayCount] = useState("");
   const [payMethod, setPayMethod] = useState(PAYMENT_METHODS[0]);
   const [paySaving, setPaySaving] = useState(false);
 
-  const openPay = (member: Member, unpaidMonths: number[]) => {
+  const slotKey = (y: number, m: number) => `${y}-${m}`;
+
+  const openPay = async (member: Member, unpaidMonths: number[]) => {
     const per = String(member.monthly_donation ?? 0);
-    setPayChecked(Object.fromEntries(unpaidMonths.map((m) => [m, true])));
-    setPayAmounts(Object.fromEntries(unpaidMonths.map((m) => [m, per])));
+    const sel: Record<string, string> = {};
+    unpaidMonths.forEach((m) => (sel[slotKey(year, m)] = per));
+    setPaySel(sel);
     setPayMethod(PAYMENT_METHODS[0]);
-    setPayTarget({ member, unpaidMonths });
+    setPayYear(year);
+    setPayCount("");
+    setPayPaidSet(new Set());
+    setPayMember(member);
+    const { data } = await supabase
+      .from("donation_collections")
+      .select("year, month")
+      .eq("member_id", member.id);
+    const s = new Set<string>();
+    (data ?? []).forEach((r: { year: number; month: number }) => s.add(slotKey(r.year, r.month)));
+    setPayPaidSet(s);
   };
 
-  const selectFirstMonths = (n: number) => {
-    if (!payTarget) return;
-    const first = payTarget.unpaidMonths.slice(0, n);
-    setPayChecked(
-      Object.fromEntries(payTarget.unpaidMonths.map((m) => [m, first.includes(m)])),
-    );
+  const toggleSlot = (y: number, m: number) => {
+    const k = slotKey(y, m);
+    if (payPaidSet.has(k)) return;
+    setPaySel((p) => {
+      const n = { ...p };
+      if (k in n) delete n[k];
+      else n[k] = String(payMember?.monthly_donation ?? 0);
+      return n;
+    });
   };
 
-  const payTotal = payTarget
-    ? payTarget.unpaidMonths.reduce(
-        (s, m) => s + (payChecked[m] ? Number(payAmounts[m]) || 0 : 0),
-        0,
-      )
-    : 0;
+  // "কত মাস" — শুরুর সময় (জুলাই ২০২৬) থেকে প্রথম N টি অনাদায়ী মাস নির্বাচন
+  const selectCount = (n: number) => {
+    if (!payMember || n <= 0) return;
+    const per = String(payMember.monthly_donation ?? 0);
+    const added: Record<string, string> = {};
+    let cy = 2026;
+    let cm = 7;
+    let count = 0;
+    while (count < n && cy < 2026 + 25) {
+      const k = slotKey(cy, cm);
+      if (!payPaidSet.has(k)) {
+        added[k] = per;
+        count++;
+      }
+      cm++;
+      if (cm > 12) {
+        cm = 1;
+        cy++;
+      }
+    }
+    setPaySel((p) => ({ ...p, ...added }));
+  };
+
+  const payTotal = Object.values(paySel).reduce((s, v) => s + (Number(v) || 0), 0);
+  const paySelList = Object.keys(paySel)
+    .map((k) => {
+      const [y, m] = k.split("-").map(Number);
+      return { y, m, key: k };
+    })
+    .sort((a, b) => a.y - b.y || a.m - b.m);
 
   const savePay = async () => {
-    if (!payTarget) return;
-    const chosen = payTarget.unpaidMonths.filter((m) => payChecked[m]);
-    if (chosen.length === 0) {
+    if (!payMember) return;
+    if (paySelList.length === 0) {
       toast.error("অন্তত একটি মাস নির্বাচন করুন।");
       return;
     }
-    const rows = chosen.map((m) => ({
-      member_id: payTarget.member.id,
-      member_no: payTarget.member.member_no,
-      member_name: payTarget.member.name,
-      mobile: payTarget.member.mobile,
-      amount: Number(payAmounts[m]) || 0,
-      year,
+    const rows = paySelList.map(({ y, m }) => ({
+      member_id: payMember.id,
+      member_no: payMember.member_no,
+      member_name: payMember.name,
+      mobile: payMember.mobile,
+      amount: Number(paySel[slotKey(y, m)]) || 0,
+      year: y,
       month: m,
       note: null,
       method: payMethod,
@@ -2118,11 +2159,15 @@ function CollectionsTab() {
       return;
     }
     const inserted = (data as Collection[]) ?? [];
-    setYearCollections((prev) => [...prev, ...inserted]);
-    setCollections((prev) => [...inserted.filter((c) => c.month === month), ...prev]);
-    setPayTarget(null);
-    toast.success(`${chosen.length} মাসের দান আদায় সম্পন্ন হয়েছে।`);
+    setYearCollections((prev) => [...prev, ...inserted.filter((c) => c.year === year)]);
+    setCollections((prev) => [
+      ...inserted.filter((c) => c.year === year && c.month === month),
+      ...prev,
+    ]);
+    setPayMember(null);
+    toast.success(`${rows.length} মাসের দান আদায় সম্পন্ন হয়েছে।`);
   };
+
 
 
   const load = async () => {
