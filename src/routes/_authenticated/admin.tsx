@@ -33,6 +33,10 @@ import {
   Check,
   MessageCircleQuestion,
   BookOpen,
+  Wallet,
+  TrendingUp,
+  TrendingDown,
+
 
 } from "lucide-react";
 import { mosque } from "@/lib/mosque-data";
@@ -262,6 +266,7 @@ function AdminPage() {
                 {tab === "addresses" && <AddressesTab />}
                 {tab === "members" && <MembersTab />}
                 {tab === "collections" && <CollectionsTab />}
+                {tab === "finance" && <FinanceTab />}
               </div>
             </div>
           </div>
@@ -271,7 +276,7 @@ function AdminPage() {
   );
 }
 
-type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "ibadah" | "development" | "donate" | "footer" | "leads" | "masala" | "qa" | "addresses" | "members" | "collections";
+type Tab = "site" | "mosque" | "slider" | "sections" | "prayer" | "staff" | "committee" | "ibadah" | "development" | "donate" | "footer" | "leads" | "masala" | "qa" | "addresses" | "members" | "collections" | "finance";
 const TAB_LABELS: Record<Tab, string> = {
   site: "সাইট সেটিংস",
   mosque: "মসজিদ",
@@ -290,6 +295,7 @@ const TAB_LABELS: Record<Tab, string> = {
   addresses: "ঠিকানা তালিকা",
   members: "সদস্য তালিকা",
   collections: "দান আদায়",
+  finance: "আয়-ব্যয় হিসাব",
 };
 
 const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
@@ -310,6 +316,7 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   addresses: MapPin,
   members: UserPlus,
   collections: HandCoins,
+  finance: Wallet,
 };
 
 const TAB_GROUPS: {
@@ -344,7 +351,7 @@ const TAB_GROUPS: {
   },
   {
     label: "দান ও উন্নয়ন",
-    tabs: ["donate", "development", "collections"],
+    tabs: ["donate", "development", "collections", "finance"],
     labelColor: "text-[#4ab89a]",
     activeBg: "bg-[#1f9d78]",
     itemText: "text-[#7ad6bd]",
@@ -3638,6 +3645,274 @@ function CommitteeTab({ content, setContent }: TabProps) {
         <PersonEditor key={i} person={s} onChange={(p) => update(i, p)} onRemove={() => remove(i)} />
       ))}
       <AddButton onClick={add} label="নতুন কমিটি সদস্য যোগ করুন" />
+    </div>
+  );
+}
+
+// ============ আয়-ব্যয় হিসাব ============
+type FinanceRow = {
+  id: string;
+  year: number;
+  month: number;
+  kind: "income" | "expense";
+  amount: number;
+  note: string | null;
+};
+
+const FIN_MONTHS = [
+  "জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন",
+  "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর",
+];
+const finBn = (n: number) => String(n).replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)]);
+const finMoney = (n: number) => {
+  const s = Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return "৳ " + s.replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)]);
+};
+
+function FinanceTab() {
+  const [rows, setRows] = useState<FinanceRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const now = new Date();
+  const [kind, setKind] = useState<"income" | "expense">("income");
+  const [year, setYear] = useState(now.getFullYear());
+  const [month, setMonth] = useState(now.getMonth() + 1);
+  const [amount, setAmount] = useState("");
+  const [note, setNote] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [confirmId, setConfirmId] = useState<string | null>(null);
+
+  const load = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("finance_entries")
+      .select("id, year, month, kind, amount, note")
+      .order("year", { ascending: false })
+      .order("month", { ascending: false })
+      .order("created_at", { ascending: false });
+    if (error) setError(error.message);
+    else setRows((data as FinanceRow[]) ?? []);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const add = async () => {
+    const amt = Number(amount);
+    if (!amt || amt <= 0) {
+      setError("সঠিক টাকার পরিমাণ লিখুন।");
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    const { error } = await supabase.from("finance_entries").insert({
+      year,
+      month,
+      kind,
+      amount: amt,
+      note: note.trim() || null,
+    });
+    setSaving(false);
+    if (error) {
+      setError(error.message);
+      return;
+    }
+    setAmount("");
+    setNote("");
+    load();
+  };
+
+  const remove = async (id: string) => {
+    const { error } = await supabase.from("finance_entries").delete().eq("id", id);
+    setConfirmId(null);
+    if (error) setError(error.message);
+    else load();
+  };
+
+  // মাসভিত্তিক জের সহ সারাংশ
+  const summary = (() => {
+    const map = new Map<string, { year: number; month: number; income: number; expense: number }>();
+    for (const r of rows) {
+      const key = `${r.year}-${r.month}`;
+      const cur = map.get(key) ?? { year: r.year, month: r.month, income: 0, expense: 0 };
+      if (r.kind === "income") cur.income += Number(r.amount);
+      else cur.expense += Number(r.amount);
+      map.set(key, cur);
+    }
+    const asc = [...map.values()].sort((a, b) => (a.year !== b.year ? a.year - b.year : a.month - b.month));
+    let opening = 0;
+    const out = asc.map((m) => {
+      const totalIncome = opening + m.income;
+      const closing = totalIncome - m.expense;
+      const o = { ...m, opening, totalIncome, closing };
+      opening = closing;
+      return o;
+    });
+    return out.reverse();
+  })();
+
+  const years = Array.from({ length: 7 }, (_, i) => now.getFullYear() - 1 + i);
+
+  return (
+    <div className="space-y-6">
+      {error && (
+        <p className="rounded-lg bg-rose-100 px-3 py-2 text-sm text-rose-700">{error}</p>
+      )}
+
+      {/* যোগ করার ফর্ম */}
+      <div className="rounded-xl border border-border bg-background p-4">
+        <h3 className="mb-3 font-semibold text-foreground">নতুন আয়/ব্যয় যোগ করুন</h3>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <div>
+            <label className="mb-1 block text-xs text-muted-foreground">ধরন</label>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setKind("income")}
+                className={`flex flex-1 items-center justify-center gap-1 rounded-lg border px-2 py-2 text-sm ${kind === "income" ? "border-emerald-600 bg-emerald-600 text-white" : "border-border bg-background text-foreground"}`}
+              >
+                <TrendingUp className="h-4 w-4" /> আয়
+              </button>
+              <button
+                type="button"
+                onClick={() => setKind("expense")}
+                className={`flex flex-1 items-center justify-center gap-1 rounded-lg border px-2 py-2 text-sm ${kind === "expense" ? "border-rose-600 bg-rose-600 text-white" : "border-border bg-background text-foreground"}`}
+              >
+                <TrendingDown className="h-4 w-4" /> ব্যয়
+              </button>
+            </div>
+          </div>
+          <div>
+            <label className="mb-1 block text-xs text-muted-foreground">মাস</label>
+            <select
+              value={month}
+              onChange={(e) => setMonth(Number(e.target.value))}
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+            >
+              {FIN_MONTHS.map((m, i) => (
+                <option key={i} value={i + 1}>{m}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-xs text-muted-foreground">বছর</label>
+            <select
+              value={year}
+              onChange={(e) => setYear(Number(e.target.value))}
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+            >
+              {years.map((y) => (
+                <option key={y} value={y}>{finBn(y)}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-xs text-muted-foreground">টাকার পরিমাণ</label>
+            <input
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="0"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+            />
+          </div>
+          <div className="col-span-2">
+            <label className="mb-1 block text-xs text-muted-foreground">নোট (ঐচ্ছিক)</label>
+            <input
+              type="text"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="যেমন: বিদ্যুৎ বিল, দান ইত্যাদি"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+            />
+          </div>
+        </div>
+        <button
+          onClick={add}
+          disabled={saving}
+          className="mt-3 flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-60"
+        >
+          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+          যোগ করুন
+        </button>
+      </div>
+
+      {/* মাসভিত্তিক সারাংশ (জের সহ) */}
+      <div>
+        <h3 className="mb-2 font-semibold text-foreground">মাসভিত্তিক হিসাব (স্বয়ংক্রিয় জের সহ)</h3>
+        <div className="overflow-x-auto rounded-xl border border-border">
+          <table className="w-full min-w-[560px] text-sm">
+            <thead>
+              <tr className="bg-muted text-foreground">
+                <th className="px-3 py-2 text-left">মাস</th>
+                <th className="px-3 py-2 text-right">গত জের</th>
+                <th className="px-3 py-2 text-right">আয়</th>
+                <th className="px-3 py-2 text-right">মোট আয়</th>
+                <th className="px-3 py-2 text-right">ব্যয়</th>
+                <th className="px-3 py-2 text-right">স্থিতি</th>
+              </tr>
+            </thead>
+            <tbody>
+              {summary.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-3 py-6 text-center text-muted-foreground">
+                    {loading ? "লোড হচ্ছে…" : "কোনো তথ্য নেই।"}
+                  </td>
+                </tr>
+              ) : (
+                summary.map((s) => (
+                  <tr key={`${s.year}-${s.month}`} className="border-t border-border">
+                    <td className="px-3 py-2 font-medium">{FIN_MONTHS[s.month - 1]} {finBn(s.year)}</td>
+                    <td className="px-3 py-2 text-right tabular-nums text-slate-600">{finMoney(s.opening)}</td>
+                    <td className="px-3 py-2 text-right tabular-nums text-emerald-700">{finMoney(s.income)}</td>
+                    <td className="px-3 py-2 text-right tabular-nums">{finMoney(s.totalIncome)}</td>
+                    <td className="px-3 py-2 text-right tabular-nums text-rose-700">{finMoney(s.expense)}</td>
+                    <td className="px-3 py-2 text-right tabular-nums font-bold text-lime-700">{finMoney(s.closing)}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* সব এন্ট্রি */}
+      <div>
+        <h3 className="mb-2 font-semibold text-foreground">সব এন্ট্রি</h3>
+        <div className="space-y-2">
+          {rows.map((r) => (
+            <div key={r.id} className="flex items-center justify-between gap-3 rounded-lg border border-border bg-background px-3 py-2">
+              <div className="flex items-center gap-2">
+                <span className={`flex h-7 w-7 items-center justify-center rounded-full ${r.kind === "income" ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"}`}>
+                  {r.kind === "income" ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+                </span>
+                <div>
+                  <p className="text-sm font-medium text-foreground">
+                    {finMoney(Number(r.amount))} · {FIN_MONTHS[r.month - 1]} {finBn(r.year)}
+                  </p>
+                  {r.note && <p className="text-xs text-muted-foreground">{r.note}</p>}
+                </div>
+              </div>
+              {confirmId === r.id ? (
+                <div className="flex items-center gap-1">
+                  <button onClick={() => remove(r.id)} className="rounded bg-rose-600 px-2 py-1 text-xs text-white">মুছুন</button>
+                  <button onClick={() => setConfirmId(null)} className="rounded bg-muted px-2 py-1 text-xs">বাতিল</button>
+                </div>
+              ) : (
+                <button onClick={() => setConfirmId(r.id)} className="text-muted-foreground hover:text-rose-600">
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          ))}
+          {rows.length === 0 && !loading && (
+            <p className="text-sm text-muted-foreground">কোনো এন্ট্রি নেই।</p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

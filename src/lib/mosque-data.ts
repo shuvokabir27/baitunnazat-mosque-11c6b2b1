@@ -165,6 +165,7 @@ export const navItems = [
 
 export const moreNavItems = [
   { to: "/development", label: "উন্নয়ন কাজ" },
+  { to: "/hisab", label: "আয়-ব্যয় হিসাব" },
   { to: "/ibadah", label: "ইবাদত ও নামাজ" },
   { to: "/masala", label: "মাসআলাহ জানুন" },
 ] as const;

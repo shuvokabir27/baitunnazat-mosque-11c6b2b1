@@ -1,6 +1,6 @@
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Home, HeartHandshake, HardHat, BookOpen, MoreHorizontal, Users, MessageCircleQuestion } from "lucide-react";
+import { Home, HeartHandshake, HardHat, BookOpen, MoreHorizontal, Users, MessageCircleQuestion, Wallet } from "lucide-react";
 import { navItems, moreNavItems } from "@/lib/mosque-data";
 import { useSiteContent } from "@/lib/use-site-content";
 
@@ -8,6 +8,7 @@ const navIcons: Record<string, typeof Home> = {
   "/": Home,
   "/donate": HeartHandshake,
   "/development": HardHat,
+  "/hisab": Wallet,
   "/ibadah": BookOpen,
   "/members": Users,
   "/masala": MessageCircleQuestion,
@@ -17,6 +18,7 @@ const navColors: Record<string, { bg: string; text: string; activeBg: string; ac
   "/": { bg: "bg-emerald-100", text: "text-emerald-700", activeBg: "bg-emerald-600", activeText: "text-white", dot: "bg-emerald-500" },
   "/donate": { bg: "bg-amber-100", text: "text-amber-700", activeBg: "bg-amber-500", activeText: "text-white", dot: "bg-amber-500" },
   "/development": { bg: "bg-sky-100", text: "text-sky-700", activeBg: "bg-sky-600", activeText: "text-white", dot: "bg-sky-500" },
+  "/hisab": { bg: "bg-lime-100", text: "text-lime-700", activeBg: "bg-lime-600", activeText: "text-white", dot: "bg-lime-500" },
   "/ibadah": { bg: "bg-violet-100", text: "text-violet-700", activeBg: "bg-violet-600", activeText: "text-white", dot: "bg-violet-500" },
   "/members": { bg: "bg-teal-100", text: "text-teal-700", activeBg: "bg-teal-600", activeText: "text-white", dot: "bg-teal-500" },
   "/masala": { bg: "bg-rose-100", text: "text-rose-700", activeBg: "bg-rose-600", activeText: "text-white", dot: "bg-rose-500" },
