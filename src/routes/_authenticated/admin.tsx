@@ -4004,13 +4004,18 @@ ${sections}
             <tbody>
               {summary.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-3 py-6 text-center text-muted-foreground">
+                  <td colSpan={7} className="px-3 py-6 text-center text-muted-foreground">
                     {loading ? "লোড হচ্ছে…" : "কোনো তথ্য নেই।"}
                   </td>
                 </tr>
               ) : (
-                summary.map((s) => (
-                  <tr key={`${s.year}-${s.month}`} className="border-t border-border">
+                summary.map((s) => {
+                  const key = `${s.year}-${s.month}`;
+                  return (
+                  <tr key={key} className="border-t border-border">
+                    <td className="px-3 py-2 text-center">
+                      <input type="checkbox" checked={selected.has(key)} onChange={() => toggleSelect(key)} aria-label={`${FIN_MONTHS[s.month - 1]} নির্বাচন`} />
+                    </td>
                     <td className="px-3 py-2 font-medium">{FIN_MONTHS[s.month - 1]} {finBn(s.year)}</td>
                     <td className="px-3 py-2 text-right tabular-nums text-slate-600">{finMoney(s.opening)}</td>
                     <td className="px-3 py-2 text-right tabular-nums text-emerald-700">{finMoney(s.income)}</td>
@@ -4018,7 +4023,8 @@ ${sections}
                     <td className="px-3 py-2 text-right tabular-nums text-rose-700">{finMoney(s.expense)}</td>
                     <td className="px-3 py-2 text-right tabular-nums font-bold text-lime-700">{finMoney(s.closing)}</td>
                   </tr>
-                ))
+                  );
+                })
               )}
             </tbody>
           </table>
