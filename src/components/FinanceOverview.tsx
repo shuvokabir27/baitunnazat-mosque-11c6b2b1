@@ -175,25 +175,66 @@ export function FinanceOverview() {
       )}
 
       {/* চার্ট */}
-      <div className="rounded-2xl border border-border bg-card p-3 shadow-sm sm:p-4">
-        <h3 className="mb-4 text-center text-base font-bold text-foreground sm:text-lg">
+      <div className="relative overflow-hidden rounded-3xl border border-white/40 bg-gradient-to-br from-emerald-50/70 via-card/80 to-rose-50/60 p-4 shadow-lg backdrop-blur-xl sm:p-5">
+        {/* সাজসজ্জার আলো */}
+        <div className="pointer-events-none absolute -left-10 -top-10 h-40 w-40 rounded-full bg-emerald-400/20 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-rose-400/20 blur-3xl" />
+        <h3 className="relative mb-4 text-center text-base font-bold text-foreground sm:text-lg">
           আয়-ব্যয় ও স্থিতির চিত্র
         </h3>
-        <div className="h-64 w-full sm:h-72 md:h-80">
+        <div className="relative h-64 w-full sm:h-72 md:h-80">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={chartData} margin={{ top: 10, right: 4, left: -18, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-              <XAxis dataKey="name" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
-              <YAxis tick={{ fontSize: 10 }} width={44} tickFormatter={(v) => bn(v as number)} />
-              <Tooltip formatter={(v: number) => money(v)} labelStyle={{ fontWeight: 700 }} />
-              <Legend wrapperStyle={{ fontSize: 12 }} />
-              <Bar dataKey="আয়" fill="#10b981" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="ব্যয়" fill="#f43f5e" radius={[4, 4, 0, 0]} />
-              <Line type="monotone" dataKey="স্থিতি" stroke="#65a30d" strokeWidth={2.5} dot={{ r: 3 }} />
+              <defs>
+                <linearGradient id="fin-income" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#34d399" stopOpacity={0.98} />
+                  <stop offset="100%" stopColor="#059669" stopOpacity={0.85} />
+                </linearGradient>
+                <linearGradient id="fin-expense" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#fb7185" stopOpacity={0.98} />
+                  <stop offset="100%" stopColor="#e11d48" stopOpacity={0.85} />
+                </linearGradient>
+                <linearGradient id="fin-balance" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#a3e635" />
+                  <stop offset="100%" stopColor="#65a30d" />
+                </linearGradient>
+                <filter id="fin-shadow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#0f172a" floodOpacity="0.18" />
+                </filter>
+              </defs>
+              <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#94a3b8" opacity={0.25} />
+              <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#475569" }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
+              <YAxis tick={{ fontSize: 10, fill: "#475569" }} width={44} axisLine={false} tickLine={false} tickFormatter={(v) => bn(v as number)} />
+              <Tooltip
+                cursor={{ fill: "rgba(148,163,184,0.12)" }}
+                formatter={(v: number) => money(v)}
+                contentStyle={{
+                  borderRadius: 14,
+                  border: "1px solid rgba(255,255,255,0.5)",
+                  background: "rgba(255,255,255,0.85)",
+                  backdropFilter: "blur(12px)",
+                  boxShadow: "0 10px 30px -10px rgba(15,23,42,0.35)",
+                  fontSize: 12,
+                }}
+                labelStyle={{ fontWeight: 700, marginBottom: 4 }}
+              />
+              <Legend wrapperStyle={{ fontSize: 12, paddingTop: 8 }} iconType="circle" />
+              <Bar dataKey="আয়" fill="url(#fin-income)" radius={[8, 8, 0, 0]} maxBarSize={46} filter="url(#fin-shadow)" animationDuration={900} />
+              <Bar dataKey="ব্যয়" fill="url(#fin-expense)" radius={[8, 8, 0, 0]} maxBarSize={46} filter="url(#fin-shadow)" animationDuration={900} />
+              <Line
+                type="monotone"
+                dataKey="স্থিতি"
+                stroke="url(#fin-balance)"
+                strokeWidth={3}
+                dot={{ r: 4, fill: "#fff", stroke: "#65a30d", strokeWidth: 2 }}
+                activeDot={{ r: 6, fill: "#65a30d", stroke: "#fff", strokeWidth: 2 }}
+                animationDuration={1100}
+              />
             </ComposedChart>
           </ResponsiveContainer>
         </div>
       </div>
+
 
       {/* মাসভিত্তিক তালিকা — মোবাইলে কার্ড (স্ক্রল ছাড়াই সব দেখা যায়) */}
       <div className="space-y-3 sm:hidden">
