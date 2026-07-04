@@ -43,6 +43,7 @@ import {
 import { mosque } from "@/lib/mosque-data";
 import { defaultContent, mergeContent, type SiteContent } from "@/lib/site-content";
 import { ImageCropUpload } from "@/components/ImageCropUpload";
+import { RichTextEditor } from "@/components/RichTextEditor";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin")({
