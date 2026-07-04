@@ -295,6 +295,7 @@ const TAB_LABELS: Record<Tab, string> = {
   addresses: "ঠিকানা তালিকা",
   members: "সদস্য তালিকা",
   collections: "দান আদায়",
+  finance: "আয়-ব্যয় হিসাব",
 };
 
 const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
@@ -315,6 +316,7 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   addresses: MapPin,
   members: UserPlus,
   collections: HandCoins,
+  finance: Wallet,
 };
 
 const TAB_GROUPS: {
@@ -349,7 +351,7 @@ const TAB_GROUPS: {
   },
   {
     label: "দান ও উন্নয়ন",
-    tabs: ["donate", "development", "collections"],
+    tabs: ["donate", "development", "collections", "finance"],
     labelColor: "text-[#4ab89a]",
     activeBg: "bg-[#1f9d78]",
     itemText: "text-[#7ad6bd]",
