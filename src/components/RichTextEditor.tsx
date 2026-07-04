@@ -6,19 +6,31 @@ import {
   Strikethrough,
   RemoveFormatting,
   Smile,
+  Pipette,
+  Highlighter,
 } from "lucide-react";
 
 const COLORS = [
   "#e11d48", // red
+  "#f43f5e", // rose
   "#ea580c", // orange
+  "#f59e0b", // amber
   "#ca8a04", // gold
+  "#eab308", // yellow
   "#16a34a", // green
+  "#22c55e", // emerald
   "#0d9488", // teal
+  "#06b6d4", // cyan
   "#2563eb", // blue
+  "#3b82f6", // sky
+  "#6366f1", // indigo
   "#7c3aed", // violet
+  "#a855f7", // purple
   "#db2777", // pink
   "#0f172a", // near-black
+  "#64748b", // slate
   "#ffffff", // white
+  "#facc15", // bright gold
 ];
 
 const SYMBOLS = [
@@ -46,8 +58,10 @@ export function RichTextEditor({
   placeholder?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const savedRange = useRef<Range | null>(null);
   const [showColors, setShowColors] = useState(false);
   const [showSymbols, setShowSymbols] = useState(false);
+  const [customColor, setCustomColor] = useState("#16a34a");
 
   // Keep the DOM in sync when the external value changes (e.g. initial load),
   // but avoid clobbering the caret while the user is typing.
@@ -62,15 +76,43 @@ export function RichTextEditor({
     if (ref.current) onChange(ref.current.innerHTML);
   };
 
+  // Remember the current text selection so color pickers can restore it
+  // (opening a popover / native color input can drop the selection).
+  const saveSelection = () => {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0 && ref.current?.contains(sel.anchorNode)) {
+      savedRange.current = sel.getRangeAt(0).cloneRange();
+    }
+  };
+
+  const restoreSelection = () => {
+    const sel = window.getSelection();
+    if (savedRange.current && sel) {
+      sel.removeAllRanges();
+      sel.addRange(savedRange.current);
+    }
+  };
+
   const applyColor = (color: string) => {
     ref.current?.focus();
+    restoreSelection();
+    exec("styleWithCSS", "true");
     exec("foreColor", color);
     setShowColors(false);
     emit();
   };
 
+  const applyHighlight = (color: string) => {
+    ref.current?.focus();
+    restoreSelection();
+    exec("styleWithCSS", "true");
+    exec("hiliteColor", color);
+    emit();
+  };
+
   const insertSymbol = (sym: string) => {
     ref.current?.focus();
+    restoreSelection();
     exec("insertText", sym);
     setShowSymbols(false);
     emit();
@@ -100,25 +142,63 @@ export function RichTextEditor({
           <button
             type="button"
             className={btn}
-            onMouseDown={(e) => e.preventDefault()}
+            onMouseDown={(e) => { e.preventDefault(); saveSelection(); }}
             onClick={() => { setShowColors((s) => !s); setShowSymbols(false); }}
-            aria-label="কালার"
+            aria-label="টেক্সট কালার"
           >
             <span className="h-4 w-4 rounded-full bg-gradient-to-br from-red-500 via-yellow-400 to-blue-500" />
           </button>
           {showColors && (
-            <div className="absolute z-20 mt-1 grid grid-cols-5 gap-1 rounded-xl border border-border bg-card p-2 shadow-soft">
-              {COLORS.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => applyColor(c)}
-                  className="h-6 w-6 rounded-full border border-border"
-                  style={{ background: c }}
-                  aria-label={c}
+            <div className="absolute z-20 mt-1 w-56 rounded-xl border border-border bg-card p-2.5 shadow-soft">
+              <p className="mb-1.5 px-0.5 text-[11px] font-semibold text-muted-foreground">টেক্সট কালার</p>
+              <div className="grid grid-cols-6 gap-1.5">
+                {COLORS.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => applyColor(c)}
+                    className="h-6 w-6 rounded-full border border-border transition-transform hover:scale-110"
+                    style={{ background: c }}
+                    aria-label={c}
+                  />
+                ))}
+              </div>
+
+              {/* Any custom color */}
+              <label
+                className="mt-2.5 flex cursor-pointer items-center gap-2 rounded-lg border border-border bg-background px-2 py-1.5 text-xs font-semibold text-foreground"
+                onMouseDown={(e) => e.preventDefault()}
+              >
+                <Pipette className="h-3.5 w-3.5 text-primary" />
+                <span className="flex-1">যেকোনো কালার</span>
+                <span className="h-5 w-5 rounded-full border border-border" style={{ background: customColor }} />
+                <input
+                  type="color"
+                  value={customColor}
+                  onMouseDown={saveSelection}
+                  onChange={(e) => { setCustomColor(e.target.value); applyColor(e.target.value); }}
+                  className="sr-only"
                 />
-              ))}
+              </label>
+
+              {/* Highlight */}
+              <p className="mb-1.5 mt-2.5 px-0.5 text-[11px] font-semibold text-muted-foreground">
+                <span className="inline-flex items-center gap-1"><Highlighter className="h-3 w-3" /> হাইলাইট</span>
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {["#fef08a", "#bbf7d0", "#bae6fd", "#fbcfe8", "#fed7aa", "transparent"].map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => applyHighlight(c)}
+                    className="h-6 w-6 rounded-md border border-border transition-transform hover:scale-110"
+                    style={{ background: c === "transparent" ? "repeating-conic-gradient(#ccc 0% 25%, #fff 0% 50%) 50%/8px 8px" : c }}
+                    aria-label={c}
+                  />
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -128,7 +208,7 @@ export function RichTextEditor({
           <button
             type="button"
             className={btn}
-            onMouseDown={(e) => e.preventDefault()}
+            onMouseDown={(e) => { e.preventDefault(); saveSelection(); }}
             onClick={() => { setShowSymbols((s) => !s); setShowColors(false); }}
             aria-label="সিম্বল"
           >
