@@ -33,6 +33,10 @@ import {
   Check,
   MessageCircleQuestion,
   BookOpen,
+  Wallet,
+  TrendingUp,
+  TrendingDown,
+
 
 } from "lucide-react";
 import { mosque } from "@/lib/mosque-data";
