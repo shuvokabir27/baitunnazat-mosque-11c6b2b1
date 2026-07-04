@@ -2381,7 +2381,8 @@ function CollectionsTab() {
     }
   };
 
-  const years = Array.from({ length: 6 }, (_, i) => now.getFullYear() - i);
+  // আগামী ৫ বছর (অগ্রিম আদায়) + চলতি ও আগের ৫ বছর
+  const years = Array.from({ length: 11 }, (_, i) => now.getFullYear() + 5 - i);
 
   return (
     <div className="space-y-5">
