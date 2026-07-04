@@ -238,6 +238,9 @@ function HeroSlider() {
         </Link>
       </div>
 
+      {/* Admin-controlled scrolling title */}
+      <MarqueeBar />
+
       {/* Zoom lightbox */}
       {zoom && (
         <div
