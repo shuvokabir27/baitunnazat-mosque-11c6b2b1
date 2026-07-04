@@ -307,6 +307,8 @@ export function Layout({ children }: { children: ReactNode }) {
       <main className="mx-auto w-full max-w-screen-md lg:max-w-6xl">{children}</main>
 
       <Footer />
+      {/* Scrolling title fixed above the bottom nav on mobile — visible on every page */}
+      <MarqueeBar variant="mobile-fixed" />
       <BottomNav />
     </div>
   );
