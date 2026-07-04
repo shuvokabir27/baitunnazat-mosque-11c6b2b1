@@ -195,70 +195,135 @@ export function FinanceOverview() {
         </div>
       </div>
 
-      {/* টেবিল */}
-      <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
-        <table className="w-full min-w-[560px] text-xs sm:text-sm">
-          <thead>
-            <tr className="bg-primary text-primary-foreground">
-              <th className="px-2.5 py-2.5 text-left font-semibold sm:px-3 sm:py-3">মাস</th>
-              <th className="px-2.5 py-2.5 text-right font-semibold sm:px-3 sm:py-3">গত মাসের জের</th>
-              <th className="px-2.5 py-2.5 text-right font-semibold sm:px-3 sm:py-3">এ মাসের আয়</th>
-              <th className="px-2.5 py-2.5 text-right font-semibold sm:px-3 sm:py-3">মোট আয়</th>
-              <th className="px-2.5 py-2.5 text-right font-semibold sm:px-3 sm:py-3">এ মাসের ব্যয়</th>
-              <th className="px-2.5 py-2.5 text-right font-semibold sm:px-3 sm:py-3">স্থিতি</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r, i) => {
-              const open = expanded === r.key;
-              const hasDetail = r.incomeItems.length > 0 || r.expenseItems.length > 0;
-              return (
-                <Fragment key={r.key}>
-                  <tr
-                    onClick={() => hasDetail && setExpanded(open ? null : r.key)}
-                    className={`${i % 2 ? "bg-muted/40" : "bg-card"} ${hasDetail ? "cursor-pointer" : ""}`}
+      {/* মাসভিত্তিক তালিকা */}
+      <div className="space-y-3">
+        {[...rows].reverse().map((r) => {
+          const open = expanded === r.key;
+          const hasDetail = r.incomeItems.length > 0 || r.expenseItems.length > 0;
+          return (
+            <div
+              key={r.key}
+              className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
+            >
+              {/* হেডার — মাস + আয় ও ব্যয় */}
+              <button
+                type="button"
+                onClick={() => hasDetail && setExpanded(open ? null : r.key)}
+                className="flex w-full items-center gap-2 px-3 py-3 text-left sm:px-4"
+              >
+                {hasDetail && (
+                  <ChevronDown
+                    className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
+                  />
+                )}
+                <span className="min-w-0 flex-1 truncate text-sm font-bold text-foreground sm:text-base">
+                  {r.label}
+                </span>
+                <span className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+                  <span className="rounded-lg bg-emerald-100 px-2 py-1 text-[11px] font-semibold text-emerald-700 sm:text-xs">
+                    আয় {money(r.income)}
+                  </span>
+                  <span className="rounded-lg bg-rose-100 px-2 py-1 text-[11px] font-semibold text-rose-700 sm:text-xs">
+                    ব্যয় {money(r.expense)}
+                  </span>
+                </span>
+              </button>
+
+              {/* বিস্তারিত */}
+              {open && (
+                <div className="border-t border-border bg-muted/20 px-3 py-3 sm:px-4">
+                  <div className="mb-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                    <MiniStat label="গত মাসের জের" value={money(r.opening)} className="text-slate-600" />
+                    <MiniStat label="মোট আয়" value={money(r.totalIncome)} className="text-emerald-700" />
+                    <MiniStat label="মোট ব্যয়" value={money(r.expense)} className="text-rose-700" />
+                    <MiniStat label="স্থিতি" value={money(r.closing)} className="font-bold text-lime-700" />
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <BreakdownList title="কি বাবদ আয়" titleClass="text-emerald-700" items={r.incomeItems} />
+                    <BreakdownList title="কি বাবদ ব্যয়" titleClass="text-rose-700" items={r.expenseItems} />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => downloadMonthPdf(r)}
+                    className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-3 py-2.5 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
                   >
-                    <td className="px-2.5 py-2.5 font-medium text-foreground sm:px-3">
-                      <span className="inline-flex items-center gap-1">
-                        {hasDetail && (
-                          <ChevronDown className={`h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
-                        )}
-                        {r.label}
-                      </span>
-                    </td>
-                    <td className="px-2.5 py-2.5 text-right tabular-nums text-slate-600 sm:px-3">{money(r.opening)}</td>
-                    <td className="px-2.5 py-2.5 text-right tabular-nums text-emerald-700 sm:px-3">{money(r.income)}</td>
-                    <td className="px-2.5 py-2.5 text-right tabular-nums font-medium text-foreground sm:px-3">{money(r.totalIncome)}</td>
-                    <td className="px-2.5 py-2.5 text-right tabular-nums text-rose-700 sm:px-3">{money(r.expense)}</td>
-                    <td className="px-2.5 py-2.5 text-right tabular-nums font-bold text-lime-700 sm:px-3">{money(r.closing)}</td>
-                  </tr>
-                  {open && (
-                    <tr key={`${r.key}-detail`} className="bg-muted/20">
-                      <td colSpan={6} className="px-3 py-3">
-                        <div className="grid gap-4 sm:grid-cols-2">
-                          <BreakdownList
-                            title="কি বাবদ আয়"
-                            titleClass="text-emerald-700"
-                            items={r.incomeItems}
-                          />
-                          <BreakdownList
-                            title="কি বাবদ ব্যয়"
-                            titleClass="text-rose-700"
-                            items={r.expenseItems}
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </Fragment>
-              );
-            })}
-          </tbody>
-        </table>
+                    <FileDown className="h-4 w-4" />
+                    এই মাসের হিসাব পিডিএফ ডাউনলোড
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
       <p className="text-center text-xs text-muted-foreground">
-        প্রতিটি মাসে ক্লিক করে কি বাবদ আয় ও ব্যয় হয়েছে তার বিস্তারিত দেখুন। প্রতি মাসের ১ তারিখে গত মাসের স্থিতি স্বয়ংক্রিয়ভাবে পরের মাসের জের হিসেবে যোগ হয়।
+        প্রতিটি মাসে ক্লিক করে কি বাবদ আয় ও ব্যয় হয়েছে তার বিস্তারিত দেখুন ও পিডিএফ ডাউনলোড করুন। প্রতি মাসের ১ তারিখে গত মাসের স্থিতি স্বয়ংক্রিয়ভাবে পরের মাসের জের হিসেবে যোগ হয়।
       </p>
+    </div>
+  );
+}
+
+function downloadMonthPdf(r: Row) {
+  const rowsHtml = (items: Item[]) =>
+    items.length === 0
+      ? `<tr><td colspan="2" style="padding:8px;color:#888;">কোনো তথ্য নেই।</td></tr>`
+      : items
+          .map(
+            (it) =>
+              `<tr><td style="padding:6px 8px;border-bottom:1px solid #eee;">${escapeHtml(it.note || "বিবরণ নেই")}</td><td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:right;">${money(it.amount)}</td></tr>`,
+          )
+          .join("");
+
+  const html = `<!DOCTYPE html><html lang="bn"><head><meta charset="utf-8" />
+<title>${r.label} — আয়-ব্যয় হিসাব</title>
+<style>
+  * { font-family: 'Noto Sans Bengali', 'SolaimanLipi', system-ui, sans-serif; }
+  body { margin: 32px; color: #1a1a1a; }
+  h1 { text-align: center; font-size: 20px; margin: 0 0 4px; }
+  .sub { text-align: center; color: #555; margin: 0 0 20px; font-size: 13px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .stat { border: 1px solid #ddd; border-radius: 8px; padding: 10px; }
+  .stat b { display: block; font-size: 11px; color: #666; font-weight: normal; }
+  .stat span { font-size: 16px; font-weight: bold; }
+  h2 { font-size: 14px; margin: 16px 0 6px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; background: #1a7a4c; color: #fff; padding: 6px 8px; }
+  th:last-child { text-align: right; }
+</style></head><body>
+<h1>${r.label}</h1>
+<p class="sub">আয়-ব্যয় হিসাব</p>
+<div class="grid">
+  <div class="stat"><b>গত মাসের জের</b><span>${money(r.opening)}</span></div>
+  <div class="stat"><b>এ মাসের আয়</b><span>${money(r.income)}</span></div>
+  <div class="stat"><b>মোট আয়</b><span>${money(r.totalIncome)}</span></div>
+  <div class="stat"><b>এ মাসের ব্যয়</b><span>${money(r.expense)}</span></div>
+  <div class="stat"><b>স্থিতি</b><span>${money(r.closing)}</span></div>
+</div>
+<h2>কি বাবদ আয়</h2>
+<table><tr><th>বিবরণ</th><th>পরিমাণ</th></tr>${rowsHtml(r.incomeItems)}</table>
+<h2>কি বাবদ ব্যয়</h2>
+<table><tr><th>বিবরণ</th><th>পরিমাণ</th></tr>${rowsHtml(r.expenseItems)}</table>
+</body></html>`;
+
+  const w = window.open("", "_blank");
+  if (!w) return;
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+  setTimeout(() => w.print(), 400);
+}
+
+function escapeHtml(s: string) {
+  return s.replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string,
+  );
+}
+
+function MiniStat({ label, value, className }: { label: string; value: string; className?: string }) {
+  return (
+    <div className="rounded-lg border border-border bg-card p-2 text-center">
+      <p className="text-[10px] text-muted-foreground sm:text-[11px]">{label}</p>
+      <p className={`mt-0.5 text-xs tabular-nums sm:text-sm ${className ?? ""}`}>{value}</p>
     </div>
   );
 }
