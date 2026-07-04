@@ -36,7 +36,8 @@ export const money = (n: number) => {
   return "৳ " + s.replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)]);
 };
 
-type Entry = { year: number; month: number; kind: string; amount: number };
+type Entry = { year: number; month: number; kind: string; amount: number; note: string | null };
+type Item = { note: string; amount: number };
 
 type Row = {
   key: string;
@@ -46,6 +47,8 @@ type Row = {
   totalIncome: number;
   expense: number;
   closing: number;
+  incomeItems: Item[];
+  expenseItems: Item[];
 };
 
 export function FinanceOverview() {
