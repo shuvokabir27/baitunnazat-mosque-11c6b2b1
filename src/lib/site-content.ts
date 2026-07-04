@@ -227,6 +227,11 @@ export const defaultContent: SiteContent = {
       },
     ],
   },
+  marquee: {
+    enabled: false,
+    html: "",
+    speed: 20,
+  },
 };
 
 
