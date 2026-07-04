@@ -3823,11 +3823,17 @@ function FinanceTab() {
             <label className="mb-1 block text-xs text-muted-foreground">নোট (ঐচ্ছিক)</label>
             <input
               type="text"
+              list="finance-note-suggestions"
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="যেমন: বিদ্যুৎ বিল, দান ইত্যাদি"
               className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
             />
+            <datalist id="finance-note-suggestions">
+              {noteSuggestions.map((n) => (
+                <option key={n} value={n} />
+              ))}
+            </datalist>
           </div>
         </div>
         <button
