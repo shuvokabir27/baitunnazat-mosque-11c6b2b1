@@ -3854,6 +3854,8 @@ function FinanceTab() {
 <style>
   * { font-family: 'Noto Sans Bengali','SolaimanLipi',system-ui,sans-serif; }
   body { margin: 28px; color: #1a1a1a; }
+  .mosque { text-align:center; font-size: 22px; font-weight: bold; color:#1a7a4c; margin: 0 0 2px; }
+  .tagline { text-align:center; font-size: 12px; color:#666; margin: 0 0 20px; }
   h1 { text-align:center; font-size: 20px; margin: 0 0 20px; }
   .month { margin-bottom: 26px; page-break-inside: avoid; }
   h2 { font-size: 15px; margin: 0 0 8px; border-bottom: 2px solid #1a7a4c; padding-bottom: 4px; }
