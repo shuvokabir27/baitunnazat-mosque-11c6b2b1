@@ -282,6 +282,7 @@ const TAB_LABELS: Record<Tab, string> = {
   mosque: "মসজিদ",
   slider: "স্লাইডার",
   sections: "সেকশন লেখা",
+  marquee: "স্ক্রোলিং টাইটেল",
   prayer: "নামাজ",
   staff: "দায়িত্বপ্রাপ্ত",
   committee: "কমিটি",
