@@ -2095,19 +2095,28 @@ function CollectionsTab() {
     year < now.getFullYear() ? 12 : year === now.getFullYear() ? now.getMonth() + 1 : 0;
 
   // যাদের দান আদায় হয়নি তাদের তালিকা (একাধিক মাস হলে সব মাস)
-  const unpaidList = members
-    .map((m) => {
-      const created = m.created_at ? new Date(m.created_at) : null;
-      const startMonth =
-        created && created.getFullYear() === year ? created.getMonth() + 1 : 1;
-      const paidSet = paidMonthsByMember.get(m.id) ?? new Set<number>();
-      const unpaidMonths: number[] = [];
-      for (let mo = startMonth; mo <= monthsElapsed; mo++) {
-        if (!paidSet.has(mo)) unpaidMonths.push(mo);
-      }
-      return { member: m, unpaidMonths };
-    })
-    .filter((x) => x.unpaidMonths.length > 0);
+  // আদায় কার্যক্রম শুরু হয়েছে জুলাই ২০২৬ থেকে — এর আগের কোনো মাস বকেয়া ধরা হবে না
+  const START_YEAR = 2026;
+  const START_MONTH = 7;
+  const unpaidList =
+    year < START_YEAR
+      ? []
+      : members
+          .map((m) => {
+            const created = m.created_at ? new Date(m.created_at) : null;
+            const memberStart =
+              created && created.getFullYear() === year ? created.getMonth() + 1 : 1;
+            const programStart = year === START_YEAR ? START_MONTH : 1;
+            const startMonth = Math.max(memberStart, programStart);
+            const paidSet = paidMonthsByMember.get(m.id) ?? new Set<number>();
+            const unpaidMonths: number[] = [];
+            for (let mo = startMonth; mo <= monthsElapsed; mo++) {
+              if (!paidSet.has(mo)) unpaidMonths.push(mo);
+            }
+            return { member: m, unpaidMonths };
+          })
+          .filter((x) => x.unpaidMonths.length > 0);
+
 
 
   const q = query.trim().toLowerCase();
