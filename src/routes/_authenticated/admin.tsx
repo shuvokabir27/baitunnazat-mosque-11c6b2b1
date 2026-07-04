@@ -2067,7 +2067,7 @@ function CollectionsTab() {
         .order("collected_at", { ascending: false }),
       supabase
         .from("donation_collections")
-        .select("member_id, month, year")
+        .select("id, member_id, month, year")
         .eq("year", year),
     ]);
     setMembers((mem as Member[]) ?? []);
