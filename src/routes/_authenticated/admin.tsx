@@ -2079,6 +2079,8 @@ function CollectionsTab() {
   const [members, setMembers] = useState<Member[]>([]);
   const [collections, setCollections] = useState<Collection[]>([]);
   const [yearCollections, setYearCollections] = useState<Collection[]>([]);
+  const [futureCollections, setFutureCollections] = useState<Collection[]>([]);
+
   const [view, setView] = useState<"paid" | "unpaid" | "advance">("paid");
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
