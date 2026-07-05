@@ -2697,15 +2697,16 @@ function CollectionsTab() {
               </tr>
             </thead>
             <tbody>
-              {advanceList.map(({ member: m, advanceMonths }) => (
+              {advanceList.map(({ member: m, advanceSlots }) => (
                 <tr key={m.id} className="border-t border-sky-200">
                   <td className="p-2 text-foreground">{m.member_no ?? "-"}</td>
                   <td className="p-2 text-foreground">{m.name}</td>
                   <td className="p-2 text-muted-foreground">{m.mobile}</td>
                   <td className="p-2 font-semibold text-sky-700">
-                    {joinMonthsBn(advanceMonths)}{" "}
-                    <span className="text-xs font-normal text-muted-foreground">({advanceMonths.length} মাস)</span>
+                    {joinSlotsBn(advanceSlots)}{" "}
+                    <span className="text-xs font-normal text-muted-foreground">({advanceSlots.length} মাস)</span>
                   </td>
+
                 </tr>
               ))}
             </tbody>
