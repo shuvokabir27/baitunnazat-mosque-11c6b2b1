@@ -2207,7 +2207,7 @@ function CollectionsTab() {
 
   const load = async () => {
     setLoading(true);
-    const [{ data: mem }, { data: monthCol }, { data: yearCol }] = await Promise.all([
+    const [{ data: mem }, { data: monthCol }, { data: yearCol }, { data: futureCol }] = await Promise.all([
       supabase
         .from("members")
         .select("id, member_no, name, father_name, mobile, address, monthly_donation, created_at")
@@ -2222,10 +2222,15 @@ function CollectionsTab() {
         .from("donation_collections")
         .select("id, member_id, month, year")
         .eq("year", year),
+      supabase
+        .from("donation_collections")
+        .select("id, member_id, month, year")
+        .gte("year", now.getFullYear()),
     ]);
     setMembers((mem as Member[]) ?? []);
     setCollections((monthCol as Collection[]) ?? []);
     setYearCollections((yearCol as Collection[]) ?? []);
+    setFutureCollections((futureCol as Collection[]) ?? []);
     setLoading(false);
   };
 
