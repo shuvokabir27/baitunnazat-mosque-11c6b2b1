@@ -2523,7 +2523,7 @@ function CollectionsTab() {
           </button>
           <button
             onClick={downloadPdf}
-            disabled={collections.length === 0}
+            disabled={view === "advance" ? advanceList.length === 0 : collections.length === 0}
             className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-3 py-2 text-sm font-semibold text-foreground disabled:opacity-50"
           >
             <FileDown className="h-4 w-4" /> পিডিএফ
