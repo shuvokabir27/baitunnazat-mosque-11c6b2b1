@@ -2382,29 +2382,77 @@ function CollectionsTab() {
   const periodLabel = `${BN_MONTHS[month - 1]} ${year}`;
 
   const downloadExcel = () => {
-    const header = ["সদস্য নম্বর", "নাম", "মোবাইল", "টাকার পরিমাণ", "নোট", "তারিখ"];
-    const rows = collections.map((c) => [
-      String(c.member_no ?? ""),
-      c.member_name,
-      c.mobile ?? "",
-      String(c.amount),
-      c.note ?? "",
-      new Date(c.collected_at).toLocaleDateString("bn-BD"),
-    ]);
     const esc = (v: string) => `"${v.replace(/"/g, '""')}"`;
-    const csv = [header, ...rows, ["", "", "মোট", String(total), "", ""]]
+    let header: string[];
+    let rows: string[][];
+    let footer: string[][] = [];
+    let filename = `দান-আদায়-${periodLabel}.csv`;
+
+    if (view === "advance") {
+      header = ["সদস্য নম্বর", "নাম", "মোবাইল", "অগ্রিম মাস", "কত মাস"];
+      rows = advanceList.map(({ member: m, advanceSlots }) => [
+        String(m.member_no ?? ""),
+        m.name,
+        m.mobile ?? "",
+        joinSlotsBn(advanceSlots),
+        `${advanceSlots.length} মাস`,
+      ]);
+      filename = "অগ্রিম-দান-আদায়.csv";
+    } else {
+      header = ["সদস্য নম্বর", "নাম", "মোবাইল", "টাকার পরিমাণ", "নোট", "তারিখ"];
+      rows = collections.map((c) => [
+        String(c.member_no ?? ""),
+        c.member_name,
+        c.mobile ?? "",
+        String(c.amount),
+        c.note ?? "",
+        new Date(c.collected_at).toLocaleDateString("bn-BD"),
+      ]);
+      footer = [["", "", "মোট", String(total), "", ""]];
+    }
+
+    const csv = [header, ...rows, ...footer]
       .map((r) => r.map(esc).join(","))
       .join("\r\n");
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `দান-আদায়-${periodLabel}.csv`;
+    a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
   };
 
   const downloadPdf = () => {
+    if (view === "advance") {
+      const rows = advanceList
+        .map(
+          ({ member: m, advanceSlots }) =>
+            `<tr><td>${m.member_no ?? ""}</td><td>${m.name}</td><td>${m.mobile ?? ""}</td><td>${joinSlotsBn(advanceSlots)}</td><td>${advanceSlots.length} মাস</td></tr>`,
+        )
+        .join("");
+      const html = `<!DOCTYPE html><html lang="bn"><head><meta charset="utf-8"><title>অগ্রিম দান আদায়</title>
+        <style>
+          body{font-family:'Noto Sans Bengali','Segoe UI',sans-serif;padding:24px;color:#1a1a1a}
+          h1{font-size:18px;text-align:center;margin:0 0 4px}
+          p{text-align:center;margin:0 0 16px;color:#555;font-size:12px}
+          table{width:100%;border-collapse:collapse;font-size:12px}
+          th,td{border:1px solid #999;padding:6px 8px;text-align:left}
+          th{background:#0369a1;color:#fff}
+        </style></head><body>
+        <h1>${mosque.name}</h1>
+        <p>অগ্রিম দান আদায় তালিকা — মোট ${advanceList.length} জন</p>
+        <table><thead><tr><th>সদস্য নম্বর</th><th>নাম</th><th>মোবাইল</th><th>অগ্রিম মাস</th><th>কত মাস</th></tr></thead>
+        <tbody>${rows}</tbody></table>
+        <script>window.onload=function(){window.print()}<\/script>
+        </body></html>`;
+      const w = window.open("", "_blank");
+      if (w) {
+        w.document.write(html);
+        w.document.close();
+      }
+      return;
+    }
     const rows = collections
       .map(
         (c) =>
