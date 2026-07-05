@@ -2275,20 +2275,27 @@ function CollectionsTab() {
           })
           .filter((x) => x.unpaidMonths.length > 0);
 
-  // অগ্রিম আদায় — যারা এখনো আসেনি এমন ভবিষ্যৎ মাসের দান আগেই দিয়েছেন
-  const advanceList =
-    year < now.getFullYear()
-      ? []
-      : members
-          .map((m) => {
-            const paidSet = paidMonthsByMember.get(m.id) ?? new Set<number>();
-            const advanceMonths: number[] = [];
-            for (let mo = monthsElapsed + 1; mo <= 12; mo++) {
-              if (paidSet.has(mo)) advanceMonths.push(mo);
-            }
-            return { member: m, advanceMonths };
-          })
-          .filter((x) => x.advanceMonths.length > 0);
+  // অগ্রিম আদায় — যারা এখনো আসেনি এমন ভবিষ্যৎ মাসের দান আগেই দিয়েছেন (একাধিক বছর জুড়ে)
+  const nowYear = now.getFullYear();
+  const nowMonth = now.getMonth() + 1;
+  const futureSlotsByMember = new Map<string, { year: number; month: number }[]>();
+  futureCollections.forEach((c) => {
+    if (!c.member_id) return;
+    const isFuture = c.year > nowYear || (c.year === nowYear && c.month > nowMonth);
+    if (!isFuture) return;
+    const arr = futureSlotsByMember.get(c.member_id) ?? [];
+    arr.push({ year: c.year, month: c.month });
+    futureSlotsByMember.set(c.member_id, arr);
+  });
+  const advanceList = members
+    .map((m) => {
+      const advanceSlots = (futureSlotsByMember.get(m.id) ?? []).sort(
+        (a, b) => a.year - b.year || a.month - b.month,
+      );
+      return { member: m, advanceSlots };
+    })
+    .filter((x) => x.advanceSlots.length > 0);
+
 
 
 
