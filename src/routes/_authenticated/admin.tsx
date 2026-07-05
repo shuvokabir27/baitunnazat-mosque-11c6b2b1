@@ -2039,6 +2039,20 @@ function bnYear(y: number): string {
   return String(y).replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)]);
 }
 
+// একাধিক বছরের অগ্রিম মাস বছরভিত্তিক সাজানো: "আগ, সেপ্ট ও ডিসে ২০২৬; জানু ও ফেব্রু ২০২৭"
+function joinSlotsBn(slots: { year: number; month: number }[]): string {
+  const byYear = new Map<number, number[]>();
+  slots.forEach((s) => {
+    const arr = byYear.get(s.year) ?? [];
+    arr.push(s.month);
+    byYear.set(s.year, arr);
+  });
+  return [...byYear.keys()]
+    .sort((a, b) => a - b)
+    .map((y) => `${joinMonthsBn(byYear.get(y)!.sort((a, b) => a - b))} ${bnYear(y)}`)
+    .join("; ");
+}
+
 
 
 
