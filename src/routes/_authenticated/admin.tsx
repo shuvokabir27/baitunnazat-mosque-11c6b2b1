@@ -2039,6 +2039,20 @@ function bnYear(y: number): string {
   return String(y).replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)]);
 }
 
+// একাধিক বছরের অগ্রিম মাস বছরভিত্তিক সাজানো: "আগ, সেপ্ট ও ডিসে ২০২৬; জানু ও ফেব্রু ২০২৭"
+function joinSlotsBn(slots: { year: number; month: number }[]): string {
+  const byYear = new Map<number, number[]>();
+  slots.forEach((s) => {
+    const arr = byYear.get(s.year) ?? [];
+    arr.push(s.month);
+    byYear.set(s.year, arr);
+  });
+  return [...byYear.keys()]
+    .sort((a, b) => a - b)
+    .map((y) => `${joinMonthsBn(byYear.get(y)!.sort((a, b) => a - b))} ${bnYear(y)}`)
+    .join("; ");
+}
+
 
 
 
@@ -2065,6 +2079,8 @@ function CollectionsTab() {
   const [members, setMembers] = useState<Member[]>([]);
   const [collections, setCollections] = useState<Collection[]>([]);
   const [yearCollections, setYearCollections] = useState<Collection[]>([]);
+  const [futureCollections, setFutureCollections] = useState<Collection[]>([]);
+
   const [view, setView] = useState<"paid" | "unpaid" | "advance">("paid");
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
@@ -2191,7 +2207,7 @@ function CollectionsTab() {
 
   const load = async () => {
     setLoading(true);
-    const [{ data: mem }, { data: monthCol }, { data: yearCol }] = await Promise.all([
+    const [{ data: mem }, { data: monthCol }, { data: yearCol }, { data: futureCol }] = await Promise.all([
       supabase
         .from("members")
         .select("id, member_no, name, father_name, mobile, address, monthly_donation, created_at")
@@ -2206,10 +2222,15 @@ function CollectionsTab() {
         .from("donation_collections")
         .select("id, member_id, month, year")
         .eq("year", year),
+      supabase
+        .from("donation_collections")
+        .select("id, member_id, month, year")
+        .gte("year", now.getFullYear()),
     ]);
     setMembers((mem as Member[]) ?? []);
     setCollections((monthCol as Collection[]) ?? []);
     setYearCollections((yearCol as Collection[]) ?? []);
+    setFutureCollections((futureCol as Collection[]) ?? []);
     setLoading(false);
   };
 
@@ -2254,20 +2275,27 @@ function CollectionsTab() {
           })
           .filter((x) => x.unpaidMonths.length > 0);
 
-  // অগ্রিম আদায় — যারা এখনো আসেনি এমন ভবিষ্যৎ মাসের দান আগেই দিয়েছেন
-  const advanceList =
-    year < now.getFullYear()
-      ? []
-      : members
-          .map((m) => {
-            const paidSet = paidMonthsByMember.get(m.id) ?? new Set<number>();
-            const advanceMonths: number[] = [];
-            for (let mo = monthsElapsed + 1; mo <= 12; mo++) {
-              if (paidSet.has(mo)) advanceMonths.push(mo);
-            }
-            return { member: m, advanceMonths };
-          })
-          .filter((x) => x.advanceMonths.length > 0);
+  // অগ্রিম আদায় — যারা এখনো আসেনি এমন ভবিষ্যৎ মাসের দান আগেই দিয়েছেন (একাধিক বছর জুড়ে)
+  const nowYear = now.getFullYear();
+  const nowMonth = now.getMonth() + 1;
+  const futureSlotsByMember = new Map<string, { year: number; month: number }[]>();
+  futureCollections.forEach((c) => {
+    if (!c.member_id) return;
+    const isFuture = c.year > nowYear || (c.year === nowYear && c.month > nowMonth);
+    if (!isFuture) return;
+    const arr = futureSlotsByMember.get(c.member_id) ?? [];
+    arr.push({ year: c.year, month: c.month });
+    futureSlotsByMember.set(c.member_id, arr);
+  });
+  const advanceList = members
+    .map((m) => {
+      const advanceSlots = (futureSlotsByMember.get(m.id) ?? []).sort(
+        (a, b) => a.year - b.year || a.month - b.month,
+      );
+      return { member: m, advanceSlots };
+    })
+    .filter((x) => x.advanceSlots.length > 0);
+
 
 
 
@@ -2567,7 +2595,7 @@ function CollectionsTab() {
           {view === "paid"
             ? `${periodLabel} — মোট ${collections.length} জন আদায় করেছেন।`
             : view === "advance"
-              ? `${year} সালে ${advanceList.length} জন অগ্রিম দান দিয়েছেন।`
+              ? `মোট ${advanceList.length} জন অগ্রিম দান দিয়েছেন।`
               : `${year} সালে ${unpaidList.length} জনের বকেয়া রয়েছে।`}
         </p>
         {view === "paid" && (
@@ -2669,15 +2697,16 @@ function CollectionsTab() {
               </tr>
             </thead>
             <tbody>
-              {advanceList.map(({ member: m, advanceMonths }) => (
+              {advanceList.map(({ member: m, advanceSlots }) => (
                 <tr key={m.id} className="border-t border-sky-200">
                   <td className="p-2 text-foreground">{m.member_no ?? "-"}</td>
                   <td className="p-2 text-foreground">{m.name}</td>
                   <td className="p-2 text-muted-foreground">{m.mobile}</td>
                   <td className="p-2 font-semibold text-sky-700">
-                    {joinMonthsBn(advanceMonths)}{" "}
-                    <span className="text-xs font-normal text-muted-foreground">({advanceMonths.length} মাস)</span>
+                    {joinSlotsBn(advanceSlots)}{" "}
+                    <span className="text-xs font-normal text-muted-foreground">({advanceSlots.length} মাস)</span>
                   </td>
+
                 </tr>
               ))}
             </tbody>
