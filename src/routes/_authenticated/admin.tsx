@@ -2595,7 +2595,7 @@ function CollectionsTab() {
           {view === "paid"
             ? `${periodLabel} — মোট ${collections.length} জন আদায় করেছেন।`
             : view === "advance"
-              ? `${year} সালে ${advanceList.length} জন অগ্রিম দান দিয়েছেন।`
+              ? `মোট ${advanceList.length} জন অগ্রিম দান দিয়েছেন।`
               : `${year} সালে ${unpaidList.length} জনের বকেয়া রয়েছে।`}
         </p>
         {view === "paid" && (
