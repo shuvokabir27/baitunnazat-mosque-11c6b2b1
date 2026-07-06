@@ -1,29 +1,35 @@
 import { useMemo } from "react";
 import DOMPurify from "dompurify";
+import { useHydrated } from "@tanstack/react-router";
 import { useSiteContent } from "@/lib/use-site-content";
 
 /**
  * Scrolling (marquee) title bar controlled from the admin panel.
  * Renders sanitized rich HTML and scrolls it horizontally.
  *
+ * DOMPurify relies on the browser DOM, which does not exist during SSR
+ * (Cloudflare Worker). Running it on the server crashes the render and
+ * exhausts Worker resource limits, so we sanitize + render on the client only.
+ *
  * variant:
  *  - "inline"       → sits in the page flow (used on the home page, desktop only)
  *  - "mobile-fixed" → fixed just above the bottom nav, visible on every page (mobile only)
  */
 export function MarqueeBar({ variant = "inline" }: { variant?: "inline" | "mobile-fixed" | "desktop-top" }) {
+  const hydrated = useHydrated();
   const { marquee } = useSiteContent();
 
   const safeHtml = useMemo(() => {
-    if (!marquee?.html) return "";
+    if (!hydrated || typeof window === "undefined" || !marquee?.html) return "";
     // Allow inline styling (color, bold, italic) and basic formatting tags only.
     return DOMPurify.sanitize(marquee.html, {
       ALLOWED_TAGS: ["b", "strong", "i", "em", "u", "s", "span", "br", "mark", "sub", "sup", "a", "font"],
       ALLOWED_ATTR: ["style", "href", "target", "rel", "color"],
       ALLOWED_URI_REGEXP: /^(https?:|mailto:|tel:)/i,
     });
-  }, [marquee?.html]);
+  }, [hydrated, marquee?.html]);
 
-  if (!marquee?.enabled || !safeHtml.trim()) return null;
+  if (!hydrated || !marquee?.enabled || !safeHtml.trim()) return null;
 
   const duration = Math.max(5, Math.min(120, marquee.speed || 20));
 
