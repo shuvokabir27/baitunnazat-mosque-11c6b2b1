@@ -2719,7 +2719,31 @@ function CollectionsTab({ role }: { role: UserRole }) {
         collections.length === 0 ? (
           <p className="py-8 text-center text-sm text-muted-foreground">এই মাসে কোনো আদায় রেকর্ড নেই।</p>
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-border">
+          <>
+          {/* mobile cards */}
+          <div className="space-y-2 sm:hidden">
+            {collections.map((c) => (
+              <div key={c.id} className="rounded-xl border border-border bg-card p-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="font-semibold text-foreground">{c.member_name}</p>
+                    <p className="text-xs text-muted-foreground">#{c.member_no ?? "-"} · {c.mobile}</p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <span className="font-bold text-emerald-700">{c.amount} ৳</span>
+                    {role === "admin" && (
+                      <button onClick={() => setDeleteTarget(c)} aria-label="মুছুন" className="text-destructive">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">{new Date(c.collected_at).toLocaleDateString("bn-BD")}</p>
+              </div>
+            ))}
+          </div>
+          {/* desktop table */}
+          <div className="hidden overflow-x-auto rounded-xl border border-border sm:block">
             <table className="w-full text-sm">
               <thead className="bg-secondary text-foreground">
                 <tr>
@@ -2751,6 +2775,7 @@ function CollectionsTab({ role }: { role: UserRole }) {
               </tbody>
             </table>
           </div>
+          </>
         )
       ) : view === "unpaid" ? (
         unpaidList.length === 0 ? (
