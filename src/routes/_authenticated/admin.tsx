@@ -2112,7 +2112,7 @@ type Collection = {
 
 const PAYMENT_METHODS = ["নগদ", "বিকাশ", "নগদ (অ্যাকাউন্ট)", "রকেট", "ব্যাংক", "অন্যান্য"];
 
-function CollectionsTab() {
+function CollectionsTab({ role }: { role: UserRole }) {
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 1);
