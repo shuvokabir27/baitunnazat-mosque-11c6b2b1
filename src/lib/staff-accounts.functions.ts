@@ -47,8 +47,8 @@ export const createStaffAccount = createServerFn({ method: "POST" })
     if (!/^[a-z0-9_]{3,20}$/.test(username)) {
       throw new Error("ইউজারনেম ৩-২০ অক্ষরের হতে হবে (শুধু ইংরেজি অক্ষর, সংখ্যা ও _)।");
     }
-    if (!/^\d{6}$/.test(pin)) {
-      throw new Error("পিন অবশ্যই ৬ সংখ্যার হতে হবে।");
+    if (!/^\d{4,32}$/.test(pin)) {
+      throw new Error("পিন ৪ থেকে ৩২ সংখ্যার হতে হবে।");
     }
     return { username, pin, name };
   })
