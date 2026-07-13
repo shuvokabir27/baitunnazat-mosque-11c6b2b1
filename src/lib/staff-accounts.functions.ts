@@ -102,8 +102,8 @@ export const updateStaffAccount = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { id: string; pin?: string; name?: string }) => {
     const pin = input.pin != null ? String(input.pin).trim() : undefined;
-    if (pin != null && pin !== "" && !/^\d{6}$/.test(pin)) {
-      throw new Error("পিন অবশ্যই ৬ সংখ্যার হতে হবে।");
+    if (pin != null && pin !== "" && !/^\d{4,32}$/.test(pin)) {
+      throw new Error("পিন ৪ থেকে ৩২ সংখ্যার হতে হবে।");
     }
     return { id: input.id, pin: pin || undefined, name: input.name?.trim() };
   })
