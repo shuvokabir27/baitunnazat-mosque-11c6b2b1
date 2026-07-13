@@ -2352,7 +2352,7 @@ function CollectionsTab({ role }: { role: UserRole }) {
             (m.mobile ?? "").toLowerCase().includes(q) ||
             (m.name ?? "").toLowerCase().includes(q),
         )
-        .slice(0, 8)
+        .slice(0, 50)
     : [];
 
   const paidIds = new Set(collections.map((c) => c.member_id).filter(Boolean) as string[]);
