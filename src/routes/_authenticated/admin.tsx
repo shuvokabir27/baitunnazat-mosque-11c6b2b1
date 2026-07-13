@@ -64,6 +64,14 @@ export const Route = createFileRoute("/_authenticated/admin")({
 type Status = "loading" | "denied" | "ready";
 type UserRole = "admin" | "finance";
 
+function getGreeting(): { text: string; emoji: string } {
+  const h = new Date().getHours();
+  if (h >= 5 && h < 12) return { text: "শুভ সকাল", emoji: "🌅" };
+  if (h >= 12 && h < 16) return { text: "শুভ দুপুর", emoji: "☀️" };
+  if (h >= 16 && h < 19) return { text: "শুভ বিকাল", emoji: "🌇" };
+  return { text: "শুভ সন্ধ্যা / রাত", emoji: "🌙" };
+}
+
 function AdminPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
