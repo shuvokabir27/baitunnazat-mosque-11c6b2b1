@@ -2705,7 +2705,7 @@ function CollectionsTab({ role }: { role: UserRole }) {
       <div className="grid grid-cols-3 gap-2">
         <button
           onClick={() => setView("paid")}
-          className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
+          className={`w-full rounded-full px-2 py-2 text-center text-xs font-semibold transition sm:text-sm ${
             view === "paid"
               ? "gradient-emerald text-primary-foreground"
               : "bg-secondary text-foreground"
