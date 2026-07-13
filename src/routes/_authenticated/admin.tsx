@@ -1909,24 +1909,26 @@ function MembersTab({ role }: { role: UserRole }) {
                   <td className="p-2 text-foreground">{m.mobile}</td>
                   <td className="p-2 text-muted-foreground">{m.address}</td>
                   <td className="p-2 text-foreground">{m.monthly_donation ?? 0} ৳</td>
-                  <td className="p-2 text-right">
-                    <div className="flex justify-end gap-1.5">
-                      <button
-                        onClick={() => openEdit(m)}
-                        className="rounded-lg bg-primary/10 p-1.5 text-primary hover:bg-primary/20"
-                        aria-label="সম্পাদনা"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => setConfirmTarget(m)}
-                        className="rounded-lg bg-destructive/10 p-1.5 text-destructive hover:bg-destructive/20"
-                        aria-label="মুছুন"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </td>
+                  {role === "admin" && (
+                    <td className="p-2 text-right">
+                      <div className="flex justify-end gap-1.5">
+                        <button
+                          onClick={() => openEdit(m)}
+                          className="rounded-lg bg-primary/10 p-1.5 text-primary hover:bg-primary/20"
+                          aria-label="সম্পাদনা"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => setConfirmTarget(m)}
+                          className="rounded-lg bg-destructive/10 p-1.5 text-destructive hover:bg-destructive/20"
+                          aria-label="মুছুন"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
