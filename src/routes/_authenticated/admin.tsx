@@ -46,6 +46,7 @@ import {
   TrendingDown,
   ScrollText,
   UserCog,
+  KeyRound,
 
 
 } from "lucide-react";
