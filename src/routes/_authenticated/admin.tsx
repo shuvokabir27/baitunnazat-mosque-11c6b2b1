@@ -4482,6 +4482,7 @@ function StaffAccountsTab() {
 
   const [editId, setEditId] = useState<string | null>(null);
   const [editPin, setEditPin] = useState("");
+  const [editName, setEditName] = useState("");
   const [savingId, setSavingId] = useState<string | null>(null);
 
   const load = async () => {
