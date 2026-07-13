@@ -2643,7 +2643,7 @@ function CollectionsTab({ role }: { role: UserRole }) {
               />
               <p className="mt-2 px-1 text-xs text-muted-foreground">নাম বা সদস্য নম্বর দিয়েও খোঁজা যাবে</p>
               {matches.length > 0 && (
-                <div className="absolute z-10 mt-1 w-full overflow-hidden rounded-xl border border-border bg-card shadow-lg">
+                <div className="absolute z-30 mt-1 max-h-72 w-full divide-y divide-border overflow-y-auto rounded-xl border border-border bg-card shadow-xl">
                   {matches.map((m) => (
                     <button
                       key={m.id}
