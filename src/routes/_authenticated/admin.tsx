@@ -4520,17 +4520,18 @@ function StaffAccountsTab() {
     }
   };
 
-  const savePin = async (id: string) => {
-    if (!/^\d{6}$/.test(editPin)) {
+  const saveEdit = async (id: string) => {
+    if (editPin && !/^\d{6}$/.test(editPin)) {
       toast.error("পিন অবশ্যই ৬ সংখ্যার হতে হবে।");
       return;
     }
     setSavingId(id);
     try {
-      await updateFn({ data: { id, pin: editPin } });
-      toast.success("পিন পরিবর্তন হয়েছে।");
+      await updateFn({ data: { id, pin: editPin || undefined, name: editName } });
+      toast.success("তথ্য পরিবর্তন হয়েছে।");
       setEditId(null);
       setEditPin("");
+      setEditName("");
       await load();
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "পরিবর্তন ব্যর্থ হয়েছে।");
