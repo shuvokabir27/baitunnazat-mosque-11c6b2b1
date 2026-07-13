@@ -4521,8 +4521,8 @@ function StaffAccountsTab() {
   };
 
   const saveEdit = async (id: string) => {
-    if (editPin && !/^\d{6}$/.test(editPin)) {
-      toast.error("পিন অবশ্যই ৬ সংখ্যার হতে হবে।");
+    if (editPin && !/^\d{4,32}$/.test(editPin)) {
+      toast.error("পিন ৪ থেকে ৩২ সংখ্যার হতে হবে।");
       return;
     }
     setSavingId(id);
