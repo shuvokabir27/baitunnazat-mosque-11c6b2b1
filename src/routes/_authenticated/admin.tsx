@@ -1887,7 +1887,46 @@ function MembersTab({ role }: { role: UserRole }) {
       ) : filtered.length === 0 ? (
         <p className="py-6 text-center text-sm text-muted-foreground">এই ফিল্টারে কোনো সদস্য পাওয়া যায়নি।</p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-border">
+        <>
+        {/* mobile cards */}
+        <div className="space-y-2 sm:hidden">
+          {filtered.map((m) => (
+            <div key={m.id} className="rounded-xl border border-border bg-card p-3">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-semibold text-foreground">{m.name}</p>
+                  <p className="text-xs font-semibold text-primary">#{m.member_no}</p>
+                </div>
+                {role === "admin" && (
+                  <div className="flex shrink-0 gap-1.5">
+                    <button
+                      onClick={() => openEdit(m)}
+                      className="rounded-lg bg-primary/10 p-1.5 text-primary hover:bg-primary/20"
+                      aria-label="সম্পাদনা"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => setConfirmTarget(m)}
+                      className="rounded-lg bg-destructive/10 p-1.5 text-destructive hover:bg-destructive/20"
+                      aria-label="মুছুন"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div className="mt-2 grid grid-cols-2 gap-1 text-xs">
+                <p className="text-muted-foreground">পিতা: <span className="text-foreground">{m.father_name}</span></p>
+                <p className="text-muted-foreground">মোবাইল: <span className="text-foreground">{m.mobile}</span></p>
+                <p className="text-muted-foreground">ঠিকানা: <span className="text-foreground">{m.address}</span></p>
+                <p className="text-muted-foreground">দান: <span className="font-semibold text-foreground">{m.monthly_donation ?? 0} ৳</span></p>
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* desktop table */}
+        <div className="hidden overflow-x-auto rounded-xl border border-border sm:block">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/40 text-left text-xs text-muted-foreground">
@@ -1934,6 +1973,7 @@ function MembersTab({ role }: { role: UserRole }) {
             </tbody>
           </table>
         </div>
+        </>
       )}
 
       {confirmTarget && (
@@ -2719,7 +2759,31 @@ function CollectionsTab({ role }: { role: UserRole }) {
         collections.length === 0 ? (
           <p className="py-8 text-center text-sm text-muted-foreground">এই মাসে কোনো আদায় রেকর্ড নেই।</p>
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-border">
+          <>
+          {/* mobile cards */}
+          <div className="space-y-2 sm:hidden">
+            {collections.map((c) => (
+              <div key={c.id} className="rounded-xl border border-border bg-card p-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="font-semibold text-foreground">{c.member_name}</p>
+                    <p className="text-xs text-muted-foreground">#{c.member_no ?? "-"} · {c.mobile}</p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <span className="font-bold text-emerald-700">{c.amount} ৳</span>
+                    {role === "admin" && (
+                      <button onClick={() => setDeleteTarget(c)} aria-label="মুছুন" className="text-destructive">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">{new Date(c.collected_at).toLocaleDateString("bn-BD")}</p>
+              </div>
+            ))}
+          </div>
+          {/* desktop table */}
+          <div className="hidden overflow-x-auto rounded-xl border border-border sm:block">
             <table className="w-full text-sm">
               <thead className="bg-secondary text-foreground">
                 <tr>
@@ -2751,12 +2815,38 @@ function CollectionsTab({ role }: { role: UserRole }) {
               </tbody>
             </table>
           </div>
+          </>
         )
       ) : view === "unpaid" ? (
         unpaidList.length === 0 ? (
         <p className="py-8 text-center text-sm text-muted-foreground">সবার দান আদায় সম্পন্ন হয়েছে। 🎉</p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-amber-300">
+        <>
+        {/* mobile cards */}
+        <div className="space-y-2 sm:hidden">
+          {unpaidList.map(({ member: m, unpaidMonths }) => (
+            <div key={m.id} className="rounded-xl border border-amber-300 bg-amber-50/40 p-3">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-semibold text-foreground">{m.name}</p>
+                  <p className="text-xs text-muted-foreground">#{m.member_no ?? "-"} · {m.mobile}</p>
+                </div>
+                <button
+                  onClick={() => openPay(m, unpaidMonths)}
+                  className="shrink-0 rounded-md gradient-emerald px-3 py-1.5 text-xs font-bold text-primary-foreground"
+                >
+                  আদায় করুন
+                </button>
+              </div>
+              <p className="mt-2 text-sm font-semibold text-amber-700">
+                {joinMonthsBn(unpaidMonths)}{" "}
+                <span className="text-xs font-normal text-muted-foreground">({unpaidMonths.length} মাস)</span>
+              </p>
+            </div>
+          ))}
+        </div>
+        {/* desktop table */}
+        <div className="hidden overflow-x-auto rounded-xl border border-amber-300 sm:block">
           <table className="w-full text-sm">
             <thead className="bg-amber-100 text-amber-900">
               <tr>
@@ -2790,11 +2880,27 @@ function CollectionsTab({ role }: { role: UserRole }) {
             </tbody>
           </table>
         </div>
+        </>
         )
       ) : advanceList.length === 0 ? (
         <p className="py-8 text-center text-sm text-muted-foreground">এখনো কেউ অগ্রিম দান দেননি।</p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-sky-300">
+        <>
+        {/* mobile cards */}
+        <div className="space-y-2 sm:hidden">
+          {advanceList.map(({ member: m, advanceSlots }) => (
+            <div key={m.id} className="rounded-xl border border-sky-300 bg-sky-50/40 p-3">
+              <div className="flex items-baseline justify-between gap-2">
+                <p className="font-semibold text-foreground">{m.name}</p>
+                <span className="shrink-0 text-xs font-normal text-muted-foreground">({advanceSlots.length} মাস)</span>
+              </div>
+              <p className="text-xs text-muted-foreground">#{m.member_no ?? "-"} · {m.mobile}</p>
+              <p className="mt-2 text-sm font-semibold text-sky-700">{joinSlotsBn(advanceSlots)}</p>
+            </div>
+          ))}
+        </div>
+        {/* desktop table */}
+        <div className="hidden overflow-x-auto rounded-xl border border-sky-300 sm:block">
           <table className="w-full text-sm">
             <thead className="bg-sky-100 text-sky-900">
               <tr>
@@ -2814,12 +2920,12 @@ function CollectionsTab({ role }: { role: UserRole }) {
                     {joinSlotsBn(advanceSlots)}{" "}
                     <span className="text-xs font-normal text-muted-foreground">({advanceSlots.length} মাস)</span>
                   </td>
-
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+        </>
       )}
 
 
@@ -4198,7 +4304,37 @@ ${sections}
           </button>
         </div>
         <p className="mb-2 text-xs text-muted-foreground">এক বা একাধিক মাস সিলেক্ট করে PDF ডাউনলোড করুন। কোনো মাস সিলেক্ট না করলে সব মাস ডাউনলোড হবে।</p>
-        <div className="overflow-x-auto rounded-xl border border-border">
+        {/* mobile cards */}
+        <div className="space-y-2 sm:hidden">
+          {summary.length === 0 ? (
+            <p className="rounded-xl border border-border px-3 py-6 text-center text-sm text-muted-foreground">
+              {loading ? "লোড হচ্ছে…" : "কোনো তথ্য নেই।"}
+            </p>
+          ) : (
+            summary.map((s) => {
+              const key = `${s.year}-${s.month}`;
+              return (
+                <div key={key} className="rounded-xl border border-border bg-card p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <label className="flex min-w-0 items-center gap-2">
+                      <input type="checkbox" checked={selected.has(key)} onChange={() => toggleSelect(key)} aria-label={`${FIN_MONTHS[s.month - 1]} নির্বাচন`} />
+                      <span className="font-semibold text-foreground">{FIN_MONTHS[s.month - 1]} {finBn(s.year)}</span>
+                    </label>
+                    <span className="shrink-0 font-bold tabular-nums text-lime-700">{finMoney(s.closing)}</span>
+                  </div>
+                  <div className="mt-2 grid grid-cols-2 gap-1 text-xs">
+                    <p className="text-muted-foreground">গত জের: <span className="tabular-nums text-slate-600">{finMoney(s.opening)}</span></p>
+                    <p className="text-muted-foreground">আয়: <span className="tabular-nums text-emerald-700">{finMoney(s.income)}</span></p>
+                    <p className="text-muted-foreground">মোট আয়: <span className="tabular-nums text-foreground">{finMoney(s.totalIncome)}</span></p>
+                    <p className="text-muted-foreground">ব্যয়: <span className="tabular-nums text-rose-700">{finMoney(s.expense)}</span></p>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+        {/* desktop table */}
+        <div className="hidden overflow-x-auto rounded-xl border border-border sm:block">
           <table className="w-full min-w-[600px] text-sm">
             <thead>
               <tr className="bg-muted text-foreground">
