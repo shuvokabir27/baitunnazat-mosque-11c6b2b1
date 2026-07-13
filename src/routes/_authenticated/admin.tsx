@@ -75,6 +75,7 @@ function AdminPage() {
   const [showVisit, setShowVisit] = useState(false);
   const [tab, setTab] = useState<Tab>("mosque");
   const [role, setRole] = useState<UserRole>("admin");
+  const [userName, setUserName] = useState<string>("");
 
   useEffect(() => {
     let cancelled = false;
