@@ -4304,7 +4304,37 @@ ${sections}
           </button>
         </div>
         <p className="mb-2 text-xs text-muted-foreground">এক বা একাধিক মাস সিলেক্ট করে PDF ডাউনলোড করুন। কোনো মাস সিলেক্ট না করলে সব মাস ডাউনলোড হবে।</p>
-        <div className="overflow-x-auto rounded-xl border border-border">
+        {/* mobile cards */}
+        <div className="space-y-2 sm:hidden">
+          {summary.length === 0 ? (
+            <p className="rounded-xl border border-border px-3 py-6 text-center text-sm text-muted-foreground">
+              {loading ? "লোড হচ্ছে…" : "কোনো তথ্য নেই।"}
+            </p>
+          ) : (
+            summary.map((s) => {
+              const key = `${s.year}-${s.month}`;
+              return (
+                <div key={key} className="rounded-xl border border-border bg-card p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <label className="flex min-w-0 items-center gap-2">
+                      <input type="checkbox" checked={selected.has(key)} onChange={() => toggleSelect(key)} aria-label={`${FIN_MONTHS[s.month - 1]} নির্বাচন`} />
+                      <span className="font-semibold text-foreground">{FIN_MONTHS[s.month - 1]} {finBn(s.year)}</span>
+                    </label>
+                    <span className="shrink-0 font-bold tabular-nums text-lime-700">{finMoney(s.closing)}</span>
+                  </div>
+                  <div className="mt-2 grid grid-cols-2 gap-1 text-xs">
+                    <p className="text-muted-foreground">গত জের: <span className="tabular-nums text-slate-600">{finMoney(s.opening)}</span></p>
+                    <p className="text-muted-foreground">আয়: <span className="tabular-nums text-emerald-700">{finMoney(s.income)}</span></p>
+                    <p className="text-muted-foreground">মোট আয়: <span className="tabular-nums text-foreground">{finMoney(s.totalIncome)}</span></p>
+                    <p className="text-muted-foreground">ব্যয়: <span className="tabular-nums text-rose-700">{finMoney(s.expense)}</span></p>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+        {/* desktop table */}
+        <div className="hidden overflow-x-auto rounded-xl border border-border sm:block">
           <table className="w-full min-w-[600px] text-sm">
             <thead>
               <tr className="bg-muted text-foreground">
