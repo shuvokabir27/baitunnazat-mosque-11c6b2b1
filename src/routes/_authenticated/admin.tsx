@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  listStaffAccounts,
+  createStaffAccount,
+  updateStaffAccount,
+  deleteStaffAccount,
+  type StaffAccount,
+} from "@/lib/staff-accounts.functions";
 import {
   LogOut,
   Save,
@@ -37,6 +45,8 @@ import {
   TrendingUp,
   TrendingDown,
   ScrollText,
+  UserCog,
+  KeyRound,
 
 
 } from "lucide-react";
@@ -52,6 +62,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
 });
 
 type Status = "loading" | "denied" | "ready";
+type UserRole = "admin" | "finance";
 
 function AdminPage() {
   const navigate = useNavigate();
@@ -63,6 +74,7 @@ function AdminPage() {
   const [saved, setSaved] = useState(false);
   const [showVisit, setShowVisit] = useState(false);
   const [tab, setTab] = useState<Tab>("mosque");
+  const [role, setRole] = useState<UserRole>("admin");
 
   useEffect(() => {
     let cancelled = false;
@@ -81,29 +93,33 @@ function AdminPage() {
         return;
       }
 
-      // Retry the admin check a couple of times in case the token is still
+      // Retry the role check a couple of times in case the token is still
       // propagating to the server.
-      let admin: { isAdmin: boolean } | null = null;
+      let roles: string[] | null = null;
       for (let i = 0; i < 3; i++) {
         try {
-          const { data: role, error } = await supabase
+          const { data, error } = await supabase
             .from("user_roles")
             .select("role")
-            .eq("user_id", session.user.id)
-            .eq("role", "admin")
-            .maybeSingle();
+            .eq("user_id", session.user.id);
           if (error) throw error;
-          admin = { isAdmin: !!role };
+          roles = (data ?? []).map((r) => r.role as string);
           break;
         } catch {
           await new Promise((r) => setTimeout(r, 300));
         }
       }
       if (cancelled) return;
-      if (!admin?.isAdmin) {
+      const isAdmin = roles?.includes("admin") ?? false;
+      const isFinance = roles?.includes("finance") ?? false;
+      if (!isAdmin && !isFinance) {
         setStatus("denied");
         return;
       }
+      const resolvedRole: UserRole = isAdmin ? "admin" : "finance";
+      setRole(resolvedRole);
+      if (resolvedRole === "finance") setTab("members");
+
       try {
         const { data, error } = await supabase
           .from("site_content")
@@ -194,14 +210,16 @@ function AdminPage() {
             <ExternalLink className="h-4 w-4" />
             সাইট ভিজিট
           </a>
-          <button
-            onClick={save}
-            disabled={saving}
-            className="inline-flex items-center gap-1.5 rounded bg-[#2271b1] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#135e96] disabled:opacity-60"
-          >
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-            পরিবর্তন সংরক্ষণ
-          </button>
+          {role === "admin" && (
+            <button
+              onClick={save}
+              disabled={saving}
+              className="inline-flex items-center gap-1.5 rounded bg-[#2271b1] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#135e96] disabled:opacity-60"
+            >
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              পরিবর্তন সংরক্ষণ
+            </button>
+          )}
           <button
             onClick={signOut}
             className="grid h-8 w-8 place-items-center rounded text-white/80 hover:bg-white/10"
@@ -243,7 +261,7 @@ function AdminPage() {
 
       <div className="flex flex-col md:flex-row">
         {/* Sidebar */}
-        <Sidebar tab={tab} setTab={setTab} />
+        <Sidebar tab={tab} setTab={setTab} role={role} />
 
         {/* Content area */}
         <main className="min-w-0 flex-1 px-4 py-6 md:px-8">
@@ -270,6 +288,7 @@ function AdminPage() {
                 {tab === "members" && <MembersTab />}
                 {tab === "collections" && <CollectionsTab />}
                 {tab === "finance" && <FinanceTab />}
+                {tab === "users" && role === "admin" && <StaffAccountsTab />}
               </div>
             </div>
           </div>
@@ -279,7 +298,10 @@ function AdminPage() {
   );
 }
 
-type Tab = "site" | "mosque" | "slider" | "sections" | "marquee" | "prayer" | "staff" | "committee" | "ibadah" | "development" | "donate" | "footer" | "leads" | "masala" | "qa" | "addresses" | "members" | "collections" | "finance";
+type Tab = "site" | "mosque" | "slider" | "sections" | "marquee" | "prayer" | "staff" | "committee" | "ibadah" | "development" | "donate" | "footer" | "leads" | "masala" | "qa" | "addresses" | "members" | "collections" | "finance" | "users";
+
+// Tabs a "finance" role staff user is allowed to access.
+const FINANCE_TABS: Tab[] = ["members", "collections", "finance"];
 const TAB_LABELS: Record<Tab, string> = {
   site: "সাইট সেটিংস",
   mosque: "মসজিদ",
@@ -300,6 +322,7 @@ const TAB_LABELS: Record<Tab, string> = {
   members: "সদস্য তালিকা",
   collections: "দান আদায়",
   finance: "আয়-ব্যয় হিসাব",
+  users: "ইউজার ও রোল",
 };
 
 const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
@@ -322,6 +345,7 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   members: UserPlus,
   collections: HandCoins,
   finance: Wallet,
+  users: UserCog,
 };
 
 const TAB_GROUPS: {
@@ -374,12 +398,28 @@ const TAB_GROUPS: {
     accentBar: "bg-[#cc7a22]",
     tint: "bg-[#cc7a22]/10",
   },
+  {
+    label: "ব্যবহারকারী",
+    tabs: ["users"],
+    labelColor: "text-[#e06a6a]",
+    activeBg: "bg-[#c0392b]",
+    itemText: "text-[#eda6a6]",
+    hoverBg: "hover:bg-[#c0392b]/20 hover:text-white",
+    accentBar: "bg-[#c0392b]",
+    tint: "bg-[#c0392b]/10",
+  },
 ];
 
-function Sidebar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
+function Sidebar({ tab, setTab, role }: { tab: Tab; setTab: (t: Tab) => void; role: UserRole }) {
+  const groups =
+    role === "finance"
+      ? TAB_GROUPS.map((g) => ({ ...g, tabs: g.tabs.filter((t) => FINANCE_TABS.includes(t)) })).filter(
+          (g) => g.tabs.length > 0,
+        )
+      : TAB_GROUPS;
   return (
     <nav className="flex shrink-0 gap-3 overflow-x-auto bg-[#1d2327] p-1.5 text-[#f0f0f1] md:w-52 md:flex-col md:gap-2 md:overflow-visible md:p-2 md:py-3 md:min-h-[calc(100vh-3rem)]">
-      {TAB_GROUPS.map((group) => (
+      {groups.map((group) => (
         <div
           key={group.label}
           className={`flex shrink-0 gap-1 rounded-lg md:flex-col md:gap-0.5 md:p-1.5 ${group.tint}`}
@@ -4216,6 +4256,231 @@ ${sections}
             <p className="text-sm text-muted-foreground">কোনো এন্ট্রি নেই।</p>
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================ Staff / role accounts ============================
+
+function StaffAccountsTab() {
+  const listFn = useServerFn(listStaffAccounts);
+  const createFn = useServerFn(createStaffAccount);
+  const updateFn = useServerFn(updateStaffAccount);
+  const deleteFn = useServerFn(deleteStaffAccount);
+
+  const [accounts, setAccounts] = useState<StaffAccount[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [pin, setPin] = useState("");
+  const [creating, setCreating] = useState(false);
+
+  const [editId, setEditId] = useState<string | null>(null);
+  const [editPin, setEditPin] = useState("");
+  const [savingId, setSavingId] = useState<string | null>(null);
+
+  const load = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await listFn();
+      setAccounts(data as StaffAccount[]);
+    } catch {
+      setError("তালিকা লোড করা যায়নি।");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const create = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCreating(true);
+    try {
+      await createFn({ data: { username, pin, name } });
+      toast.success("স্টাফ অ্যাকাউন্ট তৈরি হয়েছে।");
+      setName("");
+      setUsername("");
+      setPin("");
+      await load();
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "তৈরি ব্যর্থ হয়েছে।");
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const savePin = async (id: string) => {
+    if (!/^\d{6}$/.test(editPin)) {
+      toast.error("পিন অবশ্যই ৬ সংখ্যার হতে হবে।");
+      return;
+    }
+    setSavingId(id);
+    try {
+      await updateFn({ data: { id, pin: editPin } });
+      toast.success("পিন পরিবর্তন হয়েছে।");
+      setEditId(null);
+      setEditPin("");
+      await load();
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "পরিবর্তন ব্যর্থ হয়েছে।");
+    } finally {
+      setSavingId(null);
+    }
+  };
+
+  const remove = async (id: string, uname: string) => {
+    if (!confirm(`"${uname}" অ্যাকাউন্টটি মুছে ফেলবেন?`)) return;
+    try {
+      await deleteFn({ data: { id } });
+      toast.success("অ্যাকাউন্ট মুছে ফেলা হয়েছে।");
+      await load();
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "মুছতে ব্যর্থ হয়েছে।");
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-2xl border border-border bg-card p-5 shadow-soft">
+        <h3 className="mb-1 text-base font-bold text-primary">নতুন স্টাফ অ্যাকাউন্ট</h3>
+        <p className="mb-4 text-xs text-muted-foreground">
+          "Finance" রোলের ব্যবহারকারী শুধুমাত্র সদস্য তালিকা, দান আদায় ও আয়-ব্যয় হিসাব পরিচালনা করতে পারবেন।
+        </p>
+        <form onSubmit={create} className="grid gap-3 sm:grid-cols-2">
+          <label className="block sm:col-span-2">
+            <span className="mb-1 block text-sm font-semibold text-foreground">নাম (ঐচ্ছিক)</span>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+              placeholder="যেমন: মো. আব্দুল্লাহ"
+            />
+          </label>
+          <label className="block">
+            <span className="mb-1 block text-sm font-semibold text-foreground">ইউজারনেম</span>
+            <input
+              value={username}
+              onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))}
+              required
+              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+              placeholder="finance01"
+            />
+          </label>
+          <label className="block">
+            <span className="mb-1 block text-sm font-semibold text-foreground">৬ সংখ্যার পিন</span>
+            <input
+              value={pin}
+              onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              required
+              inputMode="numeric"
+              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-center text-base tracking-[0.3em] outline-none focus:border-primary"
+              placeholder="••••••"
+            />
+          </label>
+          <div className="sm:col-span-2">
+            <button
+              type="submit"
+              disabled={creating}
+              className="inline-flex items-center gap-2 rounded-xl gradient-emerald px-4 py-2.5 text-sm font-bold text-primary-foreground disabled:opacity-60"
+            >
+              {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
+              অ্যাকাউন্ট তৈরি করুন
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div className="rounded-2xl border border-border bg-card p-5 shadow-soft">
+        <h3 className="mb-4 text-base font-bold text-primary">স্টাফ অ্যাকাউন্ট তালিকা</h3>
+        {loading ? (
+          <div className="flex justify-center py-6">
+            <Loader2 className="h-5 w-5 animate-spin text-primary" />
+          </div>
+        ) : error ? (
+          <p className="text-sm text-destructive">{error}</p>
+        ) : accounts.length === 0 ? (
+          <p className="text-sm text-muted-foreground">এখনো কোনো স্টাফ অ্যাকাউন্ট নেই।</p>
+        ) : (
+          <div className="space-y-3">
+            {accounts.map((a) => (
+              <div
+                key={a.id}
+                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-background px-4 py-3"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-foreground">
+                    {a.name || a.username}
+                    <span className="ml-2 rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
+                      Finance
+                    </span>
+                  </p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    ইউজার: <span className="font-mono">{a.username}</span> · পিন:{" "}
+                    <span className="font-mono">{a.pin}</span>
+                  </p>
+                </div>
+                {editId === a.id ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      value={editPin}
+                      onChange={(e) => setEditPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                      inputMode="numeric"
+                      placeholder="নতুন পিন"
+                      className="w-28 rounded-lg border border-border bg-background px-2 py-1.5 text-center text-sm tracking-widest outline-none focus:border-primary"
+                    />
+                    <button
+                      onClick={() => savePin(a.id)}
+                      disabled={savingId === a.id}
+                      className="grid h-8 w-8 place-items-center rounded-lg bg-emerald-600 text-white disabled:opacity-60"
+                      aria-label="সংরক্ষণ"
+                    >
+                      {savingId === a.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setEditId(null);
+                        setEditPin("");
+                      }}
+                      className="grid h-8 w-8 place-items-center rounded-lg bg-secondary text-foreground"
+                      aria-label="বাতিল"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        setEditId(a.id);
+                        setEditPin("");
+                      }}
+                      className="grid h-8 w-8 place-items-center rounded-lg bg-secondary text-foreground hover:bg-secondary/70"
+                      aria-label="পিন পরিবর্তন"
+                      title="পিন পরিবর্তন"
+                    >
+                      <KeyRound className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => remove(a.id, a.username)}
+                      className="grid h-8 w-8 place-items-center rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20"
+                      aria-label="মুছুন"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
