@@ -37,6 +37,7 @@ import {
   TrendingUp,
   TrendingDown,
   ScrollText,
+  UserCog,
 
 
 } from "lucide-react";
@@ -52,6 +53,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
 });
 
 type Status = "loading" | "denied" | "ready";
+type UserRole = "admin" | "finance";
 
 function AdminPage() {
   const navigate = useNavigate();
@@ -63,6 +65,7 @@ function AdminPage() {
   const [saved, setSaved] = useState(false);
   const [showVisit, setShowVisit] = useState(false);
   const [tab, setTab] = useState<Tab>("mosque");
+  const [role, setRole] = useState<UserRole>("admin");
 
   useEffect(() => {
     let cancelled = false;
@@ -81,29 +84,33 @@ function AdminPage() {
         return;
       }
 
-      // Retry the admin check a couple of times in case the token is still
+      // Retry the role check a couple of times in case the token is still
       // propagating to the server.
-      let admin: { isAdmin: boolean } | null = null;
+      let roles: string[] | null = null;
       for (let i = 0; i < 3; i++) {
         try {
-          const { data: role, error } = await supabase
+          const { data, error } = await supabase
             .from("user_roles")
             .select("role")
-            .eq("user_id", session.user.id)
-            .eq("role", "admin")
-            .maybeSingle();
+            .eq("user_id", session.user.id);
           if (error) throw error;
-          admin = { isAdmin: !!role };
+          roles = (data ?? []).map((r) => r.role as string);
           break;
         } catch {
           await new Promise((r) => setTimeout(r, 300));
         }
       }
       if (cancelled) return;
-      if (!admin?.isAdmin) {
+      const isAdmin = roles?.includes("admin") ?? false;
+      const isFinance = roles?.includes("finance") ?? false;
+      if (!isAdmin && !isFinance) {
         setStatus("denied");
         return;
       }
+      const resolvedRole: UserRole = isAdmin ? "admin" : "finance";
+      setRole(resolvedRole);
+      if (resolvedRole === "finance") setTab("members");
+
       try {
         const { data, error } = await supabase
           .from("site_content")
@@ -194,14 +201,16 @@ function AdminPage() {
             <ExternalLink className="h-4 w-4" />
             সাইট ভিজিট
           </a>
-          <button
-            onClick={save}
-            disabled={saving}
-            className="inline-flex items-center gap-1.5 rounded bg-[#2271b1] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#135e96] disabled:opacity-60"
-          >
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-            পরিবর্তন সংরক্ষণ
-          </button>
+          {role === "admin" && (
+            <button
+              onClick={save}
+              disabled={saving}
+              className="inline-flex items-center gap-1.5 rounded bg-[#2271b1] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#135e96] disabled:opacity-60"
+            >
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              পরিবর্তন সংরক্ষণ
+            </button>
+          )}
           <button
             onClick={signOut}
             className="grid h-8 w-8 place-items-center rounded text-white/80 hover:bg-white/10"
@@ -243,7 +252,7 @@ function AdminPage() {
 
       <div className="flex flex-col md:flex-row">
         {/* Sidebar */}
-        <Sidebar tab={tab} setTab={setTab} />
+        <Sidebar tab={tab} setTab={setTab} role={role} />
 
         {/* Content area */}
         <main className="min-w-0 flex-1 px-4 py-6 md:px-8">
@@ -279,7 +288,10 @@ function AdminPage() {
   );
 }
 
-type Tab = "site" | "mosque" | "slider" | "sections" | "marquee" | "prayer" | "staff" | "committee" | "ibadah" | "development" | "donate" | "footer" | "leads" | "masala" | "qa" | "addresses" | "members" | "collections" | "finance";
+type Tab = "site" | "mosque" | "slider" | "sections" | "marquee" | "prayer" | "staff" | "committee" | "ibadah" | "development" | "donate" | "footer" | "leads" | "masala" | "qa" | "addresses" | "members" | "collections" | "finance" | "users";
+
+// Tabs a "finance" role staff user is allowed to access.
+const FINANCE_TABS: Tab[] = ["members", "collections", "finance"];
 const TAB_LABELS: Record<Tab, string> = {
   site: "সাইট সেটিংস",
   mosque: "মসজিদ",
@@ -300,6 +312,7 @@ const TAB_LABELS: Record<Tab, string> = {
   members: "সদস্য তালিকা",
   collections: "দান আদায়",
   finance: "আয়-ব্যয় হিসাব",
+  users: "ইউজার ও রোল",
 };
 
 const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
@@ -322,6 +335,7 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   members: UserPlus,
   collections: HandCoins,
   finance: Wallet,
+  users: UserCog,
 };
 
 const TAB_GROUPS: {
@@ -374,12 +388,28 @@ const TAB_GROUPS: {
     accentBar: "bg-[#cc7a22]",
     tint: "bg-[#cc7a22]/10",
   },
+  {
+    label: "ব্যবহারকারী",
+    tabs: ["users"],
+    labelColor: "text-[#e06a6a]",
+    activeBg: "bg-[#c0392b]",
+    itemText: "text-[#eda6a6]",
+    hoverBg: "hover:bg-[#c0392b]/20 hover:text-white",
+    accentBar: "bg-[#c0392b]",
+    tint: "bg-[#c0392b]/10",
+  },
 ];
 
-function Sidebar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
+function Sidebar({ tab, setTab, role }: { tab: Tab; setTab: (t: Tab) => void; role: UserRole }) {
+  const groups =
+    role === "finance"
+      ? TAB_GROUPS.map((g) => ({ ...g, tabs: g.tabs.filter((t) => FINANCE_TABS.includes(t)) })).filter(
+          (g) => g.tabs.length > 0,
+        )
+      : TAB_GROUPS;
   return (
     <nav className="flex shrink-0 gap-3 overflow-x-auto bg-[#1d2327] p-1.5 text-[#f0f0f1] md:w-52 md:flex-col md:gap-2 md:overflow-visible md:p-2 md:py-3 md:min-h-[calc(100vh-3rem)]">
-      {TAB_GROUPS.map((group) => (
+      {groups.map((group) => (
         <div
           key={group.label}
           className={`flex shrink-0 gap-1 rounded-lg md:flex-col md:gap-0.5 md:p-1.5 ${group.tint}`}
