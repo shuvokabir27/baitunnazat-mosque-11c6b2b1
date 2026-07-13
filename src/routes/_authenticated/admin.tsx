@@ -130,22 +130,26 @@ function AdminPage() {
       if (resolvedRole === "finance") setTab("collections");
 
       // Resolve a display name for the greeting.
+      // For staff accounts, always prefer the freshly-stored staff_accounts.name
+      // so admin edits show immediately (user_metadata can be stale).
       const meta = (session.user.user_metadata ?? {}) as Record<string, unknown>;
-      let name =
-        (typeof meta.full_name === "string" && meta.full_name) ||
-        (typeof meta.name === "string" && meta.name) ||
-        "";
+      let name = "";
+      try {
+        const { data: staff } = await supabase
+          .from("staff_accounts")
+          .select("name, username")
+          .eq("user_id", session.user.id)
+          .maybeSingle();
+        if (staff?.name) name = staff.name;
+        else if (staff?.username) name = staff.username;
+      } catch {
+        /* ignore */
+      }
       if (!name) {
-        try {
-          const { data: staff } = await supabase
-            .from("staff_accounts")
-            .select("username")
-            .eq("user_id", session.user.id)
-            .maybeSingle();
-          if (staff?.username) name = staff.username;
-        } catch {
-          /* ignore */
-        }
+        name =
+          (typeof meta.full_name === "string" && meta.full_name) ||
+          (typeof meta.name === "string" && meta.name) ||
+          "";
       }
       if (!name) name = (session.user.email ?? "").split("@")[0] || "ব্যবহারকারী";
       if (!cancelled) setUserName(name);
