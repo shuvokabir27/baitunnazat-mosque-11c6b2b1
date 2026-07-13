@@ -121,6 +121,27 @@ function AdminPage() {
       setRole(resolvedRole);
       if (resolvedRole === "finance") setTab("collections");
 
+      // Resolve a display name for the greeting.
+      const meta = (session.user.user_metadata ?? {}) as Record<string, unknown>;
+      let name =
+        (typeof meta.full_name === "string" && meta.full_name) ||
+        (typeof meta.name === "string" && meta.name) ||
+        "";
+      if (!name) {
+        try {
+          const { data: staff } = await supabase
+            .from("staff_accounts")
+            .select("username")
+            .eq("user_id", session.user.id)
+            .maybeSingle();
+          if (staff?.username) name = staff.username;
+        } catch {
+          /* ignore */
+        }
+      }
+      if (!name) name = (session.user.email ?? "").split("@")[0] || "ব্যবহারকারী";
+      if (!cancelled) setUserName(name);
+
       try {
         const { data, error } = await supabase
           .from("site_content")
