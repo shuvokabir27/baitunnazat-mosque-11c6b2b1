@@ -4672,10 +4672,11 @@ function StaffAccountsTab() {
                       onClick={() => {
                         setEditId(a.id);
                         setEditPin("");
+                        setEditName(a.name || "");
                       }}
                       className="grid h-8 w-8 place-items-center rounded-lg bg-secondary text-foreground hover:bg-secondary/70"
-                      aria-label="পিন পরিবর্তন"
-                      title="পিন পরিবর্তন"
+                      aria-label="নাম ও পিন পরিবর্তন"
+                      title="নাম ও পিন পরিবর্তন"
                     >
                       <KeyRound className="h-4 w-4" />
                     </button>
