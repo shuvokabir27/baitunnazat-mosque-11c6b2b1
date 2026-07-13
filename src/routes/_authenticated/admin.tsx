@@ -2574,7 +2574,7 @@ function CollectionsTab({ role }: { role: UserRole }) {
       </div>
 
 
-      <div className="relative overflow-hidden rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-card to-teal-50 p-5 shadow-sm sm:p-6">
+      <div className="relative rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-card to-teal-50 p-5 shadow-sm sm:p-6">
         <div className="pointer-events-none absolute -right-8 -top-10 h-32 w-32 rounded-full bg-emerald-300/20 blur-2xl" />
         <div className="relative">
           <div className="mb-4 flex items-center gap-2">
