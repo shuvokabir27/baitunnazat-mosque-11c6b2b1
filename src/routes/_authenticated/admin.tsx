@@ -2531,47 +2531,48 @@ function CollectionsTab({ role }: { role: UserRole }) {
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-end gap-3">
-        <div>
+        <div className="flex-1 min-w-[110px] sm:flex-none">
           <label className="mb-1 block text-xs font-semibold text-foreground">মাস</label>
           <select
             value={month}
             onChange={(e) => setMonth(Number(e.target.value))}
-            className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
           >
             {BN_MONTHS.map((m, i) => (
               <option key={i} value={i + 1}>{m}</option>
             ))}
           </select>
         </div>
-        <div>
+        <div className="flex-1 min-w-[110px] sm:flex-none">
           <label className="mb-1 block text-xs font-semibold text-foreground">বছর</label>
           <select
             value={year}
             onChange={(e) => setYear(Number(e.target.value))}
-            className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
           >
             {years.map((y) => (
               <option key={y} value={y}>{y}</option>
             ))}
           </select>
         </div>
-        <div className="ml-auto flex gap-2">
+        <div className="flex w-full gap-2 sm:ml-auto sm:w-auto">
           <button
             onClick={downloadExcel}
             disabled={view === "advance" ? advanceList.length === 0 : collections.length === 0}
-            className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-3 py-2 text-sm font-semibold text-foreground disabled:opacity-50"
+            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md bg-secondary px-3 py-2 text-sm font-semibold text-foreground disabled:opacity-50 sm:flex-none"
           >
             <FileSpreadsheet className="h-4 w-4" /> এক্সেল
           </button>
           <button
             onClick={downloadPdf}
             disabled={view === "advance" ? advanceList.length === 0 : collections.length === 0}
-            className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-3 py-2 text-sm font-semibold text-foreground disabled:opacity-50"
+            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md bg-secondary px-3 py-2 text-sm font-semibold text-foreground disabled:opacity-50 sm:flex-none"
           >
             <FileDown className="h-4 w-4" /> পিডিএফ
           </button>
         </div>
       </div>
+
 
       <div className="relative overflow-hidden rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-card to-teal-50 p-5 shadow-sm sm:p-6">
         <div className="pointer-events-none absolute -right-8 -top-10 h-32 w-32 rounded-full bg-emerald-300/20 blur-2xl" />
