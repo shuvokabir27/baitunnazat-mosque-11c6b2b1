@@ -296,6 +296,20 @@ function AdminPage() {
         {/* Content area */}
         <main className="min-w-0 flex-1 px-4 py-6 md:px-8">
           <div className="mx-auto max-w-3xl">
+            <div className="mb-5 flex items-center gap-3 rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50 px-4 py-3">
+              <span className="text-2xl">{getGreeting().emoji}</span>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-emerald-800">
+                  {getGreeting().text}
+                  {userName ? (
+                    <>, <span className="text-emerald-900">{userName}</span></>
+                  ) : null}
+                </p>
+                <p className="truncate text-xs text-emerald-700/80">
+                  {role === "admin" ? "অ্যাডমিন প্যানেলে স্বাগতম" : "দান আদায় প্যানেলে স্বাগতম"}
+                </p>
+              </div>
+            </div>
             <h2 className="mb-5 text-2xl font-normal text-[#1d2327]">{TAB_LABELS[tab]}</h2>
             <div className="rounded border border-[#c3c4c7] bg-white p-5 shadow-sm">
               <div className="space-y-6">
