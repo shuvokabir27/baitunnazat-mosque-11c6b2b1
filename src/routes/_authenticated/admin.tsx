@@ -118,7 +118,7 @@ function AdminPage() {
       }
       const resolvedRole: UserRole = isAdmin ? "admin" : "finance";
       setRole(resolvedRole);
-      if (resolvedRole === "finance") setTab("members");
+      if (resolvedRole === "finance") setTab("collections");
 
       try {
         const { data, error } = await supabase
