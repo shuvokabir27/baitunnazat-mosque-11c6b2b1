@@ -2648,10 +2648,10 @@ function CollectionsTab({ role }: { role: UserRole }) {
                     <button
                       key={m.id}
                       onClick={() => pickMember(m)}
-                      className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm hover:bg-secondary"
+                      className="flex w-full flex-col gap-0.5 px-4 py-3 text-left text-sm hover:bg-secondary"
                     >
-                      <span className="min-w-0 truncate text-foreground">#{m.member_no} · {m.name}</span>
-                      <span className="shrink-0 text-muted-foreground">{m.mobile}{paidIds.has(m.id) ? " ✓" : ""}</span>
+                      <span className="font-medium text-foreground">#{m.member_no} · {m.name}</span>
+                      <span className="text-xs text-muted-foreground">{m.mobile}{paidIds.has(m.id) ? " ✓" : ""}</span>
                     </button>
                   ))}
                 </div>
