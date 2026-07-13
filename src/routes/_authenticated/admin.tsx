@@ -4521,8 +4521,8 @@ function StaffAccountsTab() {
   };
 
   const saveEdit = async (id: string) => {
-    if (editPin && !/^\d{6}$/.test(editPin)) {
-      toast.error("পিন অবশ্যই ৬ সংখ্যার হতে হবে।");
+    if (editPin && !/^\d{6,32}$/.test(editPin)) {
+      toast.error("পিন ৬ থেকে ৩২ সংখ্যার হতে হবে।");
       return;
     }
     setSavingId(id);
@@ -4579,10 +4579,10 @@ function StaffAccountsTab() {
             />
           </label>
           <label className="block">
-            <span className="mb-1 block text-sm font-semibold text-foreground">৬ সংখ্যার পিন</span>
+            <span className="mb-1 block text-sm font-semibold text-foreground">পিন (৪-৩২ সংখ্যা)</span>
             <input
               value={pin}
-              onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 32))}
               required
               inputMode="numeric"
               className="w-full rounded-xl border border-border bg-background px-3 py-2 text-center text-base tracking-[0.3em] outline-none focus:border-primary"
@@ -4641,7 +4641,7 @@ function StaffAccountsTab() {
                     />
                     <input
                       value={editPin}
-                      onChange={(e) => setEditPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                      onChange={(e) => setEditPin(e.target.value.replace(/\D/g, "").slice(0, 32))}
                       inputMode="numeric"
                       placeholder="নতুন পিন (ঐচ্ছিক)"
                       className="w-28 rounded-lg border border-border bg-background px-2 py-1.5 text-center text-sm tracking-widest outline-none focus:border-primary"

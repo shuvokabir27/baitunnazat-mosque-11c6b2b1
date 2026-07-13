@@ -34,7 +34,7 @@ function AuthPage() {
       } else {
         const uname = username.trim().toLowerCase();
         if (!/^[a-z0-9_]{3,20}$/.test(uname)) throw new Error("ইউজারনেম সঠিক নয়।");
-        if (!/^\d{6}$/.test(pin.trim())) throw new Error("পিন অবশ্যই ৬ সংখ্যার হতে হবে।");
+        if (!/^\d{6,32}$/.test(pin.trim())) throw new Error("পিন ৬ থেকে ৩২ সংখ্যার হতে হবে।");
         const { error } = await supabase.auth.signInWithPassword({
           email: `${uname}@${STAFF_EMAIL_DOMAIN}`,
           password: pin.trim(),
@@ -134,12 +134,12 @@ function AuthPage() {
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-semibold text-foreground">৬ সংখ্যার পিন</label>
+                <label className="mb-1 block text-sm font-semibold text-foreground">পিন</label>
                 <input
                   type="password"
                   required
                   inputMode="numeric"
-                  maxLength={6}
+                  maxLength={32}
                   value={pin}
                   onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
                   className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-center text-lg tracking-[0.4em] outline-none focus:border-primary"
