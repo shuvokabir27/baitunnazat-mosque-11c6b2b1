@@ -48,7 +48,7 @@ export const createStaffAccount = createServerFn({ method: "POST" })
       throw new Error("ইউজারনেম ৩-২০ অক্ষরের হতে হবে (শুধু ইংরেজি অক্ষর, সংখ্যা ও _)।");
     }
     if (!/^\d{4,32}$/.test(pin)) {
-      throw new Error("পিন ৪ থেকে ৩২ সংখ্যার হতে হবে।");
+      throw new Error("পিন ৬ থেকে ৩২ সংখ্যার হতে হবে।");
     }
     return { username, pin, name };
   })
@@ -103,7 +103,7 @@ export const updateStaffAccount = createServerFn({ method: "POST" })
   .inputValidator((input: { id: string; pin?: string; name?: string }) => {
     const pin = input.pin != null ? String(input.pin).trim() : undefined;
     if (pin != null && pin !== "" && !/^\d{4,32}$/.test(pin)) {
-      throw new Error("পিন ৪ থেকে ৩২ সংখ্যার হতে হবে।");
+      throw new Error("পিন ৬ থেকে ৩২ সংখ্যার হতে হবে।");
     }
     return { id: input.id, pin: pin || undefined, name: input.name?.trim() };
   })
