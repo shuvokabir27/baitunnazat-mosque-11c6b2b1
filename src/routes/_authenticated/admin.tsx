@@ -2722,9 +2722,11 @@ function CollectionsTab({ role }: { role: UserRole }) {
                     <td className="p-2 font-semibold text-emerald-700">{c.amount} ৳</td>
                     <td className="p-2 text-muted-foreground">{new Date(c.collected_at).toLocaleDateString("bn-BD")}</td>
                     <td className="p-2 text-right">
-                      <button onClick={() => setDeleteTarget(c)} aria-label="মুছুন" className="text-destructive">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      {role === "admin" && (
+                        <button onClick={() => setDeleteTarget(c)} aria-label="মুছুন" className="text-destructive">
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
