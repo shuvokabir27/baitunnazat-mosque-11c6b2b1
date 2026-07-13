@@ -300,13 +300,13 @@ function AdminPage() {
               <span className="text-2xl">{getGreeting().emoji}</span>
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-emerald-800">
-                  {getGreeting().text}
+                  আসসালামু আলাইকুম
                   {userName ? (
                     <>, <span className="text-emerald-900">{userName}</span></>
                   ) : null}
                 </p>
                 <p className="truncate text-xs text-emerald-700/80">
-                  {role === "admin" ? "অ্যাডমিন প্যানেলে স্বাগতম" : "দান আদায় প্যানেলে স্বাগতম"}
+                  {getGreeting().text} — {role === "admin" ? "অ্যাডমিন প্যানেলে স্বাগতম" : "দান আদায় প্যানেলে স্বাগতম"}
                 </p>
               </div>
             </div>
