@@ -134,12 +134,12 @@ function AuthPage() {
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-semibold text-foreground">৬ সংখ্যার পিন</label>
+                <label className="mb-1 block text-sm font-semibold text-foreground">পিন</label>
                 <input
                   type="password"
                   required
                   inputMode="numeric"
-                  maxLength={6}
+                  maxLength={32}
                   value={pin}
                   onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
                   className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-center text-lg tracking-[0.4em] outline-none focus:border-primary"
