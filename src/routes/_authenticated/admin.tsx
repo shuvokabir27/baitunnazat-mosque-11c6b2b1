@@ -2781,7 +2781,32 @@ function CollectionsTab({ role }: { role: UserRole }) {
         unpaidList.length === 0 ? (
         <p className="py-8 text-center text-sm text-muted-foreground">সবার দান আদায় সম্পন্ন হয়েছে। 🎉</p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-amber-300">
+        <>
+        {/* mobile cards */}
+        <div className="space-y-2 sm:hidden">
+          {unpaidList.map(({ member: m, unpaidMonths }) => (
+            <div key={m.id} className="rounded-xl border border-amber-300 bg-amber-50/40 p-3">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-semibold text-foreground">{m.name}</p>
+                  <p className="text-xs text-muted-foreground">#{m.member_no ?? "-"} · {m.mobile}</p>
+                </div>
+                <button
+                  onClick={() => openPay(m, unpaidMonths)}
+                  className="shrink-0 rounded-md gradient-emerald px-3 py-1.5 text-xs font-bold text-primary-foreground"
+                >
+                  আদায় করুন
+                </button>
+              </div>
+              <p className="mt-2 text-sm font-semibold text-amber-700">
+                {joinMonthsBn(unpaidMonths)}{" "}
+                <span className="text-xs font-normal text-muted-foreground">({unpaidMonths.length} মাস)</span>
+              </p>
+            </div>
+          ))}
+        </div>
+        {/* desktop table */}
+        <div className="hidden overflow-x-auto rounded-xl border border-amber-300 sm:block">
           <table className="w-full text-sm">
             <thead className="bg-amber-100 text-amber-900">
               <tr>
@@ -2815,6 +2840,7 @@ function CollectionsTab({ role }: { role: UserRole }) {
             </tbody>
           </table>
         </div>
+        </>
         )
       ) : advanceList.length === 0 ? (
         <p className="py-8 text-center text-sm text-muted-foreground">এখনো কেউ অগ্রিম দান দেননি।</p>
