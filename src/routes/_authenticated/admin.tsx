@@ -285,7 +285,7 @@ function AdminPage() {
                 {tab === "masala" && <MasalaTab />}
                 {tab === "qa" && <QaTab />}
                 {tab === "addresses" && <AddressesTab />}
-                {tab === "members" && <MembersTab />}
+                {tab === "members" && <MembersTab role={role} />}
                 {tab === "collections" && <CollectionsTab role={role} />}
                 {tab === "finance" && <FinanceTab />}
                 {tab === "users" && role === "admin" && <StaffAccountsTab />}
@@ -1659,7 +1659,7 @@ type Member = {
   created_at: string;
 };
 
-function MembersTab() {
+function MembersTab({ role }: { role: UserRole }) {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [confirmTarget, setConfirmTarget] = useState<Member | null>(null);
@@ -1897,7 +1897,7 @@ function MembersTab() {
                 <th className="p-2">মোবাইল</th>
                 <th className="p-2">ঠিকানা</th>
                 <th className="p-2">মাসিক দান</th>
-                <th className="p-2"></th>
+                {role === "admin" && <th className="p-2"></th>}
               </tr>
             </thead>
             <tbody>
@@ -1909,24 +1909,26 @@ function MembersTab() {
                   <td className="p-2 text-foreground">{m.mobile}</td>
                   <td className="p-2 text-muted-foreground">{m.address}</td>
                   <td className="p-2 text-foreground">{m.monthly_donation ?? 0} ৳</td>
-                  <td className="p-2 text-right">
-                    <div className="flex justify-end gap-1.5">
-                      <button
-                        onClick={() => openEdit(m)}
-                        className="rounded-lg bg-primary/10 p-1.5 text-primary hover:bg-primary/20"
-                        aria-label="সম্পাদনা"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => setConfirmTarget(m)}
-                        className="rounded-lg bg-destructive/10 p-1.5 text-destructive hover:bg-destructive/20"
-                        aria-label="মুছুন"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </td>
+                  {role === "admin" && (
+                    <td className="p-2 text-right">
+                      <div className="flex justify-end gap-1.5">
+                        <button
+                          onClick={() => openEdit(m)}
+                          className="rounded-lg bg-primary/10 p-1.5 text-primary hover:bg-primary/20"
+                          aria-label="সম্পাদনা"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => setConfirmTarget(m)}
+                          className="rounded-lg bg-destructive/10 p-1.5 text-destructive hover:bg-destructive/20"
+                          aria-label="মুছুন"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
