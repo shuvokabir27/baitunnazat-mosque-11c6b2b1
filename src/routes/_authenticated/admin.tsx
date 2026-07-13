@@ -2662,10 +2662,10 @@ function CollectionsTab({ role }: { role: UserRole }) {
       </div>
 
 
-      <div className="flex items-center gap-2">
+      <div className="-mx-1 flex items-center gap-2 overflow-x-auto px-1 pb-1">
         <button
           onClick={() => setView("paid")}
-          className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+          className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
             view === "paid"
               ? "gradient-emerald text-primary-foreground"
               : "bg-secondary text-foreground"
@@ -2675,7 +2675,7 @@ function CollectionsTab({ role }: { role: UserRole }) {
         </button>
         <button
           onClick={() => setView("unpaid")}
-          className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+          className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
             view === "unpaid"
               ? "bg-amber-500 text-white"
               : "bg-secondary text-foreground"
@@ -2685,7 +2685,7 @@ function CollectionsTab({ role }: { role: UserRole }) {
         </button>
         <button
           onClick={() => setView("advance")}
-          className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+          className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
             view === "advance"
               ? "bg-sky-600 text-white"
               : "bg-secondary text-foreground"
@@ -2695,7 +2695,7 @@ function CollectionsTab({ role }: { role: UserRole }) {
         </button>
       </div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm text-muted-foreground">
           {view === "paid"
             ? `${periodLabel} — মোট ${collections.length} জন আদায় করেছেন।`
@@ -2709,6 +2709,7 @@ function CollectionsTab({ role }: { role: UserRole }) {
           </p>
         )}
       </div>
+
 
       {loading ? (
         <div className="flex justify-center py-10">
