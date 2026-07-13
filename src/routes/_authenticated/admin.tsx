@@ -2573,79 +2573,93 @@ function CollectionsTab({ role }: { role: UserRole }) {
         </div>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-4">
-        <p className="mb-2 text-sm font-semibold text-foreground">
-          দান আদায় করুন ({periodLabel})
-        </p>
-        {selected ? (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between rounded-lg bg-secondary px-3 py-2">
-              <div className="text-sm">
-                <span className="font-semibold text-foreground">#{selected.member_no} · {selected.name}</span>
-                <span className="ml-2 text-muted-foreground">{selected.mobile}</span>
+      <div className="relative overflow-hidden rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-card to-teal-50 p-5 shadow-sm sm:p-6">
+        <div className="pointer-events-none absolute -right-8 -top-10 h-32 w-32 rounded-full bg-emerald-300/20 blur-2xl" />
+        <div className="relative">
+          <div className="mb-4 flex items-center gap-2">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl gradient-emerald text-primary-foreground shadow-sm">
+              <HandCoins className="h-5 w-5" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-base font-bold text-foreground sm:text-lg">দান আদায় করুন</p>
+              <p className="text-xs text-muted-foreground">{periodLabel}</p>
+            </div>
+          </div>
+          {selected ? (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-2 rounded-xl bg-secondary px-3 py-2.5">
+                <div className="min-w-0 text-sm">
+                  <span className="font-semibold text-foreground">#{selected.member_no} · {selected.name}</span>
+                  <span className="ml-2 text-muted-foreground">{selected.mobile}</span>
+                </div>
+                <button onClick={() => setSelected(null)} aria-label="বাতিল" className="shrink-0">
+                  <X className="h-4 w-4 text-muted-foreground" />
+                </button>
               </div>
-              <button onClick={() => setSelected(null)} aria-label="বাতিল">
-                <X className="h-4 w-4 text-muted-foreground" />
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <div className="sm:w-40">
+                  <label className="mb-1 block text-xs font-semibold text-foreground">টাকার পরিমাণ</label>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    className="w-full rounded-xl border border-input bg-background px-4 py-3 text-base"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="mb-1 block text-xs font-semibold text-foreground">নোট (ঐচ্ছিক)</label>
+                  <input
+                    type="text"
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    className="w-full rounded-xl border border-input bg-background px-4 py-3 text-base"
+                  />
+                </div>
+              </div>
+              {paidIds.has(selected.id) && (
+                <p className="text-xs text-amber-600">এই সদস্যের জন্য এই মাসে ইতিমধ্যে আদায় রেকর্ড আছে।</p>
+              )}
+              <button
+                onClick={save}
+                disabled={saving}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl gradient-emerald px-4 py-3.5 text-base font-bold text-primary-foreground shadow-sm disabled:opacity-60 sm:w-auto"
+              >
+                {saving ? <Loader2 className="h-5 w-5 animate-spin" /> : <Check className="h-5 w-5" />}
+                আদায় সংরক্ষণ
               </button>
             </div>
-            <div className="flex flex-wrap gap-3">
-              <div className="flex-1 min-w-[140px]">
-                <label className="mb-1 block text-xs font-semibold text-foreground">টাকার পরিমাণ</label>
-                <input
-                  type="number"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                />
-              </div>
-              <div className="flex-[2] min-w-[180px]">
-                <label className="mb-1 block text-xs font-semibold text-foreground">নোট (ঐচ্ছিক)</label>
-                <input
-                  type="text"
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                />
-              </div>
+          ) : (
+            <div className="relative">
+              <Phone className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-emerald-600" />
+              <input
+                type="text"
+                inputMode="tel"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="মোবাইল নম্বর দিয়ে সদস্য খুঁজুন"
+                className="w-full rounded-xl border border-emerald-200 bg-background py-4 pl-12 pr-4 text-base shadow-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200"
+              />
+              <p className="mt-2 px-1 text-xs text-muted-foreground">নাম বা সদস্য নম্বর দিয়েও খোঁজা যাবে</p>
+              {matches.length > 0 && (
+                <div className="absolute z-10 mt-1 w-full overflow-hidden rounded-xl border border-border bg-card shadow-lg">
+                  {matches.map((m) => (
+                    <button
+                      key={m.id}
+                      onClick={() => pickMember(m)}
+                      className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm hover:bg-secondary"
+                    >
+                      <span className="min-w-0 truncate text-foreground">#{m.member_no} · {m.name}</span>
+                      <span className="shrink-0 text-muted-foreground">{m.mobile}{paidIds.has(m.id) ? " ✓" : ""}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-            {paidIds.has(selected.id) && (
-              <p className="text-xs text-amber-600">এই সদস্যের জন্য এই মাসে ইতিমধ্যে আদায় রেকর্ড আছে।</p>
-            )}
-            <button
-              onClick={save}
-              disabled={saving}
-              className="inline-flex items-center gap-2 rounded-md gradient-emerald px-4 py-2 text-sm font-bold text-primary-foreground disabled:opacity-60"
-            >
-              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-              আদায় সংরক্ষণ
-            </button>
-          </div>
-        ) : (
-          <div className="relative">
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="মোবাইল নম্বর, নাম বা সদস্য নম্বর দিয়ে খুঁজুন"
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            />
-            {matches.length > 0 && (
-              <div className="absolute z-10 mt-1 w-full rounded-md border border-border bg-card shadow-lg">
-                {matches.map((m) => (
-                  <button
-                    key={m.id}
-                    onClick={() => pickMember(m)}
-                    className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-secondary"
-                  >
-                    <span className="text-foreground">#{m.member_no} · {m.name}</span>
-                    <span className="text-muted-foreground">{m.mobile}{paidIds.has(m.id) ? " ✓" : ""}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+          )}
+        </div>
       </div>
+
 
       <div className="flex items-center gap-2">
         <button
