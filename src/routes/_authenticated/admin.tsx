@@ -1887,7 +1887,46 @@ function MembersTab({ role }: { role: UserRole }) {
       ) : filtered.length === 0 ? (
         <p className="py-6 text-center text-sm text-muted-foreground">এই ফিল্টারে কোনো সদস্য পাওয়া যায়নি।</p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-border">
+        <>
+        {/* mobile cards */}
+        <div className="space-y-2 sm:hidden">
+          {filtered.map((m) => (
+            <div key={m.id} className="rounded-xl border border-border bg-card p-3">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-semibold text-foreground">{m.name}</p>
+                  <p className="text-xs font-semibold text-primary">#{m.member_no}</p>
+                </div>
+                {role === "admin" && (
+                  <div className="flex shrink-0 gap-1.5">
+                    <button
+                      onClick={() => openEdit(m)}
+                      className="rounded-lg bg-primary/10 p-1.5 text-primary hover:bg-primary/20"
+                      aria-label="সম্পাদনা"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => setConfirmTarget(m)}
+                      className="rounded-lg bg-destructive/10 p-1.5 text-destructive hover:bg-destructive/20"
+                      aria-label="মুছুন"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div className="mt-2 grid grid-cols-2 gap-1 text-xs">
+                <p className="text-muted-foreground">পিতা: <span className="text-foreground">{m.father_name}</span></p>
+                <p className="text-muted-foreground">মোবাইল: <span className="text-foreground">{m.mobile}</span></p>
+                <p className="text-muted-foreground">ঠিকানা: <span className="text-foreground">{m.address}</span></p>
+                <p className="text-muted-foreground">দান: <span className="font-semibold text-foreground">{m.monthly_donation ?? 0} ৳</span></p>
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* desktop table */}
+        <div className="hidden overflow-x-auto rounded-xl border border-border sm:block">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/40 text-left text-xs text-muted-foreground">
@@ -1934,6 +1973,7 @@ function MembersTab({ role }: { role: UserRole }) {
             </tbody>
           </table>
         </div>
+        </>
       )}
 
       {confirmTarget && (
