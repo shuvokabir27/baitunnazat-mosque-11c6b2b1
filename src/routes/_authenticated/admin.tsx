@@ -4641,7 +4641,7 @@ function StaffAccountsTab() {
                     />
                     <input
                       value={editPin}
-                      onChange={(e) => setEditPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                      onChange={(e) => setEditPin(e.target.value.replace(/\D/g, "").slice(0, 32))}
                       inputMode="numeric"
                       placeholder="নতুন পিন (ঐচ্ছিক)"
                       className="w-28 rounded-lg border border-border bg-background px-2 py-1.5 text-center text-sm tracking-widest outline-none focus:border-primary"
