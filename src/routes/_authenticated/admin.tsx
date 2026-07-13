@@ -2845,7 +2845,22 @@ function CollectionsTab({ role }: { role: UserRole }) {
       ) : advanceList.length === 0 ? (
         <p className="py-8 text-center text-sm text-muted-foreground">এখনো কেউ অগ্রিম দান দেননি।</p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-sky-300">
+        <>
+        {/* mobile cards */}
+        <div className="space-y-2 sm:hidden">
+          {advanceList.map(({ member: m, advanceSlots }) => (
+            <div key={m.id} className="rounded-xl border border-sky-300 bg-sky-50/40 p-3">
+              <div className="flex items-baseline justify-between gap-2">
+                <p className="font-semibold text-foreground">{m.name}</p>
+                <span className="shrink-0 text-xs font-normal text-muted-foreground">({advanceSlots.length} মাস)</span>
+              </div>
+              <p className="text-xs text-muted-foreground">#{m.member_no ?? "-"} · {m.mobile}</p>
+              <p className="mt-2 text-sm font-semibold text-sky-700">{joinSlotsBn(advanceSlots)}</p>
+            </div>
+          ))}
+        </div>
+        {/* desktop table */}
+        <div className="hidden overflow-x-auto rounded-xl border border-sky-300 sm:block">
           <table className="w-full text-sm">
             <thead className="bg-sky-100 text-sky-900">
               <tr>
@@ -2865,12 +2880,12 @@ function CollectionsTab({ role }: { role: UserRole }) {
                     {joinSlotsBn(advanceSlots)}{" "}
                     <span className="text-xs font-normal text-muted-foreground">({advanceSlots.length} মাস)</span>
                   </td>
-
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+        </>
       )}
 
 
