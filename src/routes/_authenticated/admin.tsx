@@ -285,7 +285,7 @@ function AdminPage() {
                 {tab === "masala" && <MasalaTab />}
                 {tab === "qa" && <QaTab />}
                 {tab === "addresses" && <AddressesTab />}
-                {tab === "members" && <MembersTab />}
+                {tab === "members" && <MembersTab role={role} />}
                 {tab === "collections" && <CollectionsTab role={role} />}
                 {tab === "finance" && <FinanceTab />}
                 {tab === "users" && role === "admin" && <StaffAccountsTab />}
@@ -1659,7 +1659,7 @@ type Member = {
   created_at: string;
 };
 
-function MembersTab() {
+function MembersTab({ role }: { role: UserRole }) {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [confirmTarget, setConfirmTarget] = useState<Member | null>(null);
