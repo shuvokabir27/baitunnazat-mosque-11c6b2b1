@@ -287,7 +287,7 @@ function AdminPage() {
                 {tab === "addresses" && <AddressesTab />}
                 {tab === "members" && <MembersTab role={role} />}
                 {tab === "collections" && <CollectionsTab role={role} />}
-                {tab === "finance" && <FinanceTab />}
+                {tab === "finance" && <FinanceTab role={role} />}
                 {tab === "users" && role === "admin" && <StaffAccountsTab />}
               </div>
             </div>
@@ -3861,7 +3861,7 @@ const finMoney = (n: number) => {
   return "৳ " + s.replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)]);
 };
 
-function FinanceTab() {
+function FinanceTab({ role }: { role: UserRole }) {
   const [rows, setRows] = useState<FinanceRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -4244,15 +4244,17 @@ ${sections}
                   {r.note && <p className="text-xs text-muted-foreground">{r.note}</p>}
                 </div>
               </div>
-              {confirmId === r.id ? (
-                <div className="flex items-center gap-1">
-                  <button onClick={() => remove(r.id)} className="rounded bg-rose-600 px-2 py-1 text-xs text-white">মুছুন</button>
-                  <button onClick={() => setConfirmId(null)} className="rounded bg-muted px-2 py-1 text-xs">বাতিল</button>
-                </div>
-              ) : (
-                <button onClick={() => setConfirmId(r.id)} className="text-muted-foreground hover:text-rose-600">
-                  <Trash2 className="h-4 w-4" />
-                </button>
+              {role === "admin" && (
+                confirmId === r.id ? (
+                  <div className="flex items-center gap-1">
+                    <button onClick={() => remove(r.id)} className="rounded bg-rose-600 px-2 py-1 text-xs text-white">মুছুন</button>
+                    <button onClick={() => setConfirmId(null)} className="rounded bg-muted px-2 py-1 text-xs">বাতিল</button>
+                  </div>
+                ) : (
+                  <button onClick={() => setConfirmId(r.id)} className="text-muted-foreground hover:text-rose-600">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                )
               )}
             </div>
           ))}
