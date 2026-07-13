@@ -302,7 +302,7 @@ function AdminPage() {
                 <p className="text-sm font-semibold text-emerald-800">
                   আসসালামু আলাইকুম
                   {userName ? (
-                    <>, <span className="text-emerald-900">{userName}</span></>
+                    <>, <span className="text-emerald-900">জনাব {userName}</span></>
                   ) : null}
                 </p>
                 <p className="truncate text-xs text-emerald-700/80">
