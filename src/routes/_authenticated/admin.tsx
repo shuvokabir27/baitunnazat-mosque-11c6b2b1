@@ -4632,16 +4632,22 @@ function StaffAccountsTab() {
                   </p>
                 </div>
                 {editId === a.id ? (
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <input
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      placeholder="নাম"
+                      className="w-36 rounded-lg border border-border bg-background px-2 py-1.5 text-sm outline-none focus:border-primary"
+                    />
                     <input
                       value={editPin}
                       onChange={(e) => setEditPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
                       inputMode="numeric"
-                      placeholder="নতুন পিন"
+                      placeholder="নতুন পিন (ঐচ্ছিক)"
                       className="w-28 rounded-lg border border-border bg-background px-2 py-1.5 text-center text-sm tracking-widest outline-none focus:border-primary"
                     />
                     <button
-                      onClick={() => savePin(a.id)}
+                      onClick={() => saveEdit(a.id)}
                       disabled={savingId === a.id}
                       className="grid h-8 w-8 place-items-center rounded-lg bg-emerald-600 text-white disabled:opacity-60"
                       aria-label="সংরক্ষণ"
@@ -4652,6 +4658,7 @@ function StaffAccountsTab() {
                       onClick={() => {
                         setEditId(null);
                         setEditPin("");
+                        setEditName("");
                       }}
                       className="grid h-8 w-8 place-items-center rounded-lg bg-secondary text-foreground"
                       aria-label="বাতিল"
