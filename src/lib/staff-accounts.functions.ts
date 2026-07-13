@@ -47,7 +47,7 @@ export const createStaffAccount = createServerFn({ method: "POST" })
     if (!/^[a-z0-9_]{3,20}$/.test(username)) {
       throw new Error("ইউজারনেম ৩-২০ অক্ষরের হতে হবে (শুধু ইংরেজি অক্ষর, সংখ্যা ও _)।");
     }
-    if (!/^\d{4,32}$/.test(pin)) {
+    if (!/^\d{6,32}$/.test(pin)) {
       throw new Error("পিন ৬ থেকে ৩২ সংখ্যার হতে হবে।");
     }
     return { username, pin, name };
@@ -102,7 +102,7 @@ export const updateStaffAccount = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { id: string; pin?: string; name?: string }) => {
     const pin = input.pin != null ? String(input.pin).trim() : undefined;
-    if (pin != null && pin !== "" && !/^\d{4,32}$/.test(pin)) {
+    if (pin != null && pin !== "" && !/^\d{6,32}$/.test(pin)) {
       throw new Error("পিন ৬ থেকে ৩২ সংখ্যার হতে হবে।");
     }
     return { id: input.id, pin: pin || undefined, name: input.name?.trim() };

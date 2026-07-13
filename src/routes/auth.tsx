@@ -34,7 +34,7 @@ function AuthPage() {
       } else {
         const uname = username.trim().toLowerCase();
         if (!/^[a-z0-9_]{3,20}$/.test(uname)) throw new Error("ইউজারনেম সঠিক নয়।");
-        if (!/^\d{4,32}$/.test(pin.trim())) throw new Error("পিন ৬ থেকে ৩২ সংখ্যার হতে হবে।");
+        if (!/^\d{6,32}$/.test(pin.trim())) throw new Error("পিন ৬ থেকে ৩২ সংখ্যার হতে হবে।");
         const { error } = await supabase.auth.signInWithPassword({
           email: `${uname}@${STAFF_EMAIL_DOMAIN}`,
           password: pin.trim(),
