@@ -4482,6 +4482,7 @@ function StaffAccountsTab() {
 
   const [editId, setEditId] = useState<string | null>(null);
   const [editPin, setEditPin] = useState("");
+  const [editName, setEditName] = useState("");
   const [savingId, setSavingId] = useState<string | null>(null);
 
   const load = async () => {
@@ -4519,17 +4520,18 @@ function StaffAccountsTab() {
     }
   };
 
-  const savePin = async (id: string) => {
-    if (!/^\d{6}$/.test(editPin)) {
+  const saveEdit = async (id: string) => {
+    if (editPin && !/^\d{6}$/.test(editPin)) {
       toast.error("পিন অবশ্যই ৬ সংখ্যার হতে হবে।");
       return;
     }
     setSavingId(id);
     try {
-      await updateFn({ data: { id, pin: editPin } });
-      toast.success("পিন পরিবর্তন হয়েছে।");
+      await updateFn({ data: { id, pin: editPin || undefined, name: editName } });
+      toast.success("তথ্য পরিবর্তন হয়েছে।");
       setEditId(null);
       setEditPin("");
+      setEditName("");
       await load();
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "পরিবর্তন ব্যর্থ হয়েছে।");
@@ -4630,16 +4632,22 @@ function StaffAccountsTab() {
                   </p>
                 </div>
                 {editId === a.id ? (
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <input
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      placeholder="নাম"
+                      className="w-36 rounded-lg border border-border bg-background px-2 py-1.5 text-sm outline-none focus:border-primary"
+                    />
                     <input
                       value={editPin}
                       onChange={(e) => setEditPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
                       inputMode="numeric"
-                      placeholder="নতুন পিন"
+                      placeholder="নতুন পিন (ঐচ্ছিক)"
                       className="w-28 rounded-lg border border-border bg-background px-2 py-1.5 text-center text-sm tracking-widest outline-none focus:border-primary"
                     />
                     <button
-                      onClick={() => savePin(a.id)}
+                      onClick={() => saveEdit(a.id)}
                       disabled={savingId === a.id}
                       className="grid h-8 w-8 place-items-center rounded-lg bg-emerald-600 text-white disabled:opacity-60"
                       aria-label="সংরক্ষণ"
@@ -4650,6 +4658,7 @@ function StaffAccountsTab() {
                       onClick={() => {
                         setEditId(null);
                         setEditPin("");
+                        setEditName("");
                       }}
                       className="grid h-8 w-8 place-items-center rounded-lg bg-secondary text-foreground"
                       aria-label="বাতিল"
@@ -4663,10 +4672,11 @@ function StaffAccountsTab() {
                       onClick={() => {
                         setEditId(a.id);
                         setEditPin("");
+                        setEditName(a.name || "");
                       }}
                       className="grid h-8 w-8 place-items-center rounded-lg bg-secondary text-foreground hover:bg-secondary/70"
-                      aria-label="পিন পরিবর্তন"
-                      title="পিন পরিবর্তন"
+                      aria-label="নাম ও পিন পরিবর্তন"
+                      title="নাম ও পিন পরিবর্তন"
                     >
                       <KeyRound className="h-4 w-4" />
                     </button>
