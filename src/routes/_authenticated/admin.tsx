@@ -279,6 +279,7 @@ function AdminPage() {
                 {tab === "members" && <MembersTab />}
                 {tab === "collections" && <CollectionsTab />}
                 {tab === "finance" && <FinanceTab />}
+                {tab === "users" && role === "admin" && <StaffAccountsTab />}
               </div>
             </div>
           </div>
