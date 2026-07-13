@@ -286,7 +286,7 @@ function AdminPage() {
                 {tab === "qa" && <QaTab />}
                 {tab === "addresses" && <AddressesTab />}
                 {tab === "members" && <MembersTab />}
-                {tab === "collections" && <CollectionsTab />}
+                {tab === "collections" && <CollectionsTab role={role} />}
                 {tab === "finance" && <FinanceTab />}
                 {tab === "users" && role === "admin" && <StaffAccountsTab />}
               </div>
