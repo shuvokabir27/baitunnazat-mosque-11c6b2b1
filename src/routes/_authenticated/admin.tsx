@@ -1897,7 +1897,7 @@ function MembersTab({ role }: { role: UserRole }) {
                 <th className="p-2">মোবাইল</th>
                 <th className="p-2">ঠিকানা</th>
                 <th className="p-2">মাসিক দান</th>
-                <th className="p-2"></th>
+                {role === "admin" && <th className="p-2"></th>}
               </tr>
             </thead>
             <tbody>
