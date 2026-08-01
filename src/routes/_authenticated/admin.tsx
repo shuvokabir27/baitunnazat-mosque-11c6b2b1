@@ -2406,10 +2406,10 @@ function CollectionsTab({ role }: { role: UserRole }) {
           })
           .filter((x) => x.unpaidMonths.length > 0);
 
-  // অগ্রিম আদায় — নির্বাচিত মাস (বা চলতি মাস, যেটি পরে) পর্যন্ত সব মাস বাদ দিয়ে শুধু পরের মাসগুলোর আদায়
-  const nowIdx = nowYear * 12 + nowMonth;
+  // অগ্রিম আদায় — নির্বাচিত মাস পর্যন্ত (নির্বাচিত মাসসহ) সব বাদ দিয়ে শুধু পরের মাসগুলোর আদায়
+  
   const selIdx = year * 12 + month;
-  const cutoffIdx = Math.max(nowIdx, selIdx); // এই মাস পর্যন্ত বাদ
+  const cutoffIdx = selIdx; // নির্বাচিত মাস পর্যন্ত বাদ
   const futureSlotsByMember = new Map<string, { year: number; month: number; amount: number }[]>();
   futureCollections.forEach((c) => {
     if (!c.member_id) return;
