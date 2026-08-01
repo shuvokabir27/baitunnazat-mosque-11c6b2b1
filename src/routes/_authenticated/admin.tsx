@@ -2465,7 +2465,8 @@ function CollectionsTab({ role }: { role: UserRole }) {
     const programStart = year === START_YEAR ? START_MONTH : 1;
     const start = year > START_YEAR ? 1 : programStart;
     const unpaid: number[] = [];
-    for (let mo = start; mo <= monthsElapsed; mo++) {
+    const elapsed = year < nowYear ? 12 : year === nowYear ? nowMonth : 0;
+    for (let mo = start; mo <= elapsed; mo++) {
       if (!paidSet.has(mo)) unpaid.push(mo);
     }
     openPay(m, unpaid);
