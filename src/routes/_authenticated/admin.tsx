@@ -2378,41 +2378,42 @@ function CollectionsTab({ role }: { role: UserRole }) {
     paidMonthsByMember.set(c.member_id, set);
   });
 
-  // কত মাস পর্যন্ত হিসাব করা হবে (চলতি বছরে চলতি মাস পর্যন্ত, আগের বছরে ১২ মাস)
-  const monthsElapsed =
-    year < now.getFullYear() ? 12 : year === now.getFullYear() ? now.getMonth() + 1 : 0;
-
-  // যাদের দান আদায় হয়নি তাদের তালিকা (একাধিক মাস হলে সব মাস)
   // আদায় কার্যক্রম শুরু হয়েছে জুলাই ২০২৬ থেকে — এর আগের কোনো মাস বকেয়া ধরা হবে না
   const START_YEAR = 2026;
   const START_MONTH = 7;
+  const nowYear = now.getFullYear();
+  const nowMonth = now.getMonth() + 1;
+
+  // নির্বাচিত মাস ভবিষ্যতের কি না
+  const selectedIsFuture = year > nowYear || (year === nowYear && month > nowMonth);
+  const selectedBeforeStart =
+    year < START_YEAR || (year === START_YEAR && month < START_MONTH);
+
+  // যাদের নির্বাচিত মাসের দান আদায় হয়নি
   const unpaidList =
-    year < START_YEAR
+    selectedIsFuture || selectedBeforeStart
       ? []
       : members
           .map((m) => {
             const created = m.created_at ? new Date(m.created_at) : null;
-            const memberStart =
-              created && created.getFullYear() === year ? created.getMonth() + 1 : 1;
-            const programStart = year === START_YEAR ? START_MONTH : 1;
-            const startMonth = Math.max(memberStart, programStart);
+            const joinedAfter =
+              created &&
+              (created.getFullYear() > year ||
+                (created.getFullYear() === year && created.getMonth() + 1 > month));
+            if (joinedAfter) return { member: m, unpaidMonths: [] as number[] };
             const paidSet = paidMonthsByMember.get(m.id) ?? new Set<number>();
-            const unpaidMonths: number[] = [];
-            for (let mo = startMonth; mo <= monthsElapsed; mo++) {
-              if (!paidSet.has(mo)) unpaidMonths.push(mo);
-            }
-            return { member: m, unpaidMonths };
+            return { member: m, unpaidMonths: paidSet.has(month) ? [] : [month] };
           })
           .filter((x) => x.unpaidMonths.length > 0);
 
-  // অগ্রিম আদায় — যারা এখনো আসেনি এমন ভবিষ্যৎ মাসের দান আগেই দিয়েছেন (একাধিক বছর জুড়ে)
-  const nowYear = now.getFullYear();
-  const nowMonth = now.getMonth() + 1;
+  // অগ্রিম আদায় — ভবিষ্যৎ মাসের দান আগেই দেওয়া হয়েছে
   const futureSlotsByMember = new Map<string, { year: number; month: number; amount: number }[]>();
   futureCollections.forEach((c) => {
     if (!c.member_id) return;
     const isFuture = c.year > nowYear || (c.year === nowYear && c.month > nowMonth);
     if (!isFuture) return;
+    // নির্বাচিত মাস ভবিষ্যৎ হলে শুধু সেই মাসের অগ্রিম দেখানো হবে
+    if (selectedIsFuture && !(c.year === year && c.month === month)) return;
     const arr = futureSlotsByMember.get(c.member_id) ?? [];
     arr.push({ year: c.year, month: c.month, amount: Number(c.amount) || 0 });
     futureSlotsByMember.set(c.member_id, arr);
@@ -2425,6 +2426,7 @@ function CollectionsTab({ role }: { role: UserRole }) {
       return { member: m, advanceSlots };
     })
     .filter((x) => x.advanceSlots.length > 0);
+
 
   // সারসংক্ষেপ — সদস্য সংখ্যা ও মোট টাকা
   const unpaidTotal = unpaidList.reduce(
