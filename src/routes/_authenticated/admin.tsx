@@ -2407,7 +2407,7 @@ function CollectionsTab({ role }: { role: UserRole }) {
           .filter((x) => x.unpaidMonths.length > 0);
 
   // অগ্রিম আদায় — নির্বাচিত মাস পর্যন্ত (নির্বাচিত মাসসহ) সব বাদ দিয়ে শুধু পরের মাসগুলোর আদায়
-  const nowIdx = nowYear * 12 + nowMonth;
+  
   const selIdx = year * 12 + month;
   const cutoffIdx = selIdx; // নির্বাচিত মাস পর্যন্ত বাদ
   const futureSlotsByMember = new Map<string, { year: number; month: number; amount: number }[]>();
