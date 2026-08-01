@@ -2760,6 +2760,45 @@ function CollectionsTab({ role }: { role: UserRole }) {
         </div>
       </div>
 
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+        <button
+          onClick={() => setView("paid")}
+          className={`rounded-2xl border p-3 text-left transition ${
+            view === "paid" ? "border-emerald-400 bg-emerald-50" : "border-border bg-card"
+          }`}
+        >
+          <p className="text-xs font-semibold text-emerald-700">আদায় হয়েছে ({periodLabel})</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            সদস্য: <span className="font-bold text-foreground">{collections.length.toLocaleString("bn-BD")} জন</span>
+          </p>
+          <p className="text-base font-extrabold text-emerald-700">{total.toLocaleString("bn-BD")} ৳</p>
+        </button>
+        <button
+          onClick={() => setView("unpaid")}
+          className={`rounded-2xl border p-3 text-left transition ${
+            view === "unpaid" ? "border-amber-400 bg-amber-50" : "border-border bg-card"
+          }`}
+        >
+          <p className="text-xs font-semibold text-amber-700">আদায় হয়নি ({bnYear(year)})</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            সদস্য: <span className="font-bold text-foreground">{unpaidList.length.toLocaleString("bn-BD")} জন</span>
+          </p>
+          <p className="text-base font-extrabold text-amber-700">{unpaidTotal.toLocaleString("bn-BD")} ৳</p>
+        </button>
+        <button
+          onClick={() => setView("advance")}
+          className={`rounded-2xl border p-3 text-left transition ${
+            view === "advance" ? "border-sky-400 bg-sky-50" : "border-border bg-card"
+          }`}
+        >
+          <p className="text-xs font-semibold text-sky-700">অগ্রিম আদায়</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            সদস্য: <span className="font-bold text-foreground">{advanceList.length.toLocaleString("bn-BD")} জন</span>
+          </p>
+          <p className="text-base font-extrabold text-sky-700">{advanceTotal.toLocaleString("bn-BD")} ৳</p>
+        </button>
+      </div>
+
 
       <div className="grid grid-cols-3 gap-2">
         <button
