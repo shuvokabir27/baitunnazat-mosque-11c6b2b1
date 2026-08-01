@@ -2354,7 +2354,7 @@ function CollectionsTab({ role }: { role: UserRole }) {
         .eq("year", year),
       supabase
         .from("donation_collections")
-        .select("id, member_id, month, year")
+        .select("id, member_id, month, year, amount")
         .gte("year", now.getFullYear()),
     ]);
     setMembers((mem as Member[]) ?? []);
