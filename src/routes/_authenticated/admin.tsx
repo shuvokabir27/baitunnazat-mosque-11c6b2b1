@@ -2406,14 +2406,12 @@ function CollectionsTab({ role }: { role: UserRole }) {
           })
           .filter((x) => x.unpaidMonths.length > 0);
 
-  // অগ্রিম আদায় — ভবিষ্যৎ মাসের দান আগেই দেওয়া হয়েছে
+  // অগ্রিম আদায় — চলতি মাস ও আগের সব মাস বাদ, শুধু ভবিষ্যৎ মাসের আদায় (প্রতি মাসে অটো আপডেট)
   const futureSlotsByMember = new Map<string, { year: number; month: number; amount: number }[]>();
   futureCollections.forEach((c) => {
     if (!c.member_id) return;
     const isFuture = c.year > nowYear || (c.year === nowYear && c.month > nowMonth);
     if (!isFuture) return;
-    // নির্বাচিত মাস ভবিষ্যৎ হলে শুধু সেই মাসের অগ্রিম দেখানো হবে
-    if (selectedIsFuture && !(c.year === year && c.month === month)) return;
     const arr = futureSlotsByMember.get(c.member_id) ?? [];
     arr.push({ year: c.year, month: c.month, amount: Number(c.amount) || 0 });
     futureSlotsByMember.set(c.member_id, arr);
@@ -2841,7 +2839,7 @@ function CollectionsTab({ role }: { role: UserRole }) {
           {view === "paid"
             ? `${periodLabel} — মোট ${collections.length} জন আদায় করেছেন।`
             : view === "advance"
-              ? `${selectedIsFuture ? periodLabel + " — " : ""}মোট ${advanceList.length} জন অগ্রিম দান দিয়েছেন।`
+              ? `চলতি ও আগের মাস বাদে — মোট ${advanceList.length} জন অগ্রিম দান দিয়েছেন।`
               : `${periodLabel} — ${unpaidList.length} জনের বকেয়া রয়েছে।`}
         </p>
         {view === "paid" && (
