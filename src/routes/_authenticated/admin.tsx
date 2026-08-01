@@ -2839,7 +2839,7 @@ function CollectionsTab({ role }: { role: UserRole }) {
           {view === "paid"
             ? `${periodLabel} — মোট ${collections.length} জন আদায় করেছেন।`
             : view === "advance"
-              ? `${selectedIsFuture ? periodLabel + " — " : ""}মোট ${advanceList.length} জন অগ্রিম দান দিয়েছেন।`
+              ? `চলতি ও আগের মাস বাদে — মোট ${advanceList.length} জন অগ্রিম দান দিয়েছেন।`
               : `${periodLabel} — ${unpaidList.length} জনের বকেয়া রয়েছে।`}
         </p>
         {view === "paid" && (
