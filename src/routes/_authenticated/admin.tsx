@@ -2408,13 +2408,13 @@ function CollectionsTab({ role }: { role: UserRole }) {
   // অগ্রিম আদায় — যারা এখনো আসেনি এমন ভবিষ্যৎ মাসের দান আগেই দিয়েছেন (একাধিক বছর জুড়ে)
   const nowYear = now.getFullYear();
   const nowMonth = now.getMonth() + 1;
-  const futureSlotsByMember = new Map<string, { year: number; month: number }[]>();
+  const futureSlotsByMember = new Map<string, { year: number; month: number; amount: number }[]>();
   futureCollections.forEach((c) => {
     if (!c.member_id) return;
     const isFuture = c.year > nowYear || (c.year === nowYear && c.month > nowMonth);
     if (!isFuture) return;
     const arr = futureSlotsByMember.get(c.member_id) ?? [];
-    arr.push({ year: c.year, month: c.month });
+    arr.push({ year: c.year, month: c.month, amount: Number(c.amount) || 0 });
     futureSlotsByMember.set(c.member_id, arr);
   });
   const advanceList = members
@@ -2425,6 +2425,17 @@ function CollectionsTab({ role }: { role: UserRole }) {
       return { member: m, advanceSlots };
     })
     .filter((x) => x.advanceSlots.length > 0);
+
+  // সারসংক্ষেপ — সদস্য সংখ্যা ও মোট টাকা
+  const unpaidTotal = unpaidList.reduce(
+    (s, x) => s + (Number(x.member.monthly_donation) || 0) * x.unpaidMonths.length,
+    0,
+  );
+  const advanceTotal = advanceList.reduce(
+    (s, x) => s + x.advanceSlots.reduce((a, sl) => a + sl.amount, 0),
+    0,
+  );
+
 
 
 
