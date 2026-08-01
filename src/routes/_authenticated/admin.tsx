@@ -2841,8 +2841,8 @@ function CollectionsTab({ role }: { role: UserRole }) {
           {view === "paid"
             ? `${periodLabel} — মোট ${collections.length} জন আদায় করেছেন।`
             : view === "advance"
-              ? `মোট ${advanceList.length} জন অগ্রিম দান দিয়েছেন।`
-              : `${year} সালে ${unpaidList.length} জনের বকেয়া রয়েছে।`}
+              ? `${selectedIsFuture ? periodLabel + " — " : ""}মোট ${advanceList.length} জন অগ্রিম দান দিয়েছেন।`
+              : `${periodLabel} — ${unpaidList.length} জনের বকেয়া রয়েছে।`}
         </p>
         {view === "paid" && (
           <p className="text-base font-bold text-emerald-700">
