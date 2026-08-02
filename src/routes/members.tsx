@@ -34,7 +34,7 @@ export const Route = createFileRoute("/members")({
 
 type AddressOption = { id: string; label: string };
 
-type MemberInfo = { member_no: number; name: string; father_name: string; address: string; monthly_donation: number };
+type MemberInfo = { member_no: number; name: string; father_name: string; address: string; monthly_donation: number; account_override?: string | null; account_note?: string | null };
 
 type PaymentRow = { year: number; month: number; amount: number; collected_at: string };
 
@@ -324,8 +324,8 @@ function Members() {
                 <MonthStatusBlock paid={payStatus.paid} history={history} />
               )}
 
-              {isSuspended(history) ? (
-                <SuspendedNotice />
+              {effectiveSuspended(checkResult, history) ? (
+                <SuspendedNotice note={checkResult.account_note ?? null} />
               ) : (
                 <MemberCardBlock member={checkResult} siteIcon={siteIcon} />
               )}
@@ -645,7 +645,14 @@ function isSuspended(history: PaymentRow[]) {
   return true;
 }
 
-function SuspendedNotice() {
+/** ম্যানুয়াল সিদ্ধান্ত থাকলে সেটিই চূড়ান্ত, নয়তো স্বয়ংক্রিয় নিয়ম। */
+function effectiveSuspended(member: MemberInfo, history: PaymentRow[]) {
+  if (member.account_override === "suspended") return true;
+  if (member.account_override === "active") return false;
+  return isSuspended(history);
+}
+
+function SuspendedNotice({ note }: { note?: string | null }) {
   return (
     <div className="mb-3 rounded-2xl border border-rose-300 bg-rose-50 p-4 text-rose-900">
       <div className="flex items-center gap-2">
@@ -657,6 +664,7 @@ function SuspendedNotice() {
         পুনরায় দান আদায়ে অংশগ্রহণ করতে চান, তবে মসজিদ কর্তৃপক্ষের সাথে যোগাযোগ করে পূর্বের
         বকেয়া দান পরিশোধ করে আপনার একাউন্ট সচল করুন।
       </p>
+      {note ? <p className="mt-2 text-xs font-medium">{note}</p> : null}
     </div>
   );
 }
