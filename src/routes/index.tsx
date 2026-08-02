@@ -413,6 +413,8 @@ function useNextPrayer(prayerTimes: { name: string; time: string }[]) {
   }, []);
 
 
+  if (!hydrated || !now) return null;
+
   // exclude জুমা (weekly) from the rolling countdown
   const daily = prayerTimes
     .filter((p) => !p.name.includes("জুমা"))
