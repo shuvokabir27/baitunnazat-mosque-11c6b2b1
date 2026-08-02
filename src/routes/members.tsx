@@ -191,6 +191,7 @@ function Members() {
     setCheckResult(null);
     setNotMember(false);
     setPayStatus(null);
+    setHistory([]);
     try {
       const { data, error: rpcError } = await supabase.rpc("verify_member_by_mobile", {
         _mobile: m,
@@ -204,6 +205,16 @@ function Members() {
         });
         const p = (pay ?? [])[0] as { paid: boolean; amount: number } | undefined;
         setPayStatus(p ? { paid: !!p.paid, amount: Number(p.amount) || 0 } : { paid: false, amount: 0 });
+        const { data: hist } = await supabase.rpc("member_payment_history", { _mobile: m });
+        setHistory(
+          ((hist ?? []) as PaymentRow[]).map((h) => ({
+            year: Number(h.year),
+            month: Number(h.month),
+            amount: Number(h.amount) || 0,
+            collected_at: h.collected_at,
+          })),
+        );
+
       } else {
         setNotMember(true);
       }
