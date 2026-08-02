@@ -27,7 +27,9 @@ export const getSiteContent = createServerFn({ method: "GET" }).handler(async ()
     .select("content")
     .eq("id", 1)
     .maybeSingle();
-  return mergeContent((data?.content as Partial<SiteContent>) ?? null);
+  const merged = mergeContent((data?.content as Partial<SiteContent>) ?? null);
+  contentCache = { at: Date.now(), value: merged };
+  return merged;
 });
 
 /** Whether the current authenticated user is an admin. */
