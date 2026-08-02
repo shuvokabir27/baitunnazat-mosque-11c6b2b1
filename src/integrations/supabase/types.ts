@@ -416,6 +416,15 @@ export type Database = {
         Args: { _kind: string; _slug: string }
         Returns: number
       }
+      member_payment_history: {
+        Args: { _mobile: string }
+        Returns: {
+          amount: number
+          collected_at: string
+          month: number
+          year: number
+        }[]
+      }
       verify_member_by_mobile: {
         Args: { _mobile: string }
         Returns: {
