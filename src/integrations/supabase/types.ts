@@ -174,6 +174,8 @@ export type Database = {
       }
       members: {
         Row: {
+          account_note: string | null
+          account_override: string | null
           address: string
           created_at: string
           father_name: string
@@ -184,6 +186,8 @@ export type Database = {
           name: string
         }
         Insert: {
+          account_note?: string | null
+          account_override?: string | null
           address: string
           created_at?: string
           father_name: string
@@ -194,6 +198,8 @@ export type Database = {
           name: string
         }
         Update: {
+          account_note?: string | null
+          account_override?: string | null
           address?: string
           created_at?: string
           father_name?: string
@@ -428,6 +434,8 @@ export type Database = {
       verify_member_by_mobile: {
         Args: { _mobile: string }
         Returns: {
+          account_note: string
+          account_override: string
           address: string
           father_name: string
           member_no: number
