@@ -324,11 +324,16 @@ function Members() {
                 <MonthStatusBlock paid={payStatus.paid} history={history} />
               )}
 
-              <MemberCardBlock member={checkResult} siteIcon={siteIcon} />
+              {isSuspended(history) ? (
+                <SuspendedNotice />
+              ) : (
+                <MemberCardBlock member={checkResult} siteIcon={siteIcon} />
+              )}
 
               <PaymentHistoryBlock member={checkResult} history={history} />
             </div>
           )}
+
 
 
 
