@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, Link, useHydrated } from "@tanstack/react-router";
+import { createFileRoute, Link, useHydrated, ClientOnly } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Heart, Clock, X, Download, ZoomIn, ChevronDown, HeartHandshake, Loader2, MessageCircleQuestion } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { FinanceOverview } from "@/components/FinanceOverview";
+import { PrayerNotification } from "@/components/PrayerNotification";
 
 import { useSiteContent, siteContentQueryOptions } from "@/lib/use-site-content";
 import { heroImages, staffImages } from "@/lib/site-content";
@@ -470,6 +471,9 @@ function PrayerSection() {
   return (
     <section className="px-4 py-10">
       <SectionTitle>{sections.prayerTitle}</SectionTitle>
+      <ClientOnly fallback={null}>
+        <PrayerNotification />
+      </ClientOnly>
       {next && next.ongoing && (
         <div className="mb-5 flex flex-col items-center justify-center gap-2 rounded-2xl gradient-emerald px-4 py-4 text-center text-primary-foreground shadow-soft">
           <p className="flex items-center justify-center gap-2 text-base font-semibold sm:text-lg">
