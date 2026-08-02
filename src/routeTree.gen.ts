@@ -9,54 +9,28 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as MembersRouteImport } from './routes/members'
-import { Route as MasalaRouteImport } from './routes/masala'
-import { Route as IbadahRouteImport } from './routes/ibadah'
-import { Route as HisabRouteImport } from './routes/hisab'
-import { Route as DonateRouteImport } from './routes/donate'
-import { Route as DevelopmentRouteImport } from './routes/development'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as StaffSlugRouteImport } from './routes/staff.$slug'
-import { Route as CommitteeSlugRouteImport } from './routes/committee.$slug'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as DevelopmentRouteImport } from './routes/development'
+import { Route as DonateRouteImport } from './routes/donate'
+import { Route as HisabRouteImport } from './routes/hisab'
+import { Route as IbadahRouteImport } from './routes/ibadah'
+import { Route as MasalaRouteImport } from './routes/masala'
+import { Route as MembersRouteImport } from './routes/members'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as CommitteeSlugRouteImport } from './routes/committee.$slug'
+import { Route as StaffSlugRouteImport } from './routes/staff.$slug'
 import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
 
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MembersRoute = MembersRouteImport.update({
-  id: '/members',
-  path: '/members',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MasalaRoute = MasalaRouteImport.update({
-  id: '/masala',
-  path: '/masala',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IbadahRoute = IbadahRouteImport.update({
-  id: '/ibadah',
-  path: '/ibadah',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HisabRoute = HisabRouteImport.update({
-  id: '/hisab',
-  path: '/hisab',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DonateRoute = DonateRouteImport.update({
-  id: '/donate',
-  path: '/donate',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DevelopmentRoute = DevelopmentRouteImport.update({
-  id: '/development',
-  path: '/development',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -64,29 +38,55 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const DevelopmentRoute = DevelopmentRouteImport.update({
+  id: '/development',
+  path: '/development',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const DonateRoute = DonateRouteImport.update({
+  id: '/donate',
+  path: '/donate',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StaffSlugRoute = StaffSlugRouteImport.update({
-  id: '/staff/$slug',
-  path: '/staff/$slug',
+const HisabRoute = HisabRouteImport.update({
+  id: '/hisab',
+  path: '/hisab',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CommitteeSlugRoute = CommitteeSlugRouteImport.update({
-  id: '/committee/$slug',
-  path: '/committee/$slug',
+const IbadahRoute = IbadahRouteImport.update({
+  id: '/ibadah',
+  path: '/ibadah',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MasalaRoute = MasalaRouteImport.update({
+  id: '/masala',
+  path: '/masala',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MembersRoute = MembersRouteImport.update({
+  id: '/members',
+  path: '/members',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const CommitteeSlugRoute = CommitteeSlugRouteImport.update({
+  id: '/committee/$slug',
+  path: '/committee/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StaffSlugRoute = StaffSlugRouteImport.update({
+  id: '/staff/$slug',
+  path: '/staff/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicHealthRoute = ApiPublicHealthRouteImport.update({
   id: '/api/public/health',
@@ -208,60 +208,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/members': {
-      id: '/members'
-      path: '/members'
-      fullPath: '/members'
-      preLoaderRoute: typeof MembersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/masala': {
-      id: '/masala'
-      path: '/masala'
-      fullPath: '/masala'
-      preLoaderRoute: typeof MasalaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ibadah': {
-      id: '/ibadah'
-      path: '/ibadah'
-      fullPath: '/ibadah'
-      preLoaderRoute: typeof IbadahRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/hisab': {
-      id: '/hisab'
-      path: '/hisab'
-      fullPath: '/hisab'
-      preLoaderRoute: typeof HisabRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/donate': {
-      id: '/donate'
-      path: '/donate'
-      fullPath: '/donate'
-      preLoaderRoute: typeof DonateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/development': {
-      id: '/development'
-      path: '/development'
-      fullPath: '/development'
-      preLoaderRoute: typeof DevelopmentRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -271,25 +222,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/staff/$slug': {
-      id: '/staff/$slug'
-      path: '/staff/$slug'
-      fullPath: '/staff/$slug'
-      preLoaderRoute: typeof StaffSlugRouteImport
+    '/development': {
+      id: '/development'
+      path: '/development'
+      fullPath: '/development'
+      preLoaderRoute: typeof DevelopmentRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/committee/$slug': {
-      id: '/committee/$slug'
-      path: '/committee/$slug'
-      fullPath: '/committee/$slug'
-      preLoaderRoute: typeof CommitteeSlugRouteImport
+    '/donate': {
+      id: '/donate'
+      path: '/donate'
+      fullPath: '/donate'
+      preLoaderRoute: typeof DonateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hisab': {
+      id: '/hisab'
+      path: '/hisab'
+      fullPath: '/hisab'
+      preLoaderRoute: typeof HisabRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ibadah': {
+      id: '/ibadah'
+      path: '/ibadah'
+      fullPath: '/ibadah'
+      preLoaderRoute: typeof IbadahRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/masala': {
+      id: '/masala'
+      path: '/masala'
+      fullPath: '/masala'
+      preLoaderRoute: typeof MasalaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/members': {
+      id: '/members'
+      path: '/members'
+      fullPath: '/members'
+      preLoaderRoute: typeof MembersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -298,6 +284,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/committee/$slug': {
+      id: '/committee/$slug'
+      path: '/committee/$slug'
+      fullPath: '/committee/$slug'
+      preLoaderRoute: typeof CommitteeSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/staff/$slug': {
+      id: '/staff/$slug'
+      path: '/staff/$slug'
+      fullPath: '/staff/$slug'
+      preLoaderRoute: typeof StaffSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/health': {
       id: '/api/public/health'
@@ -338,13 +338,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
