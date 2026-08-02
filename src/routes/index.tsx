@@ -401,11 +401,17 @@ function prayerMinutes(name: string, time: string): number | null {
 }
 
 function useNextPrayer(prayerTimes: { name: string; time: string }[]) {
-  const [now, setNow] = useState(() => new Date());
+  // Clock-based UI must not render on the server: the server-rendered time never
+  // matches the client, which forces React to throw away and re-render the tree
+  // (hydration mismatch) and wastes worker CPU on every request.
+  const hydrated = useHydrated();
+  const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
+    setNow(new Date());
     const id = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(id);
   }, []);
+
 
   // exclude জুমা (weekly) from the rolling countdown
   const daily = prayerTimes
