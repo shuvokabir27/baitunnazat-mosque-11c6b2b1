@@ -3,6 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { SuspendedAccountsTab } from "@/components/admin/SuspendedAccountsTab";
 import {
   listStaffAccounts,
   createStaffAccount,
@@ -46,6 +47,7 @@ import {
   TrendingDown,
   ScrollText,
   UserCog,
+  UserX,
   KeyRound,
 
 
@@ -336,6 +338,7 @@ function AdminPage() {
                 {tab === "members" && <MembersTab role={role} />}
                 {tab === "collections" && <CollectionsTab role={role} />}
                 {tab === "finance" && <FinanceTab role={role} />}
+                {tab === "suspended" && <SuspendedAccountsTab />}
                 {tab === "users" && role === "admin" && <StaffAccountsTab />}
               </div>
             </div>
@@ -346,7 +349,7 @@ function AdminPage() {
   );
 }
 
-type Tab = "site" | "mosque" | "slider" | "sections" | "marquee" | "prayer" | "staff" | "committee" | "ibadah" | "development" | "donate" | "footer" | "leads" | "masala" | "qa" | "addresses" | "members" | "collections" | "finance" | "users";
+type Tab = "site" | "mosque" | "slider" | "sections" | "marquee" | "prayer" | "staff" | "committee" | "ibadah" | "development" | "donate" | "footer" | "leads" | "masala" | "qa" | "addresses" | "members" | "collections" | "finance" | "suspended" | "users";
 
 // Tabs a "finance" role staff user is allowed to access.
 const FINANCE_TABS: Tab[] = ["members", "collections", "finance"];
@@ -370,6 +373,7 @@ const TAB_LABELS: Record<Tab, string> = {
   members: "সদস্য তালিকা",
   collections: "দান আদায়",
   finance: "আয়-ব্যয় হিসাব",
+  suspended: "বন্ধ একাউন্ট ও বকেয়া",
   users: "ইউজার ও রোল",
 };
 
@@ -393,6 +397,7 @@ const TAB_ICONS: Record<Tab, typeof LayoutDashboard> = {
   members: UserPlus,
   collections: HandCoins,
   finance: Wallet,
+  suspended: UserX,
   users: UserCog,
 };
 
@@ -428,7 +433,7 @@ const TAB_GROUPS: {
   },
   {
     label: "দান ও উন্নয়ন",
-    tabs: ["donate", "development", "collections", "finance"],
+    tabs: ["donate", "development", "collections", "finance", "suspended"],
     labelColor: "text-[#4ab89a]",
     activeBg: "bg-[#1f9d78]",
     itemText: "text-[#7ad6bd]",
