@@ -37,8 +37,33 @@ export function PrayerNotification() {
       setSupported(false);
       return;
     }
-    if (localStorage.getItem(STORAGE_KEY) === "1" && Notification.permission === "granted") {
-      setEnabled(true);
+
+    const stored = localStorage.getItem(STORAGE_KEY);
+
+    // আগে অনুমতি দেওয়া থাকলে নতুন করে কিছু চাইতে হবে না — সরাসরি চালু
+    if (Notification.permission === "granted") {
+      if (stored !== "0") {
+        localStorage.setItem(STORAGE_KEY, "1");
+        setEnabled(true);
+      }
+      return;
+    }
+
+    // ব্যবহারকারী নিজে বন্ধ না করে থাকলে সাইট লোডেই একবার অনুমতি চাওয়া হবে
+    if (Notification.permission === "default" && stored === null) {
+      const t = setTimeout(() => {
+        Notification.requestPermission()
+          .then((perm) => {
+            if (perm === "granted") {
+              localStorage.setItem(STORAGE_KEY, "1");
+              setEnabled(true);
+            }
+          })
+          .catch(() => {
+            /* ignore */
+          });
+      }, 1500);
+      return () => clearTimeout(t);
     }
   }, []);
 
