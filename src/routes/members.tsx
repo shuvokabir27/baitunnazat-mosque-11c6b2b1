@@ -629,7 +629,40 @@ function MemberCardBlock({ member, siteIcon }: { member: MemberInfo; siteIcon?: 
   );
 }
 
+/** পর পর তিন মাস (চলতি মাস বাদে) দান আদায় না হলে একাউন্ট সাময়িকভাবে বন্ধ। */
+function isSuspended(history: PaymentRow[]) {
+  const now = new Date();
+  let y = now.getFullYear();
+  let m = now.getMonth() + 1;
+  for (let i = 0; i < 3; i++) {
+    m -= 1;
+    if (m === 0) {
+      m = 12;
+      y -= 1;
+    }
+    if (history.some((h) => h.year === y && h.month === m)) return false;
+  }
+  return true;
+}
+
+function SuspendedNotice() {
+  return (
+    <div className="mb-3 rounded-2xl border border-rose-300 bg-rose-50 p-4 text-rose-900">
+      <div className="flex items-center gap-2">
+        <UserX className="h-5 w-5 shrink-0" />
+        <span className="text-sm font-bold">আপনার একাউন্ট সাময়িকভাবে বন্ধ</span>
+      </div>
+      <p className="mt-1.5 text-sm leading-relaxed">
+        আপনি পর পর তিন মাস দান আদায় না করায় আপনার একাউন্ট সাময়িকভাবে বন্ধ করা হয়েছে। যদি
+        পুনরায় দান আদায়ে অংশগ্রহণ করতে চান, তবে মসজিদ কর্তৃপক্ষের সাথে যোগাযোগ করে পূর্বের
+        বকেয়া দান পরিশোধ করে আপনার একাউন্ট সচল করুন।
+      </p>
+    </div>
+  );
+}
+
 /** Shows previous-month and current-month payment status side by side. */
+
 function MonthStatusBlock({ paid, history }: { paid: boolean; history: PaymentRow[] }) {
   const now = new Date();
   const curY = now.getFullYear();
