@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useHydrated } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Heart, Clock, X, Download, ZoomIn, ChevronDown, HeartHandshake, Loader2, MessageCircleQuestion } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { FinanceOverview } from "@/components/FinanceOverview";
