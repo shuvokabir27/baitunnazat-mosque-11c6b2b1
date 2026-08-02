@@ -15,6 +15,7 @@ import { SiteContentProvider, siteContentQueryOptions } from "@/lib/use-site-con
 import { WelcomePopup } from "@/components/WelcomePopup";
 import { ClientOnly } from "@tanstack/react-router";
 import { Toaster } from "@/components/ui/sonner";
+import { registerServiceWorker } from "@/lib/register-sw";
 
 function NotFoundComponent() {
   return (
@@ -132,6 +133,10 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    registerServiceWorker();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
