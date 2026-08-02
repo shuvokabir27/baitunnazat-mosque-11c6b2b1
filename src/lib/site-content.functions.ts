@@ -66,5 +66,6 @@ export const updateSiteContent = createServerFn({ method: "POST" })
       .update({ content: clean, updated_at: new Date().toISOString() })
       .eq("id", 1);
     if (error) throw error;
+    contentCache = { at: Date.now(), value: clean };
     return { ok: true, content: clean };
   });
