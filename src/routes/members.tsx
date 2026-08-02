@@ -623,3 +623,154 @@ function MemberCardBlock({ member, siteIcon }: { member: MemberInfo; siteIcon?: 
     </>
   );
 }
+
+/** Shows previous-month and current-month payment status side by side. */
+function MonthStatusBlock({ paid, history }: { paid: boolean; history: PaymentRow[] }) {
+  const now = new Date();
+  const curY = now.getFullYear();
+  const curM = now.getMonth() + 1;
+  const prevM = curM === 1 ? 12 : curM - 1;
+  const prevY = curM === 1 ? curY - 1 : curY;
+
+  const prevPaid = useMemo(
+    () => history.some((h) => h.year === prevY && h.month === prevM),
+    [history, prevY, prevM],
+  );
+
+  const Item = ({ label, ok }: { label: string; ok: boolean }) => (
+    <div
+      className={`flex items-center gap-2 rounded-2xl border p-3 ${
+        ok
+          ? "border-emerald-300 bg-emerald-50 text-emerald-800"
+          : "border-rose-300 bg-rose-50 text-rose-800"
+      }`}
+    >
+      {ok ? (
+        <CheckCircle2 className="h-5 w-5 shrink-0" />
+      ) : (
+        <UserX className="h-5 w-5 shrink-0" />
+      )}
+      <div className="min-w-0">
+        <p className="text-xs font-medium opacity-80">{label}</p>
+        <p className="text-sm font-bold">{ok ? "পরিশোধ হয়েছে" : "বাকি রয়েছে"}</p>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="mb-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+      <Item label={`গত মাস (${BN_MONTHS[prevM - 1]} ${bnNum(prevY)})`} ok={prevPaid} />
+      <Item label={`চলতি মাস (${BN_MONTHS[curM - 1]} ${bnNum(curY)})`} ok={paid} />
+    </div>
+  );
+}
+
+/** Full month-by-month payment history with image download. */
+function PaymentHistoryBlock({ member, history }: { member: MemberInfo; history: PaymentRow[] }) {
+  const [open, setOpen] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const sheetRef = useRef<HTMLDivElement>(null);
+
+  const total = useMemo(() => history.reduce((s, h) => s + h.amount, 0), [history]);
+
+  const download = useCallback(async () => {
+    if (!sheetRef.current) return;
+    setDownloading(true);
+    try {
+      const dataUrl = await toPng(sheetRef.current, {
+        cacheBust: true,
+        pixelRatio: 3,
+        backgroundColor: "#ffffff",
+      });
+      const a = document.createElement("a");
+      a.download = `দান-হিসাব-${member.member_no}.png`;
+      a.href = dataUrl;
+      a.click();
+    } catch {
+      /* ignore */
+    } finally {
+      setDownloading(false);
+    }
+  }, [member.member_no]);
+
+  return (
+    <div className="mt-4 rounded-2xl border border-border bg-background p-4">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between gap-3 text-left"
+      >
+        <span className="flex items-center gap-2 text-sm font-bold text-primary">
+          <History className="h-4 w-4" /> সকল মাসের দানের হিসাব
+        </span>
+        <span className="flex items-center gap-1 text-xs font-semibold text-muted-foreground">
+          {bnNum(history.length)} মাস
+          {open ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+        </span>
+      </button>
+
+      {open && (
+        <>
+          {history.length === 0 ? (
+            <p className="mt-3 rounded-xl bg-muted p-3 text-sm text-muted-foreground">
+              এখনো কোনো দান আদায়ের তথ্য পাওয়া যায়নি।
+            </p>
+          ) : (
+            <>
+              <div
+                ref={sheetRef}
+                className="mt-3 overflow-hidden rounded-xl border border-[#b08d4f]/40 bg-[#fffdf6]"
+              >
+                <div className="bg-[#0f5132] px-4 py-3 text-center">
+                  <p className="text-sm font-extrabold text-[#f7e9c6]">{mosque.name}</p>
+                  <p className="mt-0.5 text-[11px] font-semibold text-[#d4af5f]">দান পরিশোধের হিসাব</p>
+                </div>
+                <div className="space-y-0.5 px-4 py-2 text-xs text-[#7a6233]">
+                  <p>
+                    সদস্য নম্বর: <span className="font-bold text-[#0f5132]">{bnNum(member.member_no)}</span>
+                  </p>
+                  <p>
+                    নাম: <span className="font-bold text-[#1c1c1c]">{member.name}</span>
+                  </p>
+                </div>
+                <div className="px-3 pb-3">
+                  <div className="overflow-hidden rounded-lg border border-[#b08d4f]/40">
+                    <div className="grid grid-cols-[1fr_auto] gap-2 bg-[#f7f0df] px-3 py-2 text-xs font-bold text-[#7a6233]">
+                      <span>মাস</span>
+                      <span>পরিমাণ</span>
+                    </div>
+                    {history.map((h, i) => (
+                      <div
+                        key={`${h.year}-${h.month}-${i}`}
+                        className="grid grid-cols-[1fr_auto] gap-2 border-t border-[#b08d4f]/25 px-3 py-2 text-sm"
+                      >
+                        <span className="text-[#1c1c1c]">
+                          {BN_MONTHS[h.month - 1]} {bnNum(h.year)}
+                        </span>
+                        <span className="font-bold text-[#0f5132]">{bnNum(h.amount)} ৳</span>
+                      </div>
+                    ))}
+                    <div className="grid grid-cols-[1fr_auto] gap-2 border-t border-[#b08d4f]/40 bg-[#0f5132] px-3 py-2 text-sm">
+                      <span className="font-bold text-[#f7e9c6]">সর্বমোট</span>
+                      <span className="font-extrabold text-[#d4af5f]">{bnNum(total)} ৳</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={download}
+                disabled={downloading}
+                className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-sm font-semibold text-primary shadow-soft disabled:opacity-60"
+              >
+                {downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                হিসাব ডাউনলোড করুন
+              </button>
+            </>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
