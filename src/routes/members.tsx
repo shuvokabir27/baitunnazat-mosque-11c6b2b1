@@ -36,6 +36,27 @@ type AddressOption = { id: string; label: string };
 
 type MemberInfo = { member_no: number; name: string; father_name: string; address: string; monthly_donation: number };
 
+type PaymentRow = { year: number; month: number; amount: number; collected_at: string };
+
+const BN_MONTHS = [
+  "জানুয়ারি",
+  "ফেব্রুয়ারি",
+  "মার্চ",
+  "এপ্রিল",
+  "মে",
+  "জুন",
+  "জুলাই",
+  "আগস্ট",
+  "সেপ্টেম্বর",
+  "অক্টোবর",
+  "নভেম্বর",
+  "ডিসেম্বর",
+];
+
+const bnNum = (n: number | string) => String(n).replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)]);
+
+
+
 function Members() {
   const siteContent = useSiteContent();
   const siteIcon = siteContent.site.icon;
