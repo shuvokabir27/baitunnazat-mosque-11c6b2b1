@@ -4,8 +4,17 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
 import { mergeContent, type SiteContent } from "@/lib/site-content";
 
+// Short-lived in-worker cache. Every SSR request used to hit the database and
+// re-parse the whole content document, which is what pushed the worker over
+// Cloudflare's CPU/resource limit ("Error 1102") during traffic bursts.
+let contentCache: { at: number; value: SiteContent } | undefined;
+const CONTENT_TTL_MS = 60_000;
+
 /** Public read of the site content. Falls back to defaults when empty. */
 export const getSiteContent = createServerFn({ method: "GET" }).handler(async () => {
+  if (contentCache && Date.now() - contentCache.at < CONTENT_TTL_MS) {
+    return contentCache.value;
+  }
   const supabaseUrl = process.env.SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL;
   const publishableKey =
     process.env.SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -18,7 +27,9 @@ export const getSiteContent = createServerFn({ method: "GET" }).handler(async ()
     .select("content")
     .eq("id", 1)
     .maybeSingle();
-  return mergeContent((data?.content as Partial<SiteContent>) ?? null);
+  const merged = mergeContent((data?.content as Partial<SiteContent>) ?? null);
+  contentCache = { at: Date.now(), value: merged };
+  return merged;
 });
 
 /** Whether the current authenticated user is an admin. */
@@ -55,5 +66,6 @@ export const updateSiteContent = createServerFn({ method: "POST" })
       .update({ content: clean, updated_at: new Date().toISOString() })
       .eq("id", 1);
     if (error) throw error;
+    contentCache = { at: Date.now(), value: clean };
     return { ok: true, content: clean };
   });

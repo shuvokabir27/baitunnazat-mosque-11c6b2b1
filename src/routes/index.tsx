@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useHydrated } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Heart, Clock, X, Download, ZoomIn, ChevronDown, HeartHandshake, Loader2, MessageCircleQuestion } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { FinanceOverview } from "@/components/FinanceOverview";
@@ -401,11 +401,19 @@ function prayerMinutes(name: string, time: string): number | null {
 }
 
 function useNextPrayer(prayerTimes: { name: string; time: string }[]) {
-  const [now, setNow] = useState(() => new Date());
+  // Clock-based UI must not render on the server: the server-rendered time never
+  // matches the client, which forces React to throw away and re-render the tree
+  // (hydration mismatch) and wastes worker CPU on every request.
+  const hydrated = useHydrated();
+  const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
+    setNow(new Date());
     const id = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(id);
   }, []);
+
+
+  if (!hydrated || !now) return null;
 
   // exclude জুমা (weekly) from the rolling countdown
   const daily = prayerTimes
