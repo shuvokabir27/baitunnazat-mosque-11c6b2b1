@@ -4,17 +4,17 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
 import { mergeContent, type SiteContent } from "@/lib/site-content";
 
-// Short-lived in-worker cache. Every SSR request used to hit the database and
-// re-parse the whole content document, which is what pushed the worker over
-// Cloudflare's CPU/resource limit ("Error 1102") during traffic bursts.
+// In-worker cache with stale-while-revalidate. Every SSR request used to hit
+// the database and re-parse the whole content document, which is what pushed
+// the worker over Cloudflare's CPU/resource limit ("Error 1102") during bursts.
+// Now a request never waits on the database unless the cache is completely
+// empty: stale content is served instantly and refreshed in the background,
+// and concurrent misses share a single database round-trip.
 let contentCache: { at: number; value: SiteContent } | undefined;
-const CONTENT_TTL_MS = 60_000;
+let inFlight: Promise<SiteContent> | undefined;
+const CONTENT_TTL_MS = 300_000; // 5 min fresh window
 
-/** Public read of the site content. Falls back to defaults when empty. */
-export const getSiteContent = createServerFn({ method: "GET" }).handler(async () => {
-  if (contentCache && Date.now() - contentCache.at < CONTENT_TTL_MS) {
-    return contentCache.value;
-  }
+async function loadContent(): Promise<SiteContent> {
   const supabaseUrl = process.env.SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL;
   const publishableKey =
     process.env.SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -30,7 +30,27 @@ export const getSiteContent = createServerFn({ method: "GET" }).handler(async ()
   const merged = mergeContent((data?.content as Partial<SiteContent>) ?? null);
   contentCache = { at: Date.now(), value: merged };
   return merged;
+}
+
+function refresh(): Promise<SiteContent> {
+  if (!inFlight) {
+    inFlight = loadContent().finally(() => {
+      inFlight = undefined;
+    });
+  }
+  return inFlight;
+}
+
+/** Public read of the site content. Falls back to defaults when empty. */
+export const getSiteContent = createServerFn({ method: "GET" }).handler(async () => {
+  if (contentCache) {
+    // Serve immediately; kick off a background refresh once stale.
+    if (Date.now() - contentCache.at >= CONTENT_TTL_MS) void refresh().catch(() => {});
+    return contentCache.value;
+  }
+  return refresh();
 });
+
 
 /** Whether the current authenticated user is an admin. */
 export const getMyAdminStatus = createServerFn({ method: "POST" })
