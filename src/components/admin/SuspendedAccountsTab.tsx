@@ -103,19 +103,11 @@ export function SuspendedAccountsTab() {
         const due = completedMonths(m.created_at).filter(
           (s) => !paidKeys.has(`${m.id}|${s.year}|${s.month}`),
         );
-        // শেষ তিনটি সম্পন্ন মাস টানা বকেয়া কি না
-        const all = completedMonths(m.created_at);
-        const last3 = all.slice(-3);
-        const autoSuspended =
-          last3.length === 3 &&
-          last3.every((s) => !paidKeys.has(`${m.id}|${s.year}|${s.month}`));
-        const effective =
-          m.account_override === "suspended"
-            ? true
-            : m.account_override === "active"
-              ? false
-              : autoSuspended;
+        // স্বয়ংক্রিয় সাসপেন্ড আপাতত অফ — শুধু ম্যানুয়াল সাসপেন্ড চালু।
+        const autoSuspended = false;
+        const effective = m.account_override === "suspended";
         return { m, due, autoSuspended, effective };
+
       })
       .filter((r) => (filter === "suspended" ? r.effective : r.due.length > 0 || r.effective))
       .filter((r) =>
