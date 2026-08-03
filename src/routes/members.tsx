@@ -645,12 +645,11 @@ function isSuspended(history: PaymentRow[]) {
   return true;
 }
 
-/** ম্যানুয়াল সিদ্ধান্ত থাকলে সেটিই চূড়ান্ত, নয়তো স্বয়ংক্রিয় নিয়ম। */
-function effectiveSuspended(member: MemberInfo, history: PaymentRow[]) {
-  if (member.account_override === "suspended") return true;
-  if (member.account_override === "active") return false;
-  return isSuspended(history);
+/** ম্যানুয়াল সিদ্ধান্ত থাকলে সেটিই চূড়ান্ত; স্বয়ংক্রিয় সাসপেন্ড আপাতত অফ। */
+function effectiveSuspended(member: MemberInfo, _history: PaymentRow[]) {
+  return member.account_override === "suspended";
 }
+
 
 function SuspendedNotice({ note }: { note?: string | null }) {
   return (
