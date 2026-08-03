@@ -629,21 +629,9 @@ function MemberCardBlock({ member, siteIcon }: { member: MemberInfo; siteIcon?: 
   );
 }
 
-/** পর পর তিন মাস (চলতি মাস বাদে) দান আদায় না হলে একাউন্ট সাময়িকভাবে বন্ধ। */
-function isSuspended(history: PaymentRow[]) {
-  const now = new Date();
-  let y = now.getFullYear();
-  let m = now.getMonth() + 1;
-  for (let i = 0; i < 3; i++) {
-    m -= 1;
-    if (m === 0) {
-      m = 12;
-      y -= 1;
-    }
-    if (history.some((h) => h.year === y && h.month === m)) return false;
-  }
-  return true;
-}
+/* আপাতত স্বয়ংক্রিয় সাসপেন্ড লজিক সরিয়ে রাখা হয়েছে;
+   ম্যানুয়াল override ছাড়া কোনো একাউন্ট বন্ধ হবে না। */
+
 
 /** ম্যানুয়াল সিদ্ধান্ত থাকলে সেটিই চূড়ান্ত; স্বয়ংক্রিয় সাসপেন্ড আপাতত অফ। */
 function effectiveSuspended(member: MemberInfo, _history: PaymentRow[]) {
